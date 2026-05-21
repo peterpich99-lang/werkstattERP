@@ -266,7 +266,7 @@ window.saveAuftrag = async () => {
     faellig_am:    document.getElementById('m-faellig')?.value || null,
     stundensatz:   parseFloat(document.getElementById('m-stunde')?.value) || null,
     notizen:       document.getElementById('m-notizen')?.value || null,
-    zugewiesen_an: document.getElementById('m-zugewiesen')?.value || null,
+    ...(document.getElementById('m-zugewiesen')?.value ? { zugewiesen_an: document.getElementById('m-zugewiesen').value } : {}),
     status: id ? undefined : 'offen',
     erstellt_am: id ? undefined : new Date().toISOString(),
   };
