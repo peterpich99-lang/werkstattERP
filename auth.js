@@ -241,24 +241,53 @@ window.doLogin = async () => {
   btn.disabled    = true;
   errEl.textContent = '';
 
-  const dbg = `[${isLocalMode ? 'OFFLINE' : 'online'} · net:${navigator.onLine} · sb:${!!SB?.auth}] `;
   try {
     if (isLocalMode) {
-      errEl.textContent = dbg + 'Offline-Modus aktiv – Supabase nicht erreichbar.';
+      errEl.textContent = 'Offline-Modus aktiv – Supabase nicht erreichbar.';
       btn.textContent = 'Anmelden'; btn.disabled = false; return;
     }
     if (!SB?.auth) {
-      errEl.textContent = dbg + 'Supabase nicht geladen. Bitte Seite neu laden.';
+      errEl.textContent = 'Supabase nicht geladen. Bitte Seite neu laden.';
       btn.textContent = 'Anmelden'; btn.disabled = false; return;
     }
-    const { data, error } = await SB.auth.signInWithPassword({ email, password: pw });
+    // iOS PWA WebKit bug: fetch after touch events can fail immediately.
+    // Small delay lets the touch handling complete before the network call.
+    await new Promise(r => setTimeout(r, 150));
+
+    let data, error;
+    try {
+      ({ data, error } = await SB.auth.signInWithPassword({ email, password: pw }));
+    } catch (fetchErr) {
+      // Fallback: direct fetch bypasses supabase-js wrapper
+      const r = await fetch('https://itstjivahmmiuwxqabnq.supabase.co/auth/v1/token?grant_type=password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': 'sb_publishable_kNLXqjqguJhAq4Q4IL8ogQ_3jyiN54F',
+          'Authorization': 'Bearer sb_publishable_kNLXqjqguJhAq4Q4IL8ogQ_3jyiN54F',
+        },
+        body: JSON.stringify({ email, password: pw }),
+      });
+      const json = await r.json();
+      if (!r.ok) {
+        error = { message: json.error_description || json.msg || 'Login fehlgeschlagen' };
+      } else {
+        // Inject session into SB client so everything works normally
+        await SB.auth.setSession({ access_token: json.access_token, refresh_token: json.refresh_token });
+        data = { user: json.user };
+        error = null;
+      }
+    }
+
     if (error) {
-      errEl.textContent = dbg + error.message;
+      errEl.textContent = error.message.toLowerCase().includes('invalid')
+        ? 'Falsche E-Mail oder falsches Passwort.'
+        : error.message;
     } else if (data?.user) {
       await boot(data.user);
     }
   } catch (e) {
-    errEl.textContent = dbg + 'Exception: ' + (e?.message || String(e));
+    errEl.textContent = 'Fehler: ' + (e?.message || String(e));
   } finally {
     btn.textContent = 'Anmelden';
     btn.disabled    = false;
