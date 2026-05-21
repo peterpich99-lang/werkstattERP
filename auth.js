@@ -5,11 +5,11 @@ const DEMO = {
   user:   { id: 'demo', email: 'demo@werkstatt.at' },
   profil: { id: 'demo', name: 'Demo User', rolle: 'admin', stundensatz: 45, freigegeben: true },
   firma:  {
-    firmenname: 'Tischlerei Mustermann', inhaber: 'Hans Mustermann',
-    adresse: 'Hauptstraße 12', plz_ort: '8600 Bruck an der Mur',
+    name: 'Tischlerei Mustermann', inhaber: 'Hans Mustermann',
+    adresse: 'Hauptstraße 12, 8600 Bruck an der Mur',
     telefon: '03862 12345', email: 'office@tischlerei-mustermann.at',
-    iban: 'AT12 3456 7890 1234 5678', bic: 'BKAUATWW', bank: 'Sparkasse',
-    kleinunternehmer: true, ust_satz: 20, zahlungsziel_tage: 14, angebot_gueltig_tage: 30,
+    iban: 'AT12 3456 7890 1234 5678',
+    kleinunternehmer: true, ust_satz: 20,
   },
   typen: [
     { id: 't1', name: 'Fensterrestaurierung', farbe: '#b8832a', vordefiniert: true },
@@ -111,7 +111,7 @@ export function startDemo() {
   S.rechnungen = DEMO.rechnungen;
   S.nutzer = DEMO.nutzer;
   document.getElementById('hdr-user').textContent = 'Demo';
-  document.getElementById('hdr-sub').textContent = DEMO.firma.firmenname;
+  document.getElementById('hdr-sub').textContent = DEMO.firma.name;
   hideAuth();
   render();
 }
@@ -163,7 +163,7 @@ export async function boot(user) {
     }
 
     document.getElementById('hdr-user').textContent = (profil?.name || user.email).split(' ')[0];
-    document.getElementById('hdr-sub').textContent  = S.firma.firmenname || 'Werkstatt Pro';
+    document.getElementById('hdr-sub').textContent  = S.firma.name || 'Werkstatt Pro';
   } catch (err) {
     S.profil = {};
     S.firma  = {};
@@ -186,7 +186,7 @@ export function render() {
 }
 
 function _renderPlaceholder() {
-  const content = document.getElementById('content');
+  const content = document.getElementById('app-content');
   if (!content) return;
 
   const offen = S.auftraege.filter(a => a.status === 'offen' || a.status === 'in_arbeit').length;
@@ -197,19 +197,16 @@ function _renderPlaceholder() {
     <div style="text-align:center;padding:2.5rem 1rem 1.5rem">
       <div class="auth-logo" style="margin:0 auto 1rem">W</div>
       <div style="font-family:'DM Serif Display',serif;font-size:1.5rem;margin-bottom:.3rem">Willkommen, ${name}!</div>
-      <div style="font-size:.75rem;color:var(--text3);margin-bottom:1.5rem">${S.firma.firmenname || 'Werkstatt Pro'} · ${mode}</div>
+      <div style="font-size:.75rem;color:var(--text3);margin-bottom:1.5rem">${S.firma.name || 'Werkstatt Pro'} · ${mode}</div>
     </div>
     <div class="kpi-grid">
       <div class="kpi"><div class="kpi-val">${offen}</div><div class="kpi-lbl"><span class="kpi-dot" style="background:var(--amber2)"></span>Offene Aufträge</div></div>
       <div class="kpi"><div class="kpi-val">${S.kunden.length}</div><div class="kpi-lbl"><span class="kpi-dot" style="background:var(--blue2)"></span>Kunden</div></div>
       <div class="kpi"><div class="kpi-val">${S.angebote.length}</div><div class="kpi-lbl"><span class="kpi-dot" style="background:var(--gold2)"></span>Angebote</div></div>
       <div class="kpi"><div class="kpi-val">${S.rechnungen.length}</div><div class="kpi-lbl"><span class="kpi-dot" style="background:var(--green2)"></span>Rechnungen</div></div>
-    </div>
-    <div style="margin-top:1rem;padding:.85rem;background:var(--s2);border:1px solid var(--border2);border-radius:var(--radius);font-size:.77rem;color:var(--text3);text-align:center">
-      Auth läuft ✓ &nbsp;·&nbsp; App-Module werden als nächstes geladen
     </div>`;
 
-  const nav = document.getElementById('nav');
+  const nav = document.getElementById('app-nav');
   if (nav) nav.innerHTML = '';
 }
 
