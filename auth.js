@@ -64,7 +64,7 @@ export const S = {
   tab: 'dash',
   user: null, profil: null, firma: {},
   typen: [], kunden: [], auftraege: [], inventar: [], angebote: [], rechnungen: [], nutzer: [],
-  aktId: null, timer: null, tick: null, modal: null, filter: 'alle',
+  aktId: null, timer: null, tick: null, modal: null, filter: 'alle', doktab: 'angebote',
 };
 
 // ── UI ────────────────────────────────────────────────────────────────
