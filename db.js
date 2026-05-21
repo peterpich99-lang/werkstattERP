@@ -1,4 +1,5 @@
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+// Supabase wird via <script> Tag in index.html geladen (window.supabase)
+const { createClient } = window.supabase;
 
 const SUPABASE_URL = 'https://itstjivahmmiuwxqabnq.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_kNLXqjqguJhAq4Q4IL8ogQ_3jyiN54F';
@@ -24,10 +25,10 @@ export let isLocalMode = false;
 
 export async function detectMode() {
   try {
-    await Promise.race([
-      fetch(`${SUPABASE_URL}/rest/v1/`, { signal: AbortSignal.timeout(2500) }),
-      new Promise((_, r) => setTimeout(() => r(new Error('timeout')), 2500)),
-    ]);
+    const ctrl = new AbortController();
+    const tid  = setTimeout(() => ctrl.abort(), 2500);
+    await fetch(`${SUPABASE_URL}/rest/v1/`, { signal: ctrl.signal });
+    clearTimeout(tid);
     isLocalMode = false;
   } catch {
     isLocalMode = true;
@@ -41,7 +42,7 @@ export const DB = {
 
   insert(t, rows) {
     const data = this._get(t);
-    const arr = Array.isArray(rows) ? rows : [rows];
+    const arr  = Array.isArray(rows) ? rows : [rows];
     arr.forEach(r => {
       if (!r.id) r.id = crypto.randomUUID();
       if (!r.erstellt_am) r.erstellt_am = new Date().toISOString();
@@ -64,7 +65,7 @@ export const DB = {
 
   upsert(t, row) {
     const data = this._get(t);
-    const i = data.findIndex(r => r.id === row.id || (row.profil_id && r.profil_id === row.profil_id));
+    const i    = data.findIndex(r => r.id === row.id || (row.profil_id && r.profil_id === row.profil_id));
     if (i >= 0) data[i] = { ...data[i], ...row }; else data.push(row);
     this._set(t, data);
     return { data: row, error: null };
@@ -80,10 +81,10 @@ export function sbq(table) {
         eq(col, val) {
           const rows = DB._get(table).filter(r => r[col] === val);
           return {
-            single()      { return Promise.resolve({ data: rows[0] ?? null, error: null }) },
-            order()       { return Promise.resolve({ data: rows, error: null }) },
-            then(fn)      { return Promise.resolve({ data: rows, error: null }).then(fn) },
-            gte(c2, v2)   {
+            single()    { return Promise.resolve({ data: rows[0] ?? null, error: null }) },
+            order()     { return Promise.resolve({ data: rows, error: null }) },
+            then(fn)    { return Promise.resolve({ data: rows, error: null }).then(fn) },
+            gte(c2, v2) {
               const d2 = rows.filter(r => r[c2] >= v2);
               return {
                 order()  { return Promise.resolve({ data: d2, error: null }) },
@@ -93,7 +94,7 @@ export function sbq(table) {
           };
         },
         order(col, opts) {
-          const asc = opts?.ascending !== false;
+          const asc  = opts?.ascending !== false;
           const data = DB._get(table).sort((a, b) =>
             asc ? String(a[col] ?? '').localeCompare(String(b[col] ?? ''))
                 : String(b[col] ?? '').localeCompare(String(a[col] ?? ''))
@@ -148,8 +149,8 @@ export function sbq(table) {
 }
 
 export const localAuth = {
-  _users()        { try { return JSON.parse(localStorage.getItem('wp_users') || '[]') } catch { return [] } },
-  _saveUsers(u)   { localStorage.setItem('wp_users', JSON.stringify(u)) },
+  _users()        { try { return JSON.parse(localStorage.getItem('wp_users')   || '[]')   } catch { return [] } },
+  _saveUsers(u)   { localStorage.setItem('wp_users',   JSON.stringify(u)) },
   _session()      { try { return JSON.parse(localStorage.getItem('wp_session') || 'null') } catch { return null } },
   _saveSession(s) { localStorage.setItem('wp_session', JSON.stringify(s)) },
 
@@ -168,12 +169,12 @@ export const localAuth = {
   async signUp({ email, password, options }) {
     const users = this._users();
     if (users.find(u => u.email === email)) return { data: null, error: { message: 'User already registered' } };
-    const id = crypto.randomUUID();
+    const id   = crypto.randomUUID();
     const name = options?.data?.name || email;
     users.push({ id, email, password, name });
     this._saveUsers(users);
     const profiles = DB._get('profile');
-    const isFirst = profiles.length === 0;
+    const isFirst  = profiles.length === 0;
     profiles.push({ id, name, rolle: isFirst ? 'admin' : 'mitarbeiter', freigegeben: isFirst, stundensatz: 0, erstellt_am: new Date().toISOString() });
     DB._set('profile', profiles);
     const session = { user: { id, email } };
