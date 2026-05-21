@@ -153,6 +153,7 @@ window.appRender = render;
 window.openM     = openM;
 window.oClose    = oClose;
 window.openPDF   = openPDF;
+window.S         = S;
 
 window.setTab = (tab) => {
   S.tab = tab;
