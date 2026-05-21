@@ -1,7 +1,7 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
-const SUPABASE_URL = 'https://itstjivahmmiuwxqabnq.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_kNLXqjqguJhAq4Q4IL8ogQ_3jyiN54F';
+const SUPABASE_URL = 'https://mjiqfpdthrqznrdxcwzt.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1qaXFmcGR0aHJxem5yZHhjd3p0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzNTkwNDEsImV4cCI6MjA5NDkzNTA0MX0.9zg22fKAEvBovrouLKrXgvg6Hku71UNuPV7hhzfPDOo';
 
 // iOS-safe storage wrapper
 export const safeStorage = {
