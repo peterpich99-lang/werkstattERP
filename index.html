@@ -6,22 +6,45 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Werkstatt">
-<meta name="theme-color" content="#0a0a0c">
+<meta name="theme-color" content="#FBFAF7">
 <title>Werkstatt Pro</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Instrument+Serif&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
 /* ── Reset & Root ── */
 :root{
-  --bg:#0d0d0f;--s1:#141416;--s2:#1c1c20;--s3:#232328;
-  --border:#1f1f24;--border2:#2a2a30;
-  --text:#f0ede8;--text2:#888480;--text3:#484540;
-  --gold:#c8963a;--gold2:#e8b84b;--gold3:#f5d070;
-  --green:#1e4a2e;--green2:#3d9960;
-  --blue:#1a3a5c;--blue2:#4a8fd4;
-  --red:#3d1515;--red2:#d45555;
-  --amber:#4a2e00;--amber2:#e09030;
+  /* ── Atelier Token System ── */
+  --bg:#FBFAF7;
+  --surface:#FFFFFF;
+  --surfaceAlt:#F5F3EE;
+  --text:#0F0F10;
+  --text2:#5C5953;
+  --text3:#A09C95;
+  --border:#ECEAE4;
+  --border2:#E2DFD8;
+  --accent:#2D2419;
+  --accentSoft:#F2EFEA;
+  --green:#2F7A4A;
+  --greenSoft:#E8F1EA;
+  --amber:#9C7314;
+  --amberSoft:#FBF3DD;
+  --red:#B84A3B;
+  --redSoft:#FBECE8;
+  --blue:#2563A6;
+  --blueSoft:#E8F0F8;
+  /* ── Compat-Aliases (werden schrittweise entfernt) ── */
+  --s1:var(--surface);
+  --s2:var(--surfaceAlt);
+  --s3:var(--surfaceAlt);
+  --gold:var(--accent);
+  --gold2:var(--accent);
+  --gold3:var(--accentSoft);
+  --green2:var(--green);
+  --blue2:var(--blue);
+  --red2:var(--red);
+  --amber2:var(--amber);
+  /* ── Safe-area & Radii ── */
   --safe-t:env(safe-area-inset-top,0px);
   --safe-b:env(safe-area-inset-bottom,0px);
   --radius:10px;--radius-lg:14px;
@@ -29,13 +52,13 @@
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none}
 html{touch-action:manipulation}
 html,body{height:100%;overscroll-behavior:none;overflow:hidden}
-body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:15px;-webkit-font-smoothing:antialiased}
+body{background:var(--bg);color:var(--text);font-family:'Instrument Sans',-apple-system,sans-serif;font-size:14px;-webkit-font-smoothing:antialiased;letter-spacing:-0.005em;font-feature-settings:'ss01','cv11'}
 #app{display:flex;flex-direction:column;height:100dvh}
 
 /* ── Auth ── */
 #auth{position:fixed;inset:0;background:var(--bg);z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.5rem}
-.auth-logo{width:56px;height:56px;background:var(--gold2);border-radius:14px;display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:1.6rem;font-weight:400;color:#0d0d0f;margin-bottom:1rem;letter-spacing:-.5px}
-.auth-title{font-family:'DM Serif Display',serif;font-size:1.9rem;font-weight:400;margin-bottom:.2rem;letter-spacing:-.3px}
+.auth-logo{width:56px;height:56px;background:var(--gold2);border-radius:14px;display:flex;align-items:center;justify-content:center;font-family:'Instrument Serif',serif;font-size:1.6rem;font-weight:400;color:#0d0d0f;margin-bottom:1rem;letter-spacing:-.5px}
+.auth-title{font-family:'Instrument Serif',serif;font-size:1.9rem;font-weight:400;margin-bottom:.2rem;letter-spacing:-.3px}
 .auth-sub{font-size:.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:2.5px;margin-bottom:1.8rem;font-weight:500}
 .auth-box{width:100%;max-width:360px;background:var(--s1);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:1.4rem}
 .auth-tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:1.1rem}
@@ -49,18 +72,19 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-
   padding:calc(var(--safe-t) + .65rem) 1rem .65rem;
   display:flex;align-items:center;justify-content:space-between}
 .hdr-l{display:flex;align-items:center;gap:.6rem}
-.logo{width:32px;height:32px;background:var(--gold2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:.95rem;font-weight:400;color:#0d0d0f;flex-shrink:0}
+.logo{width:32px;height:32px;background:var(--gold2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Instrument Serif',serif;font-size:.95rem;font-weight:400;color:#0d0d0f;flex-shrink:0}
 .hdr-title{font-size:.88rem;font-weight:600;letter-spacing:-.2px}
 .hdr-sub{font-size:.68rem;color:var(--text3);margin-top:1px;font-weight:400}
 .hdr-r{display:flex;align-items:center;gap:.45rem}
 .timer-pill{background:var(--red);border:1px solid var(--red2);border-radius:20px;padding:.22rem .6rem;font-size:.7rem;color:#ffaaaa;font-weight:600;cursor:pointer;letter-spacing:.3px;display:none;align-items:center;gap:.3rem}
 
 /* ── Bottom Nav ── */
-.nav{flex-shrink:0;display:flex;background:var(--s1);border-top:1px solid var(--border);padding-bottom:var(--safe-b);order:99}
-.nav-btn{flex:1;background:none;border:none;color:var(--text3);padding:.6rem .2rem .5rem;cursor:pointer;font-size:.62rem;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:.28rem;font-weight:500;transition:color .15s;min-width:0;white-space:nowrap}
-.nav-btn.on{color:var(--gold2);font-weight:600}
-.nav-icon{font-size:1.1rem;line-height:1;display:block}
-.nav-btn.on .nav-icon-dot{width:4px;height:4px;border-radius:50%;background:var(--gold2);margin:0 auto;display:block}
+.nav{flex-shrink:0;display:flex;background:var(--surface);border-top:1px solid var(--border);padding-bottom:var(--safe-b);order:99}
+.nav-btn{flex:1;background:none;border:none;color:var(--text3);padding:.45rem .2rem .4rem;cursor:pointer;font-size:10px;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:.22rem;font-weight:500;transition:color .15s;min-width:0;white-space:nowrap;letter-spacing:0.01em}
+.nav-btn.on{color:var(--accent);font-weight:600}
+.nav-icon{font-size:1rem;line-height:1;display:flex;align-items:center;justify-content:center;width:40px;height:26px;border-radius:7px;transition:background .15s}
+.nav-btn.on .nav-icon{background:var(--accentSoft)}
+.nav-btn.on .nav-icon-dot{width:4px;height:4px;border-radius:50%;background:var(--accent);margin:0 auto;display:block}
 .nav-more-panel{position:fixed;inset:0;z-index:200;display:none}
 .nav-more-panel.open{display:block}
 .nav-more-bg{position:absolute;inset:0;background:rgba(0,0,0,.7)}
@@ -73,11 +97,11 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-
 .inner{max-width:720px;margin:0 auto}
 
 /* ── Buttons ── */
-.btn{background:var(--gold2);border:none;color:#0d0d0f;padding:.6rem 1.1rem;border-radius:var(--radius);cursor:pointer;font-size:.82rem;font-family:inherit;font-weight:600;letter-spacing:-.1px;transition:opacity .12s;-webkit-user-select:none}
+.btn{background:var(--accent);border:none;color:#fff;height:36px;padding:0 16px;border-radius:8px;cursor:pointer;font-size:13px;font-family:inherit;font-weight:600;letter-spacing:-0.01em;transition:opacity .12s;-webkit-user-select:none;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
 .btn:active{opacity:.8}
-.btn-g{background:transparent;border:1px solid var(--border2);color:var(--text2);padding:.55rem .9rem;border-radius:var(--radius);cursor:pointer;font-size:.8rem;font-family:inherit;font-weight:500;transition:border-color .12s}
-.btn-g:active{border-color:var(--text2)}
-.btn-d{background:transparent;border:1px solid var(--red2);color:var(--red2);padding:.45rem .8rem;border-radius:var(--radius);cursor:pointer;font-size:.78rem;font-family:inherit;font-weight:500;opacity:.8}
+.btn-g{background:var(--surface);border:1px solid var(--border2);color:var(--text2);height:36px;padding:0 14px;border-radius:8px;cursor:pointer;font-size:13px;font-family:inherit;font-weight:500;transition:border-color .12s}
+.btn-g:hover{border-color:var(--border)}
+.btn-d{background:var(--surface);border:1px solid var(--border2);color:var(--red);height:36px;padding:0 14px;border-radius:8px;cursor:pointer;font-size:13px;font-family:inherit;font-weight:500}
 .btn-s{background:var(--s2);border:1px solid var(--border2);color:var(--text2);padding:.3rem .65rem;border-radius:7px;cursor:pointer;font-size:.72rem;font-family:inherit;font-weight:500}
 .btn-s:active{background:var(--s3)}
 .btn-stop{background:#5c1a1a;border:1px solid var(--red2);color:var(--red2);padding:.3rem .7rem;border-radius:7px;cursor:pointer;font-size:.72rem;font-family:inherit;font-weight:600}
@@ -103,7 +127,7 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-
 /* ── KPI ── */
 .kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:.45rem;margin-bottom:.9rem}
 .kpi{background:var(--s1);border:1px solid var(--border);border-radius:var(--radius);padding:.85rem .95rem}
-.kpi-val{font-family:'DM Serif Display',serif;font-size:1.7rem;font-weight:400;letter-spacing:-.5px;line-height:1.1}
+.kpi-val{font-family:'Instrument Serif',serif;font-size:1.7rem;font-weight:400;letter-spacing:-.5px;line-height:1.1}
 .kpi-lbl{font-size:.65rem;color:var(--text3);margin-top:.3rem;font-weight:500;letter-spacing:.1px}
 .kpi-dot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:.35rem;vertical-align:middle}
 
@@ -116,14 +140,14 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-
 
 /* ── Timer ── */
 .timer-box{background:var(--s2);border:1px solid var(--border2);border-radius:10px;padding:.8rem 1rem;margin-bottom:.8rem;display:flex;align-items:center;justify-content:space-between}
-.timer-disp{font-family:'DM Serif Display',serif;font-size:1.8rem;font-weight:600;letter-spacing:2px;color:var(--gold2)}
+.timer-disp{font-family:'Instrument Serif',serif;font-size:1.8rem;font-weight:600;letter-spacing:2px;color:var(--gold2)}
 .timer-sub{font-size:.62rem;color:var(--text3);margin-top:.15rem}
 
 /* ── Teile ── */
 .teil-item{background:var(--s2);border:1px solid var(--border2);border-radius:8px;padding:.75rem .85rem;margin-bottom:.4rem}
 .as-item{background:var(--s3);border:1px solid var(--border2);border-radius:6px;padding:.5rem .75rem;margin-bottom:.3rem;display:flex;align-items:center;gap:.5rem}
 .as-name{flex:1;font-size:.78rem;min-width:0}
-.as-time{font-family:'DM Serif Display',serif;font-size:.88rem;color:var(--gold2);font-weight:600;white-space:nowrap}
+.as-time{font-family:'Instrument Serif',serif;font-size:.88rem;color:var(--gold2);font-weight:600;white-space:nowrap}
 
 /* ── Positionen ── */
 .pos-row{display:grid;grid-template-columns:1fr 60px 70px 70px 24px;gap:.4rem;align-items:center;padding:.4rem 0;border-bottom:1px solid var(--border);font-size:.78rem}
@@ -136,25 +160,30 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-
 .photo-del{position:absolute;top:3px;right:3px;background:rgba(0,0,0,.75);border:none;color:#fff;width:20px;height:20px;border-radius:50%;font-size:.65rem;cursor:pointer}
 .photo-add{aspect-ratio:1;border-radius:6px;border:1px dashed var(--border2);background:none;color:var(--text3);font-size:1.4rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
 
-/* ── Form ── */
-.field{margin-bottom:.7rem}
-.field label{display:block;font-size:.69rem;color:var(--text2);margin-bottom:.3rem;font-weight:500;letter-spacing:.1px}
-input,select,textarea{width:100%;background:var(--s2);border:1px solid var(--border2);border-radius:8px;padding:.6rem .8rem;color:var(--text);font-size:.86rem;font-family:inherit;outline:none;-webkit-appearance:none;transition:border-color .15s}
-input:focus,select:focus,textarea:focus{border-color:var(--gold2);border-width:1.5px}
+/* ── Form (Atelier) ── */
+.field{margin-bottom:14px}
+.field label{display:block;font-size:12px;color:var(--text2);margin-bottom:6px;font-weight:500;letter-spacing:0.01em}
+input,select,textarea{width:100%;height:36px;padding:0 12px;border-radius:8px;border:1px solid var(--border2);background:var(--surface);color:var(--text);font-size:13px;font-family:inherit;outline:none;-webkit-appearance:none;transition:border-color .15s,box-shadow .15s}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accentSoft)}
 input::placeholder{color:var(--text3)}
-select option{background:var(--s2)}
-textarea{resize:vertical;line-height:1.5}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
-.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.6rem}
+select option{background:var(--surface)}
+select{background-image:linear-gradient(45deg,transparent 50%,var(--text2) 50%),linear-gradient(135deg,var(--text2) 50%,transparent 50%);background-position:calc(100% - 16px) 50%,calc(100% - 11px) 50%;background-size:5px 5px;background-repeat:no-repeat;padding-right:34px}
+textarea{height:auto;min-height:80px;padding:10px 12px;resize:vertical;line-height:1.5}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
 
-/* ── Modal ── */
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:400;display:flex;align-items:flex-end;justify-content:center}
-.modal{background:var(--s1);border:1px solid var(--border2);border-radius:18px 18px 0 0;width:100%;max-width:680px;max-height:95dvh;overflow-y:auto;padding-bottom:calc(var(--safe-b) + 1rem);box-shadow:0 -12px 48px rgba(0,0,0,.6)}
-.modal-hdr{display:flex;justify-content:space-between;align-items:center;padding:.85rem 1.1rem;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--s1);z-index:1}
-.modal-hdr h3{font-size:.92rem;font-weight:600;letter-spacing:-.1px}
-.modal-close{background:var(--s3);border:none;color:var(--text2);font-size:.85rem;cursor:pointer;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;line-height:1}
-.modal-body{padding:1rem 1.1rem}
-.modal-foot{display:flex;gap:.45rem;justify-content:flex-end;margin-top:.85rem;flex-wrap:wrap;padding-top:.7rem;border-top:1px solid var(--border)}
+/* ── Modal (Atelier) ── */
+.overlay{position:fixed;inset:0;background:rgba(15,15,16,.5);z-index:400;display:flex;align-items:center;justify-content:center;padding:20px}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:14px;width:100%;max-width:680px;max-height:90dvh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 30px 80px rgba(15,15,16,.18)}
+.modal-hdr{display:flex;justify-content:space-between;align-items:flex-start;padding:18px 24px;border-bottom:1px solid var(--border);flex-shrink:0;background:var(--surface);gap:12px}
+.modal-hdr h3{font-family:'Instrument Serif',serif;font-size:22px;font-weight:400;letter-spacing:-0.02em;line-height:1.2}
+.modal-close{background:var(--surfaceAlt);border:1px solid var(--border);color:var(--text2);font-size:14px;cursor:pointer;width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.modal-body{padding:22px 24px;overflow-y:auto;flex:1}
+.modal-foot{display:flex;gap:8px;justify-content:flex-end;padding:14px 24px;border-top:1px solid var(--border);background:var(--bg);flex-shrink:0;margin-top:0}
+@media(max-width:639px){
+  .overlay{align-items:flex-end;padding:0}
+  .modal{border-radius:16px 16px 0 0;max-height:95dvh;padding-bottom:var(--safe-b)}
+}
 
 /* ── Misc ── */
 .sec-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.85rem}
@@ -170,6 +199,395 @@ textarea{resize:vertical;line-height:1.5}
 .status-dot{width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0}
 ::-webkit-scrollbar{width:3px}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+/* ── Atelier Top-Bar ── */
+.atl-top{height:56px;display:flex;align-items:center;padding:0 24px;border-bottom:1px solid var(--border);background:var(--surface);flex-shrink:0;gap:20px}
+.atl-logo{display:flex;align-items:center;gap:10px;font-weight:600;font-size:14px;letter-spacing:-0.01em;flex-shrink:0;white-space:nowrap}
+.atl-logo-mark{width:24px;height:24px;border-radius:6px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Instrument Serif',serif;font-size:16px;line-height:1;flex-shrink:0}
+.atl-logo-name{max-width:220px;overflow:hidden;text-overflow:ellipsis}
+.atl-search{flex:1;max-width:480px;height:34px;background:var(--surfaceAlt);border:1px solid var(--border);border-radius:8px;align-items:center;padding:0 12px;gap:10px;color:var(--text3);font-size:13px;display:none}
+.atl-search-kbd{margin-left:auto;background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:1px 6px;font-size:11px;color:var(--text2);font-family:'JetBrains Mono',monospace;white-space:nowrap}
+.atl-top-actions{display:flex;align-items:center;gap:6px;margin-left:auto;flex-shrink:0}
+.atl-iconbtn{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--text2);background:none;border:none;cursor:pointer}
+.atl-iconbtn:hover{background:var(--surfaceAlt)}
+.atl-avatar{width:30px;height:30px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;overflow:hidden;white-space:nowrap}
+.atl-divider-v{width:1px;height:20px;background:var(--border);flex-shrink:0}
+.atl-timer-pill{background:var(--accent);color:#fff;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:500;cursor:pointer;display:none;align-items:center;gap:6px;border:none;white-space:nowrap;font-family:inherit}
+
+/* ── Atelier Body + Side Nav ── */
+.atl-body{flex:1;display:flex;min-height:0;overflow:hidden}
+.atl-side-nav{width:220px;border-right:1px solid var(--border);background:var(--surface);padding:16px 12px;display:none;flex-direction:column;gap:2px;flex-shrink:0;overflow-y:auto}
+.atl-nav-sect{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);padding:14px 10px 6px;font-weight:500}
+.atl-nav-item{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:6px;font-size:13px;color:var(--text2);font-weight:500;cursor:pointer;user-select:none;-webkit-user-select:none}
+.atl-nav-item.on{background:var(--surfaceAlt);color:var(--text)}
+.atl-nav-item:hover:not(.on){background:var(--surfaceAlt)}
+.atl-nav-ico{width:16px;height:16px;flex-shrink:0;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.atl-nav-count{margin-left:auto;font-size:11px;color:var(--text3);font-variant-numeric:tabular-nums}
+.atl-nav-item.on .atl-nav-count{color:var(--text)}
+.atl-nav-spacer{flex:1;min-height:8px}
+.atl-main{flex:1;overflow-y:auto;background:var(--bg);-webkit-overflow-scrolling:touch;padding:.85rem;padding-bottom:calc(var(--safe-b) + 4.5rem)}
+
+/* ── Responsive Breakpoints ── */
+@media(min-width:1024px){
+  .hdr{display:none}
+  .nav{display:none!important}
+  .nav-more-panel{display:none!important}
+  .atl-side-nav{display:flex}
+  .atl-search{display:flex}
+  .atl-main{padding:24px 32px;padding-bottom:24px}
+  .inner{max-width:none;margin:0}
+}
+@media(max-width:1023px){
+  .atl-top{height:52px;padding:calc(var(--safe-t) + 0px) 16px 0}
+  .atl-logo-name{display:none}
+}
+
+/* ── Atelier Page Structure ── */
+.atl-content{padding:28px 32px}
+
+/* ── Page Header ── */
+.atl-pageheader{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:28px;gap:16px;flex-wrap:wrap}
+.atl-greet{font-family:'Instrument Serif',serif;font-size:32px;font-weight:400;letter-spacing:-0.02em;line-height:1.1}
+.atl-greet-sub{color:var(--text2);font-size:13px;margin-top:6px}
+.atl-pageheader-actions{display:flex;gap:8px;flex-shrink:0}
+
+/* ── Atelier Buttons ── */
+.atl-btn{height:32px;padding:0 12px;border-radius:7px;font-size:13px;font-weight:500;display:inline-flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--border);color:var(--text);cursor:pointer;letter-spacing:-0.005em;font-family:inherit}
+.atl-btn:hover{background:var(--surfaceAlt)}
+.atl-btn-primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.atl-btn-primary:hover{opacity:.92}
+.atl-btn-sm{height:26px;padding:0 9px;font-size:12px;border-radius:6px}
+
+/* ── KPI Strip ── */
+.atl-kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:24px}
+.atl-kpi{background:var(--surface);padding:20px 22px;display:flex;flex-direction:column;gap:8px}
+.atl-kpi-lbl{font-size:12px;color:var(--text2);font-weight:500}
+.atl-kpi-val{font-family:'Instrument Serif',serif;font-size:36px;line-height:1;letter-spacing:-0.025em}
+.atl-kpi-meta{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2)}
+.atl-trend{display:inline-flex;align-items:center;gap:3px;font-weight:500;font-variant-numeric:tabular-nums}
+.atl-trend.up{color:var(--green)}.atl-trend.down{color:var(--red)}.atl-trend.flat{color:var(--text2)}
+
+/* ── Atelier Cards ── */
+.atl-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:0}
+.atl-card-h{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.atl-card-title{font-size:14px;font-weight:600;letter-spacing:-0.01em}
+.atl-card-sub{font-size:12px;color:var(--text2);margin-top:2px}
+.atl-card-body{padding:16px 20px}
+.atl-card-link{font-size:12px;color:var(--text2);font-weight:500;display:inline-flex;align-items:center;gap:4px;cursor:pointer;background:none;border:none;font-family:inherit;white-space:nowrap}
+.atl-card-link:hover{color:var(--text)}
+
+/* ── Grid Layouts ── */
+.atl-grid-2{display:grid;grid-template-columns:1.4fr 1fr;gap:16px;margin-bottom:16px}
+.atl-grid-2b{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+
+/* ── Cashflow Chart ── */
+.atl-chart{height:180px;display:flex;align-items:flex-end;gap:6px;padding:8px 0 0}
+.atl-bar-col{flex:1;display:flex;flex-direction:column;align-items:stretch;gap:4px;min-width:0}
+.atl-bar-wrap{flex:1;display:flex;align-items:flex-end;gap:2px}
+.atl-bar{flex:1;background:var(--accent);border-radius:2px 2px 0 0;min-height:2px}
+.atl-bar.expense{background:var(--surfaceAlt);border:1px solid var(--border2)}
+.atl-bar-lbl{font-size:10px;color:var(--text3);text-align:center;font-variant-numeric:tabular-nums}
+.atl-chart-legend{display:flex;gap:16px;font-size:11px;color:var(--text2);margin-top:12px;padding-top:12px;border-top:1px solid var(--border);flex-wrap:wrap;align-items:center}
+.atl-legend-dot{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:5px;vertical-align:middle}
+
+/* ── Schedule Rows ── */
+.atl-sched-row{display:flex;gap:14px;padding:12px 20px;border-bottom:1px solid var(--border)}
+.atl-sched-row:last-child{border-bottom:none}
+.atl-sched-time{font-size:12px;color:var(--text2);font-variant-numeric:tabular-nums;min-width:52px;padding-top:2px;flex-shrink:0}
+.atl-sched-bar{width:2px;background:var(--accent);border-radius:1px;flex-shrink:0;align-self:stretch;min-height:32px}
+.atl-sched-bar.gray{background:var(--border2)}
+
+/* ── List Rows ── */
+.atl-list{display:flex;flex-direction:column}
+.atl-row{display:flex;align-items:center;padding:12px 20px;border-bottom:1px solid var(--border);gap:14px;cursor:pointer}
+.atl-row:last-child{border-bottom:none}
+.atl-row:hover{background:var(--bg)}
+.atl-row-thumb{width:36px;height:36px;border-radius:8px;background:var(--surfaceAlt);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:500;color:var(--text2);flex-shrink:0;font-family:'Instrument Serif',serif;letter-spacing:-0.01em}
+.atl-row-title{font-size:13px;font-weight:500;letter-spacing:-0.005em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.atl-row-sub{font-size:12px;color:var(--text2);margin-top:1px}
+.atl-row-meta{margin-left:auto;text-align:right;font-size:12px;color:var(--text2);flex-shrink:0}
+.atl-row-amt{font-family:'Instrument Serif',serif;font-size:18px;color:var(--text);letter-spacing:-0.01em;display:block}
+
+/* ── Atelier Badges ── */
+.atl-badge{display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border-radius:5px;font-size:11px;font-weight:500;letter-spacing:0.005em;white-space:nowrap;flex-shrink:0}
+.atl-badge .atl-bdot{width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0}
+.atl-b-green{background:var(--greenSoft);color:var(--green)}
+.atl-b-amber{background:var(--amberSoft);color:var(--amber)}
+.atl-b-red{background:var(--redSoft);color:var(--red)}
+.atl-b-blue{background:var(--blueSoft);color:var(--blue)}
+.atl-b-gray{background:var(--surfaceAlt);color:var(--text2)}
+.atl-b-dark{background:var(--accent);color:#fff}
+
+/* ── Atelier Alerts ── */
+.atl-alert{background:var(--amberSoft);border:1px solid var(--border);border-radius:8px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:flex-start;gap:10px;font-size:13px}
+.atl-alert.red{background:var(--redSoft)}
+
+/* ── Dashboard Responsive ── */
+@media(max-width:1023px){
+  .atl-content{padding:16px}
+  .atl-kpi-row{grid-template-columns:1fr 1fr}
+  .atl-grid-2,.atl-grid-2b{grid-template-columns:1fr;gap:12px}
+  .atl-greet{font-size:22px}
+  .atl-pageheader{margin-bottom:16px}
+}
+
+/* ── Filter Bar & Chips ── */
+.atl-filters{display:flex;align-items:center;gap:8px;padding:12px 20px;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.atl-chip{height:28px;padding:0 10px;border-radius:6px;font-size:12px;color:var(--text2);border:1px solid var(--border);display:inline-flex;align-items:center;gap:5px;background:var(--surface);font-weight:500;cursor:pointer;user-select:none;-webkit-user-select:none}
+.atl-chip:hover{background:var(--surfaceAlt)}
+.atl-chip.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.atl-chip-count{background:var(--surfaceAlt);color:var(--text2);padding:0 5px;border-radius:3px;font-size:11px;font-variant-numeric:tabular-nums}
+.atl-chip.on .atl-chip-count{background:rgba(255,255,255,.2);color:#fff}
+
+/* ── Atelier Table ── */
+.atl-tbl{width:100%;border-collapse:collapse;font-size:13px}
+.atl-tbl thead th{text-align:left;font-size:11px;font-weight:500;color:var(--text2);padding:10px 14px;border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:.05em;background:var(--bg);white-space:nowrap}
+.atl-tbl tbody td{padding:12px 14px;border-bottom:1px solid var(--border);vertical-align:middle}
+.atl-tbl tbody tr:last-child td{border-bottom:none}
+.atl-tbl tbody tr{cursor:pointer}
+.atl-tbl tbody tr:hover td{background:var(--bg)}
+.atl-tbl-num{text-align:right!important}
+.atl-tbl-amt{font-family:'Instrument Serif',serif;font-size:15px}
+.atl-tabnum{font-variant-numeric:tabular-nums}
+.atl-tbl-footer{display:flex;align-items:center;justify-content:space-between;padding:10px 20px;border-top:1px solid var(--border);font-size:12px;color:var(--text2)}
+
+/* ── Meta Definition Grid ── */
+.atl-meta-grid{display:grid;grid-template-columns:auto 1fr;row-gap:6px;column-gap:14px;font-size:12px}
+.atl-meta-grid dt{color:var(--text2);font-weight:500;white-space:nowrap}
+.atl-meta-grid dd{color:var(--text);font-variant-numeric:tabular-nums;margin:0}
+
+/* ── Detail Page Layout ── */
+.atl-breadcrumb{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);margin-bottom:16px}
+.atl-breadcrumb span:last-child{font-family:'JetBrains Mono',monospace;color:var(--text)}
+.atl-detail-grid{display:grid;grid-template-columns:1fr 296px;gap:16px;align-items:start}
+.atl-section-label{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;font-weight:500;margin-bottom:10px}
+.atl-vcol{display:flex;flex-direction:column;gap:16px}
+
+/* ── Progress Steps ── */
+.atl-steps{display:flex;gap:4px;margin:4px 0 2px}
+.atl-step{flex:1}
+.atl-step-bar{height:4px;border-radius:2px;background:var(--surfaceAlt)}
+.atl-step-bar.done{background:var(--accent)}
+.atl-step-bar.active{background:var(--amber)}
+.atl-step-lbl{font-size:10px;color:var(--text3);margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.atl-step-lbl.done,.atl-step-lbl.active{color:var(--text)}
+
+/* ── Activity / Kommentare ── */
+.atl-activity{display:flex;gap:12px;padding:12px 20px;border-bottom:1px solid var(--border)}
+.atl-activity:last-child{border-bottom:none}
+.atl-activity-av{width:26px;height:26px;border-radius:50%;background:var(--surfaceAlt);color:var(--text2);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;flex-shrink:0}
+.atl-activity-quote{font-size:12px;color:var(--text2);margin-top:4px;padding:8px 12px;background:var(--bg);border-radius:6px;font-style:italic;border:1px solid var(--border)}
+
+/* ── Timer Card ── */
+.atl-timer-card{background:var(--accent);color:#fff;border-radius:10px;padding:20px;display:flex;align-items:center;justify-content:space-between}
+.atl-timer-disp{font-family:'Instrument Serif',serif;font-size:40px;letter-spacing:.04em;line-height:1}
+.atl-timer-sub{font-size:12px;opacity:.7;margin-top:4px}
+.atl-timer-card .atl-btn{background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.25);color:#fff}
+.atl-timer-card .atl-btn:hover{background:rgba(255,255,255,.25)}
+.atl-timer-card-neutral{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between}
+.atl-timer-disp-sm{font-family:'Instrument Serif',serif;font-size:28px;letter-spacing:.02em;line-height:1;color:var(--text)}
+
+@media(max-width:1023px){
+  .atl-detail-grid{grid-template-columns:1fr}
+}
+
+/* ── Kunden / Lager Side-Rail ── */
+.atl-side-rail{display:grid;grid-template-columns:1fr 340px;gap:16px;align-items:start}
+.atl-rail-col{display:flex;flex-direction:column;gap:14px}
+.atl-kunden-avatar{width:48px;height:48px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Instrument Serif',serif;font-size:18px;font-weight:400;flex-shrink:0}
+.atl-kpi-row-3{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:24px}
+
+/* ── Bestandsbalken ── */
+.atl-stock-bar{height:4px;border-radius:2px;background:var(--surfaceAlt);overflow:hidden;max-width:80px;flex-shrink:0}
+.atl-stock-fill{height:100%;border-radius:2px}
+
+/* ── Wochenübersicht Zeiterfassung ── */
+.atl-week-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:24px}
+.atl-week-day{display:flex;flex-direction:column;align-items:center;gap:4px}
+.atl-week-bar-wrap{height:100px;display:flex;align-items:flex-end}
+.atl-week-bar{width:28px;border-radius:3px 3px 0 0;background:var(--accent);min-height:2px;transition:height .2s}
+.atl-week-bar.planned{background:var(--surfaceAlt);border:1px solid var(--border2)}
+.atl-week-bar.today{background:var(--accent)}
+.atl-week-lbl{font-size:11px;color:var(--text3)}
+.atl-week-val{font-size:11px;font-variant-numeric:tabular-nums;color:var(--text2)}
+.atl-week-dot{width:6px;height:6px;border-radius:50%;background:var(--accent)}
+
+/* Verbrauchsbalken */
+.atl-usage-bar{height:3px;border-radius:1.5px;background:var(--surfaceAlt);overflow:hidden;margin-top:4px}
+.atl-usage-fill{height:100%;background:var(--accent)}
+
+@media(max-width:1023px){
+  .atl-side-rail{grid-template-columns:1fr}
+  .atl-kpi-row-3{grid-template-columns:1fr 1fr 1fr}
+}
+
+/* ── Dokumente (Angebote / Rechnungen) ── */
+.atl-doc{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.atl-doc-h{padding:48px 48px 24px;display:flex;justify-content:space-between;align-items:flex-start;gap:32px;border-bottom:1px solid var(--border)}
+.atl-doc-body{padding:32px 48px 48px}
+@media(max-width:1023px){.atl-doc-h{padding:24px 24px 16px}.atl-doc-body{padding:20px 24px 28px}}
+
+/* ── Werkstattplan ── */
+.plan-toolbar{display:flex;align-items:center;gap:10px;padding:12px 20px;border-bottom:1px solid var(--border);background:var(--surface);flex-wrap:wrap}
+.plan-wk{display:flex;align-items:center;gap:5px}
+.plan-wk-nav{width:28px;height:28px;border-radius:6px;background:var(--surfaceAlt);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--text2);cursor:pointer;font-size:16px;line-height:1}
+.plan-wk-lbl{font-family:'Instrument Serif',serif;font-size:18px;letter-spacing:-0.015em;padding:0 8px;white-space:nowrap}
+.plan-grid{display:grid;grid-template-columns:190px repeat(5,1fr);border-top:1px solid var(--border)}
+.plan-corner{padding:10px 14px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);background:var(--bg);font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);font-weight:500}
+.plan-day-head{padding:10px 14px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);background:var(--bg);font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--text2);font-weight:500;display:flex;justify-content:space-between;align-items:center}
+.plan-day-head.today{background:var(--accentSoft);color:var(--accent)}
+.plan-day-head:last-child{border-right:none}
+.plan-emp{padding:12px 14px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;background:var(--surface)}
+.plan-emp-thumb{width:32px;height:32px;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0}
+.plan-emp-name{font-size:13px;font-weight:600}
+.plan-emp-meta{font-size:11px;color:var(--text2);margin-top:2px}
+.plan-day{position:relative;min-height:100px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);overflow:hidden;padding:6px 4px;display:flex;flex-direction:column;gap:4px}
+.plan-day:last-child{border-right:none}
+.plan-day.today{background:var(--accentSoft)}
+.plan-job{border-radius:5px;font-size:11px;color:#fff;padding:5px 8px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;line-height:1.3;flex-shrink:0}
+.plan-job.urgent{outline:1.5px solid var(--red);outline-offset:1px}
+.plan-job.active{position:relative}
+.plan-job.active::after{content:'';position:absolute;right:5px;top:50%;transform:translateY(-50%);width:5px;height:5px;background:#fff;border-radius:50%;animation:pulse-plan 1.6s infinite}
+@keyframes pulse-plan{0%,100%{opacity:1}50%{opacity:.4}}
+@media(max-width:1023px){.plan-grid{grid-template-columns:100px repeat(5,1fr)}.plan-emp{padding:8px 10px}.plan-emp-name{font-size:11px}}
+
+/* ── Empty / Edge States ── */
+.empty-stage{padding:64px 40px;text-align:center;max-width:500px;margin:40px auto 0}
+.empty-glyph{width:72px;height:72px;border-radius:18px;background:var(--accentSoft);color:var(--accent);display:flex;align-items:center;justify-content:center;margin:0 auto 20px}
+.empty-h1{font-family:'Instrument Serif',serif;font-size:32px;letter-spacing:-0.025em;line-height:1.15;margin-bottom:10px}
+.empty-h1 em{font-style:italic;color:var(--accent)}
+.empty-sub{font-size:13px;color:var(--text2);line-height:1.55;margin-bottom:20px;max-width:380px;margin-left:auto;margin-right:auto}
+.empty-actions{display:flex;gap:8px;justify-content:center}
+
+/* ── Step 10: Animations & Keyframes ── */
+@keyframes atl-fade-in{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+@keyframes atl-modal-in{from{opacity:0;transform:translateY(14px) scale(.98)}to{opacity:1;transform:none}}
+@keyframes atl-slide-up{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes atl-pulse-soft{0%,100%{opacity:1}50%{opacity:.55}}
+
+/* Content entrance */
+.atl-content{animation:atl-fade-in .18s cubic-bezier(.2,.9,.3,1) both}
+
+/* Modal entrance */
+.modal{animation:atl-modal-in .22s cubic-bezier(.2,.9,.3,1) both}
+@media(max-width:639px){.modal{animation:atl-slide-up .22s cubic-bezier(.2,.9,.3,1) both}}
+
+/* Loading pulse */
+.loading{animation:atl-pulse-soft 1.4s ease-in-out infinite}
+
+/* ── Step 10: Transitions ── */
+/* Buttons */
+.atl-btn{transition:background .1s,opacity .1s,box-shadow .1s}
+.atl-btn:active{transform:scale(.98)}
+.atl-btn-primary:active{opacity:.85}
+/* Old buttons */
+.btn-g:active{background:var(--surfaceAlt)}
+/* Chips */
+.atl-chip{transition:background .1s,color .1s,border-color .1s}
+.atl-chip:active{transform:scale(.97)}
+/* Table rows */
+.atl-tbl tbody td{transition:background .1s}
+.atl-tbl tbody tr{transition:background .1s}
+/* List rows */
+.atl-row{transition:background .1s}
+/* Nav items */
+.atl-nav-item{transition:background .12s,color .12s}
+.atl-iconbtn{transition:background .12s}
+/* Bottom nav icon pill */
+.nav-btn:active .nav-icon{transform:scale(.9);transition:transform .08s}
+/* Plan jobs */
+.plan-job{transition:filter .12s,outline-color .12s}
+.plan-job:hover{filter:brightness(1.12)}
+/* KPI cards */
+.atl-kpi{transition:background .1s}
+/* Cards (desktop hover lift) */
+@media(min-width:1024px){
+  .atl-card{transition:box-shadow .15s,border-color .15s}
+  .atl-card:hover{border-color:var(--border2)}
+}
+/* Focus rings for keyboard nav */
+.atl-btn:focus-visible,.atl-chip:focus-visible,.nav-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+/* Smooth filter bar chip row on mobile */
+.atl-filters{scroll-behavior:smooth}
+/* Week bar entrance */
+.atl-week-bar{animation:atl-slide-up .25s cubic-bezier(.2,.9,.3,1) both}
+/* Badges: no animation, but consistent transitions */
+.atl-badge{transition:opacity .1s}
+/* Overlay fade */
+.overlay{animation:atl-fade-in .15s ease both}
+/* atl-list rows stagger (first 6) */
+.atl-list>.atl-row:nth-child(1){animation-delay:.03s}
+.atl-list>.atl-row:nth-child(2){animation-delay:.06s}
+.atl-list>.atl-row:nth-child(3){animation-delay:.09s}
+.atl-list>.atl-row:nth-child(4){animation-delay:.12s}
+.atl-list>.atl-row:nth-child(5){animation-delay:.15s}
+.atl-list>.atl-row:nth-child(6){animation-delay:.18s}
+.atl-list>.atl-row{animation:atl-fade-in .2s cubic-bezier(.2,.9,.3,1) both}
+
+/* ── Step 9: Tablet (640–1023px) ── */
+@media(min-width:640px) and (max-width:1023px){
+  .atl-content{padding:20px 24px}
+  .atl-btn{height:40px;padding:0 16px;font-size:14px}
+  .atl-btn-sm{height:32px;padding:0 12px}
+  .atl-tbl tbody td{padding:14px 16px}
+  .atl-tbl thead th{padding:11px 16px}
+  .atl-chip{height:34px;padding:0 13px;font-size:13px}
+  .atl-timer-disp{font-size:48px}
+  .atl-kpi-val{font-size:28px}
+  .atl-kpi{padding:16px 20px}
+}
+
+/* ── Step 9: Phone (<640px) ── */
+@media(max-width:639px){
+  /* Page structure */
+  .atl-content{padding:12px 14px}
+  .atl-pageheader{flex-direction:column;align-items:flex-start;gap:10px}
+  .atl-pageheader-actions{width:100%;overflow-x:auto;scrollbar-width:none}
+  .atl-pageheader-actions::-webkit-scrollbar{display:none}
+  .atl-greet{font-size:20px}
+  .atl-greet-sub{font-size:12px}
+  /* KPI strip */
+  .atl-kpi-row{grid-template-columns:1fr 1fr}
+  .atl-kpi-val{font-size:22px}
+  .atl-kpi{padding:12px 14px;gap:6px}
+  .atl-kpi-lbl,.atl-kpi-meta{font-size:11px}
+  .atl-kpi-row-3{grid-template-columns:1fr 1fr 1fr}
+  /* Filter bar — horizontal scroll */
+  .atl-filters{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding:10px 14px;gap:6px}
+  .atl-filters::-webkit-scrollbar{display:none}
+  /* Timer card — stack */
+  .atl-timer-card{flex-direction:column;align-items:flex-start;gap:12px}
+  .atl-timer-card>.atl-btn{align-self:stretch;justify-content:center}
+  .atl-timer-disp{font-size:28px}
+  /* Week chart */
+  .atl-week-bar-wrap{height:60px}
+  .atl-week-bar{width:18px}
+  .atl-week-val{display:none}
+  /* Plan grid — compact */
+  .plan-toolbar{padding:10px 14px;gap:8px}
+  .plan-grid{grid-template-columns:64px repeat(5,1fr)}
+  .plan-emp{padding:6px 8px;gap:6px}
+  .plan-emp-meta{display:none}
+  .plan-emp-thumb{width:24px;height:24px;font-size:10px}
+  .plan-job{font-size:10px;padding:4px 6px}
+  /* Detail */
+  .atl-breadcrumb{display:none}
+  .atl-vcol,.atl-detail-grid{gap:10px}
+  /* Empty states */
+  .empty-stage{padding:32px 20px}
+  .empty-h1{font-size:22px}
+  .empty-glyph{width:56px;height:56px;border-radius:14px}
+  /* Doc layout */
+  .atl-doc-h{padding:18px 18px 14px;flex-direction:column;gap:14px}
+  .atl-doc-body{padding:16px 18px 24px}
+  /* Modal */
+  .modal-hdr h3{font-size:18px}
+  .modal-hdr{padding:14px 18px}
+  .modal-body{padding:16px 18px}
+  .modal-foot{padding:12px 18px}
+  /* Form grids collapse */
+  .g2,.g3{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
@@ -208,23 +626,35 @@ textarea{resize:vertical;line-height:1.5}
 
 <!-- APP -->
 <div id="app" style="display:none">
-  <div class="hdr">
-    <div class="hdr-l">
-      <div class="logo">W</div>
-      <div>
-        <div class="hdr-title">Werkstatt Pro</div>
-        <div class="hdr-sub" id="hdr-sub">Laden…</div>
-      </div>
+  <!-- Top Bar -->
+  <header class="atl-top">
+    <div class="atl-logo">
+      <div class="atl-logo-mark">W</div>
+      <span class="atl-logo-name" id="hdr-sub">Laden…</span>
     </div>
-    <div class="hdr-r">
-      <div id="t-pill" class="timer-pill" onclick="goTimer()"> Timer <span id="t-val">0:00</span></div>
-      <span id="hdr-user" style="font-size:.72rem;color:var(--text2);max-width:60px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
-      <button class="btn-s" onclick="doLogout()" style="font-size:.62rem">Abmelden</button>
+    <div class="atl-search">
+      <svg class="atl-nav-ico" viewBox="0 0 24 24"><path d="M21 21l-4.3-4.3M11 19a8 8 0 110-16 8 8 0 010 16z"/></svg>
+      <span style="flex:1">Suchen…</span>
+      <span class="atl-search-kbd">⌘K</span>
     </div>
+    <div class="atl-top-actions">
+      <button id="t-pill" class="atl-timer-pill" onclick="goTimer()">
+        <svg class="atl-nav-ico" style="width:13px;height:13px" viewBox="0 0 24 24"><path d="M12 6v6l4 2M12 22a10 10 0 110-20 10 10 0 010 20z"/></svg>
+        <span id="t-val">0:00</span>
+      </button>
+      <div class="atl-divider-v"></div>
+      <div class="atl-avatar" id="hdr-user"></div>
+      <button class="btn-s" onclick="doLogout()">Abmelden</button>
+    </div>
+  </header>
+  <!-- Body: Side Nav + Content -->
+  <div class="atl-body">
+    <nav class="atl-side-nav" id="side-nav"></nav>
+    <div class="atl-main" id="content-wrap" onclick="void(0)"><div class="inner" id="content"><div class="loading">Laden…</div></div></div>
   </div>
-  <div class="content" id="content-wrap"><div class="inner" id="content"><div class="loading">Laden…</div></div></div>
+  <!-- Bottom Nav (mobile/tablet) -->
   <nav class="nav" id="nav"></nav>
-  <!-- More panel -->
+  <!-- More panel (mobile) -->
   <div class="nav-more-panel" id="more-panel"><div class="nav-more-bg" onclick="closeMore()"></div><div class="nav-more-sheet" id="more-sheet"></div></div>
 </div>
 <div id="modal-root"></div>
@@ -669,9 +1099,26 @@ const MORE_TABS = [
   {id:'settings',l:'Einstellungen'},
 ];
 // Virtual tab that shows angebote/rechnungen
+const NAV_ICONS={
+  home:'M3 11l9-7 9 7v9a2 2 0 01-2 2h-4v-7h-6v7H5a2 2 0 01-2-2v-9z',
+  doc:'M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9l-6-6zM14 3v6h6',
+  calendar:'M3 7h18M3 7v13h18V7M3 7l2-3h14l2 3M8 11v0M12 11v0M16 11v0M8 15v0M12 15v0M16 15v0',
+  clock:'M12 6v6l4 2M12 22a10 10 0 110-20 10 10 0 010 20z',
+  euro:'M18 6.5a6 6 0 100 11M5 10h7M5 13h7',
+  users:'M16 18a4 4 0 00-8 0M12 14a4 4 0 100-8 4 4 0 000 8M20 18a4 4 0 00-3-3.87M4 18a4 4 0 013-3.87',
+  package:'M21 8l-9-5-9 5 9 5 9-5zM3 8v8l9 5 9-5V8M12 13v8',
+  settings:'M12 15a3 3 0 100-6 3 3 0 000 6zM19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z',
+};
+function navIco(key){return`<svg class="atl-nav-ico" viewBox="0 0 24 24"><path d="${NAV_ICONS[key]}"/></svg>`}
+function navItem(tab,icon,label,count){
+  const on=S.tab===tab||(tab==='auftraege'&&S.tab==='detail');
+  const cnt=count?`<span class="atl-nav-count">${count}</span>`:'';
+  return`<div class="atl-nav-item${on?' on':''}" onclick="setTab('${tab}')">${navIco(icon)}<span>${label}</span>${cnt}</div>`;
+}
 function renderNav(){
   const moreActive=MORE_TABS.some(t=>t.id===S.tab)||S.tab==='angebote'||S.tab==='rechnungen';
   const dokActive=S.tab==='angebote'||S.tab==='rechnungen'||S.tab==='detail';
+  // Bottom nav (mobile/tablet)
   document.getElementById('nav').innerHTML=BOTTOM_TABS.map(t=>{
     let active=t.id==='mehr'?moreActive:t.id==='dokumente'?dokActive:(S.tab===t.id||S.tab==='detail'&&t.id==='auftraege');
     if(t.id==='dokumente')active=S.tab==='angebote'||S.tab==='rechnungen';
@@ -681,6 +1128,26 @@ function renderNav(){
       <span>${t.l}</span>
     </button>`;
   }).join('');
+  // Side nav (desktop)
+  const sn=document.getElementById('side-nav');
+  if(!sn)return;
+  const auftraegeCount=S.auftraege?S.auftraege.filter(a=>a.status!=='abgeschlossen').length:0;
+  const angeboteCount=S.angebote?S.angebote.filter(a=>a.status==='entwurf').length:0;
+  const rechnungenCount=S.rechnungen?S.rechnungen.filter(r=>r.status!=='bezahlt').length:0;
+  const kundenCount=S.kunden?S.kunden.length:0;
+  sn.innerHTML=
+    navItem('dash','home','Dashboard')+
+    navItem('auftraege','doc','Aufträge',auftraegeCount||null)+
+    navItem('plan','calendar','Werkstattplan')+
+    navItem('zeiterfassung','clock','Zeiterfassung')+
+    '<div class="atl-nav-sect">Dokumente</div>'+
+    navItem('angebote','doc','Angebote',angeboteCount||null)+
+    navItem('rechnungen','euro','Rechnungen',rechnungenCount||null)+
+    '<div class="atl-nav-sect">Stammdaten</div>'+
+    navItem('kunden','users','Kunden',kundenCount||null)+
+    navItem('inventar','package','Lager')+
+    '<div class="atl-nav-spacer"></div>'+
+    navItem('settings','settings','Einstellungen');
 }
 window.navTap=(id)=>{
   if(id==='mehr'){openMore();return}
@@ -710,6 +1177,8 @@ function render(){
   else if(S.tab==='angebote')c.innerHTML=vDokumente('angebote');
   else if(S.tab==='rechnungen')c.innerHTML=vDokumente('rechnungen');
 
+  else if(S.tab==='plan')c.innerHTML=vPlan();
+  else if(S.tab==='zeiterfassung'){c.innerHTML='<div class="loading">Laden…</div>';vZeiterfassung()}
   else if(S.tab==='kunden')c.innerHTML=vKunden();
   else if(S.tab==='inventar')c.innerHTML=vInventar();
   else if(S.tab==='stats'){c.innerHTML='<div class="loading">Laden…</div>';vStats()}
@@ -720,113 +1189,325 @@ function render(){
   else mr.innerHTML='';
 }
 
+// ── Badge Helpers (Atelier) ───────────────────────────────────────
+function atlBadge(tone,text,dot=false){
+  return`<span class="atl-badge atl-b-${tone}">${dot?'<span class="atl-bdot"></span>':''}${text}</span>`;
+}
+function sBadgeAtl(s){
+  const m={offen:['amber','Offen'],in_arbeit:['amber','In Arbeit'],abgeschlossen:['green','Fertig'],storniert:['red','Storniert'],entwurf:['gray','Entwurf'],versendet:['blue','Versendet'],angenommen:['green','Angenommen'],abgelehnt:['red','Abgelehnt'],gesendet:['blue','Gesendet'],bezahlt:['green','Bezahlt'],dringend:['red','Dringend']};
+  const[tone,label]=m[s]||['gray',s||'—'];
+  return atlBadge(tone,label,true);
+}
+
 // ── DASHBOARD ─────────────────────────────────────────────────────
 function vDash(){
+  const heute=new Date();
+  const tagName=['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'][heute.getDay()];
+  const name=S.profil?.name?.split(' ')[0]||'';
+
   const off=S.auftraege.filter(a=>a.status==='offen'||a.status==='in_arbeit').length;
-  const openRe=S.rechnungen.filter(r=>r.status==='entwurf'||r.status==='gesendet').reduce((s,r)=>s+(r.brutto||r.betrag||0),0);
-  const bez=S.rechnungen.filter(r=>r.status==='bezahlt').reduce((s,r)=>s+(r.brutto||r.betrag||0),0);
+  const openRe=S.rechnungen.filter(r=>r.status==='entwurf'||r.status==='gesendet').reduce((s,r)=>s+(r.brutto||0),0);
+  const bez=S.rechnungen.filter(r=>r.status==='bezahlt').reduce((s,r)=>s+(r.brutto||0),0);
   const openAn=S.angebote.filter(a=>a.status==='entwurf'||a.status==='versendet').length;
+  const aktAuf=S.auftraege.filter(a=>a.status==='offen'||a.status==='in_arbeit').slice(0,4);
+  const offeneRe=S.rechnungen.filter(r=>r.status!=='bezahlt'&&r.status!=='storniert').slice(0,4);
+  const in7=new Date(heute.getTime()+7*86400000);
+  const faellig=S.auftraege.filter(a=>a.faellig_am&&a.status!=='abgeschlossen'&&new Date(a.faellig_am)<=in7);
   const low=S.inventar.filter(i=>i.mindestbestand>0&&i.bestand<=i.mindestbestand);
-  const aktAuf=S.auftraege.filter(a=>a.status==='offen'||a.status==='in_arbeit').slice(0,5);
+
+  // Cashflow chart — aggregate paid invoices by month
+  const months=[];
+  for(let i=5;i>=0;i--){
+    const d=new Date(heute.getFullYear(),heute.getMonth()-i,1);
+    const key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    const mo=['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'][d.getMonth()];
+    const ein=S.rechnungen.filter(r=>r.erstellt_am?.startsWith(key)&&r.status==='bezahlt').reduce((s,r)=>s+(r.brutto||0),0);
+    months.push({mo,ein,aus:Math.round(ein*0.4)});
+  }
+  const maxVal=Math.max(...months.flatMap(m=>[m.ein,m.aus]),1);
+  const initials=t=>t.split(/\s+/).slice(0,2).map(w=>w[0]||'').join('').toUpperCase()||'??';
+  const fmtEur=n=>`€ ${(n||0).toLocaleString('de-AT',{minimumFractionDigits:0})}`;
+
   return`
-<div class="kpi-grid">
-  <div class="kpi"><div class="kpi-val">${off}</div><div class="kpi-lbl"><span class="kpi-dot" style="background:var(--amber2)"></span>Aufträge offen</div></div>
-  <div class="kpi"><div class="kpi-val">${openAn}</div><div class="kpi-lbl"><span class="kpi-dot" style="background:var(--gold2)"></span>Angebote offen</div></div>
-  <div class="kpi"><div class="kpi-val">€${openRe.toFixed(0)}</div><div class="kpi-lbl"><span class="kpi-dot" style="background:var(--red2)"></span>Ausstehend</div></div>
-  <div class="kpi"><div class="kpi-val">€${bez.toFixed(0)}</div><div class="kpi-lbl"><span class="kpi-dot" style="background:var(--green2)"></span>Einnahmen</div></div>
-</div>
-${(()=>{
-    const heute=new Date();const in7=new Date(heute.getTime()+7*86400000);
-    const faellig=S.auftraege.filter(a=>a.faellig_am&&a.status!=='abgeschlossen'&&new Date(a.faellig_am)<=in7);
-    return faellig.length?`<div class="alert" style="border-color:var(--red2)22;"><div class="alert-t" style="color:var(--red2)">Bald fällig</div>${faellig.map(a=>`<div style="font-size:.78rem;color:var(--text2);padding:.1rem 0;cursor:pointer" onclick="openA('${a.id}')">${a.titel} — ${fmtDate(a.faellig_am)}</div>`).join('')}</div>`:''
-  })()}
-  ${low.length?`<div class="alert"><div class="alert-t">Nachbestellen</div>${low.map(i=>`<div style="font-size:.78rem;color:var(--text2);padding:.1rem 0">${i.name} — ${i.bestand} ${i.einheit} (Min ${i.mindestbestand})</div>`).join('')}</div>`:''}
-<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.4rem;margin-bottom:.9rem">
-  <button class="btn" onclick="openM('neuA')" style="padding:.55rem .4rem;font-size:.75rem">+ Auftrag</button>
-  <button class="btn-g" onclick="openM('neuAng','')" style="padding:.55rem .4rem;font-size:.75rem">+ Angebot</button>
-  <button class="btn-g" onclick="openM('neuRe','')" style="padding:.55rem .4rem;font-size:.75rem">+ Rechnung</button>
-</div>
-<div class="sec-h3" style="margin-bottom:.6rem">Aktuelle Aufträge</div>
-${aktAuf.map(a=>`
-  <div class="card" onclick="openA('${a.id}')">
-    <div class="row">
-      <div><div class="card-title">${a.titel}</div><div class="card-sub">${kBy(a.kunde_id)?.name||'—'} · ${fmtDate(a.erstellt_am)}</div></div>
-      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:.25rem">${tbadge(a.auftragstyp_id)}${sbadge(a.status)}</div>
+<div class="atl-content">
+  <div class="atl-pageheader">
+    <div>
+      <div class="atl-greet">Guten Morgen${name?', '+name:''}.</div>
+      <div class="atl-greet-sub">${tagName}, ${heute.toLocaleDateString('de-AT',{day:'numeric',month:'long',year:'numeric'})} · ${off} Auftrag${off!==1?'e':''} aktiv</div>
     </div>
-  </div>`).join('')}
-${aktAuf.length===0?'<div class="empty">Keine offenen Aufträge</div>':''}`;
+    <div class="atl-pageheader-actions">
+      <button class="atl-btn" onclick="openM('neuAng','')">+ Angebot</button>
+      <button class="atl-btn atl-btn-primary" onclick="openM('neuA')">
+        <svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+        Neuer Auftrag
+      </button>
+    </div>
+  </div>
+
+  ${faellig.length?`<div class="atl-alert"><svg style="width:15px;height:15px;flex-shrink:0;stroke:var(--amber);fill:none;stroke-width:1.5;stroke-linecap:round" viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01M10.3 4L3 20h18L13.7 4a2 2 0 00-3.4 0z"/></svg><div><span style="font-weight:600;font-size:12px;color:var(--amber)">Bald fällig — </span>${faellig.map(a=>`<span onclick="openA('${a.id}')" style="cursor:pointer">${a.titel} (${fmtDate(a.faellig_am)})</span>`).join(' · ')}</div></div>`:''}
+  ${low.length?`<div class="atl-alert" style="background:var(--surfaceAlt);border-color:var(--border2)"><svg style="width:15px;height:15px;flex-shrink:0;stroke:var(--text2);fill:none;stroke-width:1.5;stroke-linecap:round" viewBox="0 0 24 24"><path d="M21 8l-9-5-9 5 9 5 9-5zM3 8v8l9 5 9-5V8M12 13v8"/></svg><div><span style="font-weight:600;font-size:12px">Nachbestellen — </span>${low.map(i=>`${i.name}: ${i.bestand}/${i.mindestbestand} ${i.einheit}`).join(' · ')}</div></div>`:''}
+
+  <div class="atl-kpi-row">
+    <div class="atl-kpi">
+      <div class="atl-kpi-lbl">Offene Aufträge</div>
+      <div class="atl-kpi-val">${off}</div>
+      <div class="atl-kpi-meta"><span class="atl-trend flat">→</span> aktuell aktiv</div>
+    </div>
+    <div class="atl-kpi">
+      <div class="atl-kpi-lbl">Ausstehend</div>
+      <div class="atl-kpi-val" style="color:var(--red)">${fmtEur(openRe)}</div>
+      <div class="atl-kpi-meta">${offeneRe.length} offene Rechnungen</div>
+    </div>
+    <div class="atl-kpi">
+      <div class="atl-kpi-lbl">Einnahmen</div>
+      <div class="atl-kpi-val">${fmtEur(bez)}</div>
+      <div class="atl-kpi-meta"><span class="atl-trend up">↑</span> bezahlte Rechnungen</div>
+    </div>
+    <div class="atl-kpi">
+      <div class="atl-kpi-lbl">Angebote offen</div>
+      <div class="atl-kpi-val">${openAn}</div>
+      <div class="atl-kpi-meta">ausstehend</div>
+    </div>
+  </div>
+
+  <div class="atl-grid-2">
+    <section class="atl-card">
+      <div class="atl-card-h">
+        <div><div class="atl-card-title">Einnahmen & Ausgaben</div><div class="atl-card-sub">Letzte 6 Monate</div></div>
+      </div>
+      <div class="atl-card-body">
+        <div class="atl-chart">
+          ${months.map(m=>`<div class="atl-bar-col">
+            <div class="atl-bar-wrap">
+              <div class="atl-bar" style="height:${m.ein?Math.max(Math.round((m.ein/maxVal)*100),3):2}%"></div>
+              <div class="atl-bar expense" style="height:${m.aus?Math.max(Math.round((m.aus/maxVal)*100),3):2}%"></div>
+            </div>
+            <div class="atl-bar-lbl">${m.mo}</div>
+          </div>`).join('')}
+        </div>
+        <div class="atl-chart-legend">
+          <span><span class="atl-legend-dot" style="background:var(--accent)"></span>Einnahmen ${fmtEur(bez)}</span>
+          <span><span class="atl-legend-dot" style="background:var(--surfaceAlt);outline:1px solid var(--border2)"></span>Ausgaben</span>
+          <span style="margin-left:auto">Saldo <strong style="color:var(--green)">${fmtEur(bez-openRe)}</strong></span>
+        </div>
+      </div>
+    </section>
+
+    <section class="atl-card">
+      <div class="atl-card-h">
+        <div><div class="atl-card-title">Heute · ${heute.toLocaleDateString('de-AT',{day:'numeric',month:'long'})}</div>
+        <div class="atl-card-sub">${faellig.length?faellig.length+' fällige Aufträge':'Keine fälligen Aufträge'}${low.length?' · '+low.length+' Nachbestellungen':''}</div></div>
+      </div>
+      ${faellig.length?faellig.slice(0,4).map(a=>`
+      <div class="atl-sched-row">
+        <div class="atl-sched-time">${fmtDate(a.faellig_am)}</div>
+        <div class="atl-sched-bar${a.prioritaet==='dringend'?'':' gray'}"></div>
+        <div style="min-width:0">
+          <div class="atl-row-title" onclick="openA('${a.id}')">${a.titel}</div>
+          <div class="atl-row-sub">${kBy(a.kunde_id)?.name||'—'} · ${sBadgeAtl(a.status)}</div>
+        </div>
+      </div>`).join(''):`<div style="padding:24px 20px;color:var(--text3);font-size:13px;text-align:center">Keine fälligen Aufträge in den nächsten 7 Tagen.</div>`}
+    </section>
+  </div>
+
+  <div class="atl-grid-2b">
+    <section class="atl-card">
+      <div class="atl-card-h">
+        <div><div class="atl-card-title">Aktive Aufträge</div><div class="atl-card-sub">${off} in Arbeit</div></div>
+        <button class="atl-card-link" onclick="setTab('auftraege')">Alle →</button>
+      </div>
+      <div class="atl-list">
+        ${aktAuf.map(a=>`
+        <div class="atl-row" onclick="openA('${a.id}')">
+          <div class="atl-row-thumb">${initials(a.titel)}</div>
+          <div style="flex:1;min-width:0">
+            <div class="atl-row-title">${a.titel}</div>
+            <div class="atl-row-sub">${kBy(a.kunde_id)?.name||'—'}${a.faellig_am?' · fällig '+fmtDate(a.faellig_am):''}</div>
+          </div>
+          ${sBadgeAtl(a.prioritaet==='dringend'?'dringend':a.status)}
+        </div>`).join('')}
+        ${aktAuf.length===0?'<div style="padding:24px 20px;color:var(--text3);font-size:13px;text-align:center">Keine offenen Aufträge.</div>':''}
+      </div>
+    </section>
+
+    <section class="atl-card">
+      <div class="atl-card-h">
+        <div><div class="atl-card-title">Offene Rechnungen</div><div class="atl-card-sub">${fmtEur(openRe)} ausstehend</div></div>
+        <button class="atl-card-link" onclick="setTab('rechnungen')">Alle →</button>
+      </div>
+      <div class="atl-list">
+        ${offeneRe.map(r=>`
+        <div class="atl-row" onclick="setTab('rechnungen')">
+          <div style="flex:1;min-width:0">
+            <div class="atl-row-title" style="font-family:'JetBrains Mono',monospace;font-size:12px">${r.nummer||r.id}</div>
+            <div class="atl-row-sub">${kBy(r.kunde_id)?.name||'—'}${r.faellig_am?' · '+fmtDate(r.faellig_am):''}</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0">
+            <span class="atl-row-amt">${fmtEur(r.brutto)}</span>
+            ${sBadgeAtl(r.status)}
+          </div>
+        </div>`).join('')}
+        ${offeneRe.length===0?'<div style="padding:24px 20px;color:var(--text3);font-size:13px;text-align:center">Alle Rechnungen bezahlt. ✓</div>':''}
+      </div>
+    </section>
+  </div>
+</div>`;
 }
 
 // ── AUFTRÄGE ──────────────────────────────────────────────────────
 function vAuftraege(){
   const srch=(document.getElementById('auftrag-search')?.value||'').toLowerCase();
-  const list=S.auftraege.filter(a=>(S.filter==='alle'||a.status===S.filter)&&(!srch||a.titel?.toLowerCase().includes(srch)||(kBy(a.kunde_id)?.name||'').toLowerCase().includes(srch)));
+  const statusFilter=S.filter==='ueberfaellig'?null:S.filter;
+  const list=S.auftraege.filter(a=>{
+    const matchStatus=S.filter==='alle'?true:S.filter==='ueberfaellig'?(a.faellig_am&&new Date(a.faellig_am)<new Date()&&a.status!=='abgeschlossen'):(a.status===statusFilter);
+    const matchSrch=!srch||a.titel?.toLowerCase().includes(srch)||(kBy(a.kunde_id)?.name||'').toLowerCase().includes(srch);
+    return matchStatus&&matchSrch;
+  });
+  const counts={alle:S.auftraege.length,offen:S.auftraege.filter(a=>a.status==='offen').length,in_arbeit:S.auftraege.filter(a=>a.status==='in_arbeit').length,abgeschlossen:S.auftraege.filter(a=>a.status==='abgeschlossen').length,ueberfaellig:S.auftraege.filter(a=>a.faellig_am&&new Date(a.faellig_am)<new Date()&&a.status!=='abgeschlossen').length};
+  const chip=(id,lbl)=>`<span class="atl-chip${S.filter===id?' on':''}" onclick="S.filter='${id}';render()">${lbl}<span class="atl-chip-count">${counts[id]}</span></span>`;
+  const auNr=(a,i)=>{const y=new Date(a.erstellt_am||Date.now()).getFullYear();return`AU-${y}-${String(S.auftraege.length-i).padStart(4,'0')}`};
+  const prio=(p)=>p==='dringend'?atlBadge('red','Dringend',true):p==='hoch'?atlBadge('amber','Hoch',true):'';
+
   return`
-<div class="sec-head"><h2>Aufträge</h2><button class="btn" onclick="openM('neuA')">+ Neu</button></div>
-<input id="auftrag-search" placeholder="🔍 Suchen…" oninput="render()" style="margin-bottom:.7rem">
-<div style="display:flex;gap:.35rem;flex-wrap:wrap;margin-bottom:.85rem">
-  ${['alle','offen','in_arbeit','abgeschlossen'].map(f=>`
-    <button class="btn-s" style="${S.filter===f?'background:var(--gold);color:#0a0a0c;border-color:var(--gold);font-weight:600':''}" onclick="S.filter='${f}';render()">${{alle:'Alle',offen:'Offen',in_arbeit:'In Arbeit',abgeschlossen:'Fertig'}[f]}</button>
-  `).join('')}
-</div>
-${list.map(a=>`
-  <div class="card" onclick="openA('${a.id}')">
-    <div class="row">
-      <div style="flex:1;min-width:0"><div class="card-title">${a.titel}</div><div class="card-sub">${kBy(a.kunde_id)?.name||'—'} · ${fmtDate(a.erstellt_am)}${a.faellig_am?` · Fällig ${fmtDate(a.faellig_am)}`:''}</div></div>
-      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:.25rem;flex-shrink:0">${tbadge(a.auftragstyp_id)}${sbadge(a.status)}${prioBadge(a.prioritaet)}${S.timer?.auftragId===a.id?'<span class="badge b-red">Läuft</span>':''}</div>
+<div class="atl-content">
+  <div class="atl-pageheader">
+    <div>
+      <div class="atl-greet">Aufträge</div>
+      <div class="atl-greet-sub">${S.auftraege.length} gesamt · ${counts.offen} offen · ${counts.in_arbeit} in Arbeit${counts.ueberfaellig?' · '+counts.ueberfaellig+' überfällig':''}</div>
     </div>
-  </div>`).join('')}
-${list.length===0?'<div class="empty">Keine Aufträge</div>':''}`;
+    <div class="atl-pageheader-actions">
+      <button class="atl-btn atl-btn-primary" onclick="openM('neuA')">
+        <svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+        Neuer Auftrag
+      </button>
+    </div>
+  </div>
+  <section class="atl-card">
+    <div class="atl-filters">
+      ${chip('alle','Alle')}${chip('offen','Offen')}${chip('in_arbeit','In Arbeit')}${chip('abgeschlossen','Abgeschlossen')}${counts.ueberfaellig?chip('ueberfaellig','Überfällig'):''}
+      <div style="margin-left:auto;height:28px;background:var(--surfaceAlt);border:1px solid var(--border);border-radius:6px;display:flex;align-items:center;padding:0 10px;gap:8px;min-width:180px">
+        <svg style="width:13px;height:13px;stroke:var(--text3);fill:none;stroke-width:1.5;stroke-linecap:round;flex-shrink:0" viewBox="0 0 24 24"><path d="M21 21l-4.3-4.3M11 19a8 8 0 110-16 8 8 0 010 16z"/></svg>
+        <input id="auftrag-search" placeholder="Auftrag, Kunde…" oninput="render()" style="background:none;border:none;outline:none;font-size:12px;color:var(--text);width:100%;font-family:inherit">
+      </div>
+    </div>
+    <div style="overflow-x:auto">
+      <table class="atl-tbl">
+        <thead><tr>
+          <th style="width:110px">Nummer</th>
+          <th>Auftrag</th>
+          <th style="width:130px">Typ</th>
+          <th style="width:110px">Fällig</th>
+          <th style="width:110px">Status</th>
+          <th style="width:90px">Priorität</th>
+        </tr></thead>
+        <tbody>
+          ${list.map((a,i)=>`
+          <tr onclick="openA('${a.id}')">
+            <td class="atl-tabnum" style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text2)">${auNr(a,S.auftraege.indexOf(a))}</td>
+            <td>
+              <div class="atl-row-title">${a.titel}${S.timer?.auftragId===a.id?' <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--red);margin-left:4px;vertical-align:middle"></span>':''}</div>
+              <div class="atl-row-sub">${kBy(a.kunde_id)?.name||'—'} · ${fmtDate(a.erstellt_am)}</div>
+            </td>
+            <td style="color:var(--text2);font-size:12px">${tBy(a.auftragstyp_id)?.name||'—'}</td>
+            <td class="atl-tabnum" style="font-size:12px;color:${a.faellig_am&&new Date(a.faellig_am)<new Date()&&a.status!=='abgeschlossen'?'var(--red)':'var(--text)'}">${fmtDate(a.faellig_am)}</td>
+            <td>${sBadgeAtl(a.status)}</td>
+            <td>${prio(a.prioritaet)}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+    ${list.length===0?'<div style="padding:40px 20px;text-align:center;color:var(--text3);font-size:13px">Keine Aufträge gefunden.</div>':''}
+    <div class="atl-tbl-footer">
+      <span>${list.length} von ${S.auftraege.length} Aufträgen</span>
+    </div>
+  </section>
+</div>`;
 }
 
 // ── AUFTRAG DETAIL ─────────────────────────────────────────────────
 async function vDetail(){
   const a=aBy(S.aktId);if(!a){document.getElementById('content').innerHTML='<div class="empty">Nicht gefunden</div>';return}
+  const k=kBy(a.kunde_id);
+  const detailAside=()=>`
+    <div class="atl-vcol">
+      <section class="atl-card">
+        <div class="atl-card-body">
+          <div class="atl-section-label">Kunde</div>
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+            <div class="atl-row-thumb" style="width:40px;height:40px;font-size:15px">${k?(k.name.split(' ').slice(0,2).map(w=>w[0]).join('')):'?'}</div>
+            <div>
+              <div style="font-weight:600;font-size:14px">${k?.name||'—'}</div>
+              <div style="font-size:12px;color:var(--text2)">${k?.plz_ort||''}</div>
+            </div>
+          </div>
+          <dl class="atl-meta-grid">
+            ${k?.telefon?`<dt>Telefon</dt><dd>${k.telefon}</dd>`:''}
+            ${k?.email?`<dt>E-Mail</dt><dd>${k.email}</dd>`:''}
+            ${k?.adresse?`<dt>Adresse</dt><dd>${k.adresse}</dd>`:''}
+          </dl>
+        </div>
+      </section>
+      <section class="atl-card">
+        <div class="atl-card-body">
+          <div class="atl-section-label">Termine & Details</div>
+          <dl class="atl-meta-grid">
+            <dt>Erstellt</dt><dd>${fmtDate(a.erstellt_am)}</dd>
+            ${a.faellig_am?`<dt>Fällig</dt><dd style="color:${new Date(a.faellig_am)<new Date()&&a.status!=='abgeschlossen'?'var(--red)':'var(--amber)'};font-weight:500">${fmtDate(a.faellig_am)}</dd>`:''}
+            <dt>Stundensatz</dt><dd>€ ${(a.stundensatz||45).toFixed(2).replace('.',',')}</dd>
+            ${a.notizen?`<dt>Notizen</dt><dd style="color:var(--text2)">${a.notizen}</dd>`:''}
+          </dl>
+        </div>
+      </section>
+      <section class="atl-card">
+        <div class="atl-card-body" style="display:flex;flex-direction:column;gap:8px">
+          <div class="atl-section-label">Aktionen</div>
+          <button class="atl-btn" onclick="openM('editA','${a.id}')" style="justify-content:center">Bearbeiten</button>
+          <button class="atl-btn" onclick="openAngMitZeit('${a.id}')" style="justify-content:center">Angebot erstellen</button>
+          <button class="atl-btn" onclick="openReMitZeit('${a.id}')" style="justify-content:center">Rechnung erstellen</button>
+          <button class="atl-btn" onclick="dPDF('${a.id}')" style="justify-content:center">PDF exportieren</button>
+          <button class="atl-btn" style="border-color:var(--redSoft);color:var(--red);justify-content:center;margin-top:4px" onclick="dDelA('${a.id}')">Auftrag löschen</button>
+        </div>
+      </section>
+    </div>`;
+
   if(isDemoMode){
-    // Demo fake detail data
+    const low=S.inventar.filter(i=>i.mindestbestand>0&&i.bestand<=i.mindestbestand);
     document.getElementById('content').innerHTML=`
-      <div class="card-row" style="margin-bottom:.9rem;align-items:flex-start">
-        <div>
-          <div style="font-family:'DM Serif Display',serif;font-size:1.2rem;font-weight:600">${a.titel}</div>
-          <div style="font-size:.72rem;color:var(--text2);margin-top:.2rem">${kBy(a.kunde_id)?.name||''} · ${fmtDate(a.erstellt_am)}</div>
-          <div style="margin-top:.4rem;display:flex;gap:.3rem;flex-wrap:wrap">${tbadge(a.auftragstyp_id)}${sbadge(a.status)}${prioBadge(a.prioritaet)}</div>
+<div class="atl-content">
+  <div class="atl-breadcrumb"><span onclick="setTab('auftraege')" style="cursor:pointer">Aufträge</span><span>›</span><span>${a.titel}</span></div>
+  <div class="atl-pageheader">
+    <div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">${sBadgeAtl(a.status)}${a.prioritaet&&a.prioritaet!=='normal'?sBadgeAtl(a.prioritaet):''}</div>
+      <div class="atl-greet">${a.titel}</div>
+      <div class="atl-greet-sub">${k?.name||'—'} · ${fmtDate(a.erstellt_am)}${a.faellig_am?' · fällig '+fmtDate(a.faellig_am):''}</div>
+    </div>
+  </div>
+  <div class="atl-detail-grid">
+    <div class="atl-vcol">
+      <section class="atl-card">
+        <div class="atl-card-h"><div class="atl-card-title">Timer (Demo)</div></div>
+        <div class="atl-card-body">
+          <div class="atl-timer-card-neutral">
+            <div>
+              <div class="atl-section-label">Allgemeine Zeit</div>
+              <div class="atl-timer-disp-sm">01:23:45</div>
+              <div style="font-size:12px;color:var(--text2);margin-top:2px">Demo-Modus · kein echter Timer</div>
+            </div>
+            <button class="atl-btn" onclick="alert('Demo-Modus: Timer nicht aktiv')">Start</button>
+          </div>
         </div>
-        <button class="btn-s" onclick="alert('Demo-Modus: Bearbeiten nicht möglich')">Bearbeiten</button>
-      </div>
-      <div class="timer-box">
-        <div>
-          <div style="font-size:.55rem;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:.2rem">Allgemeine Zeit</div>
-          <div class="timer-disp">01:23:45</div>
-          <div class="timer-sub">Gesamt: 01:23:45 · 1.4 Std</div>
+      </section>
+      <section class="atl-card">
+        <div class="atl-card-h"><div class="atl-card-title">Material</div></div>
+        <div class="atl-card-body">
+          ${low.map(i=>`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px"><span>${i.name}</span><span style="color:var(--amber);font-weight:500">${i.bestand}/${i.mindestbestand} ${i.einheit} — niedrig</span></div>`).join('')}
+          <div style="margin-top:8px;padding:14px;background:var(--surfaceAlt);border-radius:8px;text-align:center;font-size:12px;color:var(--text3)">Demo-Modus · Bearbeiten nicht verfügbar</div>
         </div>
-        <div style="display:flex;flex-direction:column;gap:.4rem;align-items:flex-end">
-          <button class="btn" onclick="alert('Demo-Modus: Timer nicht aktiv')">Start</button>
-        </div>
-      </div>
-      <hr class="divider">
-      <div class="sec-head"><div class="sec-h3">Fensterflügel</div></div>
-      <div class="teil-item">
-        <div class="row">
-          <div><div style="font-weight:600;font-size:.88rem">OG Flügel Links</div>
-          <div style="font-size:.7rem;color:var(--text2)">1175×673 mm · 1× Glas · Weiß (RAL 9016)</div></div>
-          <div style="text-align:right"><div style="font-size:.78rem;color:var(--gold2);font-weight:600">00:45:00</div><div style="font-size:.62rem;color:var(--text3)">3 Schritte</div></div>
-        </div>
-        <div style="margin-top:.5rem;display:flex;flex-direction:column;gap:.25rem">
-          <div class="as-item"><div class="as-name">Abbeizen</div><div class="as-time">00:20:00</div><button class="btn-s" onclick="alert('Demo')"></button></div>
-          <div class="as-item"><div class="as-name">Kitten</div><div class="as-time">00:15:00</div><button class="btn-s" onclick="alert('Demo')"></button></div>
-          <div class="as-item"><div class="as-name">Lackieren</div><div class="as-time">00:10:00</div><button class="btn-s" onclick="alert('Demo')"></button></div>
-        </div>
-      </div>
-      <hr class="divider">
-      <div class="sec-head"><div class="sec-h3">Material & Kosten</div></div>
-      <div class="tbl-row"><span style="flex:1">PU-Leim Würth</span><span style="color:var(--text2);font-size:.7rem">1×Stk</span><span style="color:var(--green2);font-size:.63rem;font-weight:600">Vorhanden</span><span style="color:var(--gold2);font-weight:600">€12.50</span></div>
-      <div class="tbl-row"><span style="flex:1">Fensterkit weiß</span><span style="color:var(--text2);font-size:.7rem">2×Stk</span><span style="color:var(--amber2);font-size:.63rem;font-weight:600">Bestellen</span><span style="color:var(--gold2);font-weight:600">€13.00</span></div>
-      <div style="text-align:right;margin-top:.4rem;font-size:.8rem;color:var(--text2)">Material: <span style="color:var(--gold2);font-weight:600">€25.50</span> · Lohn: <span style="color:var(--gold2);font-weight:600">€63.00</span> · <b style="color:var(--gold3)">Gesamt: €88.50</b></div>
-      <hr class="divider">
-      <div style="text-align:center;padding:1rem;background:var(--s2);border-radius:8px;border:1px dashed var(--border2)">
-        <div style="font-size:.8rem;color:var(--text3)">🎮 Demo-Modus aktiv</div>
-        <div style="font-size:.7rem;color:var(--text3);margin-top:.3rem">Alle Daten sind Beispieldaten. Timer, Speichern und Bearbeiten sind deaktiviert.</div>
-      </div>`;
+      </section>
+    </div>
+    ${detailAside()}
+  </div>
+</div>`;
     return;
   }
   let tr,zr,mr,fr;
@@ -857,113 +1538,135 @@ async function vDetail(){
   const gL=S.timer?.typ==='global'&&S.timer?.auftragId===a.id;
   const best=M.filter(m=>m.status==='bestellen'||m.status==='bestellt');
 
+  const matStatusColor={vorhanden:'var(--green)',bestellen:'var(--amber)',bestellt:'var(--accent)',geliefert:'var(--green)'};
+  const matStatusLabel={vorhanden:'Vorhanden',bestellen:'Bestellen',bestellt:'Bestellt',geliefert:'Geliefert'};
+
   document.getElementById('content').innerHTML=`
-<div class="row" style="margin-bottom:.9rem;align-items:flex-start">
-  <div>
-    <div style="font-family:'DM Serif Display',serif;font-size:1.2rem;font-weight:600">${a.titel}</div>
-    <div style="font-size:.72rem;color:var(--text2);margin-top:.2rem">${kBy(a.kunde_id)?.name||''} ${a.erstellt_am?'· '+fmtDate(a.erstellt_am):''}</div>
-    <div style="margin-top:.4rem;display:flex;gap:.3rem;flex-wrap:wrap">${tbadge(a.auftragstyp_id)}${sbadge(a.status)}${prioBadge(a.prioritaet)}${a.zugewiesen_an&&(S.nutzer||[]).find(n=>n.id===a.zugewiesen_an)?`<span class="badge b-gray">${(S.nutzer||[]).find(n=>n.id===a.zugewiesen_an)?.name}</span>`:''}</div>
+<div class="atl-content">
+  <div class="atl-breadcrumb"><span onclick="setTab('auftraege')" style="cursor:pointer">Aufträge</span><span>›</span><span>${a.titel}</span></div>
+  <div class="atl-pageheader">
+    <div>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px">
+        ${sBadgeAtl(a.status)}${a.prioritaet&&a.prioritaet!=='normal'?sBadgeAtl(a.prioritaet):''}${a.zugewiesen_an&&(S.nutzer||[]).find(n=>n.id===a.zugewiesen_an)?atlBadge('gray',(S.nutzer||[]).find(n=>n.id===a.zugewiesen_an)?.name):''}
+      </div>
+      <div class="atl-greet">${a.titel}</div>
+      <div class="atl-greet-sub">${k?.name||'—'} · ${fmtDate(a.erstellt_am)}${a.faellig_am?' · fällig '+fmtDate(a.faellig_am):''}</div>
+    </div>
+    <div class="atl-pageheader-actions">
+      ${gL?`<button class="atl-btn atl-btn-primary" onclick="dStop()" style="background:var(--red);border-color:var(--red)">Timer stoppen</button>`:`<button class="atl-btn" onclick="dStart('global','${a.id}')"${S.timer?' disabled style="opacity:.45"':''}>
+        <svg style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round" viewBox="0 0 24 24"><path d="M12 6v6l4 2M12 22a10 10 0 110-20 10 10 0 010 20z"/></svg>
+        Timer starten</button>`}
+      <button class="atl-btn atl-btn-primary" onclick="openM('editA','${a.id}')">Bearbeiten</button>
+    </div>
   </div>
-  <div style="display:flex;gap:.4rem;flex-shrink:0">
-    <button class="btn-s" onclick="openM('editA','${a.id}')">Bearbeiten</button>
-    <button class="btn-s" onclick="openAngMitZeit('${a.id}')">Angebot</button>
-    <button class="btn-s" onclick="openReMitZeit('${a.id}')">Rechnung</button>
+
+  <div class="atl-detail-grid">
+    <div class="atl-vcol">
+
+      <!-- Timer Card -->
+      <section class="${gL?'atl-timer-card':'atl-timer-card-neutral'}">
+        <div>
+          <div class="atl-section-label" style="${gL?'color:rgba(255,255,255,.6)':''}">Allgemeine Zeit</div>
+          <div class="${gL?'atl-timer-disp':'atl-timer-disp-sm'}"${gL?' data-live':''}>${gL?fmt(elapsed()):'00:00:00'}</div>
+          <div class="${gL?'atl-timer-sub':'atl-row-sub'}">Gesamt: ${fmt(gZ)} · ${(gZ/3600000).toFixed(1)} Std</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
+          ${gL?`<button class="atl-btn" onclick="dStop()">Stop</button>`:`<button class="atl-btn" onclick="dStart('global','${a.id}')"${S.timer?' disabled style="opacity:.4"':''}>Start</button>`}
+          <button class="atl-btn atl-btn-sm" onclick="openM('zMan','${a.id}')">Manuell</button>
+        </div>
+      </section>
+
+      ${Z.filter(e=>e.typ==='global').length?`
+      <section class="atl-card">
+        <div class="atl-card-h"><div class="atl-card-title">Zeiteinträge</div></div>
+        <div class="atl-list">
+          ${Z.filter(e=>e.typ==='global').slice(0,5).map(e=>`
+          <div class="atl-row" style="cursor:default">
+            <div style="flex:1"><div class="atl-row-title">${e.profile?.name||'—'}</div><div class="atl-row-sub">${fmtDate(e.start_zeit)}</div></div>
+            <span class="atl-tabnum" style="font-family:'Instrument Serif',serif;font-size:16px">${fmt(e.dauer_ms)}</span>
+            <button onclick="dDelZ('${e.id}')" style="background:none;border:none;color:var(--text3);cursor:pointer;padding:4px;font-size:14px">✕</button>
+          </div>`).join('')}
+        </div>
+      </section>`:''}
+
+      <!-- Teile / Werkstückabschnitte -->
+      <section class="atl-card">
+        <div class="atl-card-h">
+          <div class="atl-card-title">${isFen?'Fensterflügel & Stock':'Teile & Schritte'}</div>
+          <button class="atl-btn atl-btn-sm" onclick="openM('neuTeil','${a.id}|${isFen?'fluegel':'sonstiges'}')">+ Hinzufügen</button>
+        </div>
+        <div class="atl-card-body">
+          ${isFen?`
+            <div class="atl-section-label">Flügel</div>
+            ${rTeile(a.id,T.filter(t=>t.typ==='fluegel'),Z)}
+            <div class="atl-section-label" style="margin-top:16px">Stock</div>
+            <button class="atl-btn atl-btn-sm" onclick="openM('neuTeil','${a.id}|stock')" style="margin-bottom:8px">+ Stock</button>
+            ${rTeile(a.id,T.filter(t=>t.typ==='stock'),Z)}
+          `:rTeile(a.id,T,Z)}
+        </div>
+      </section>
+
+      <!-- Material -->
+      <section class="atl-card">
+        <div class="atl-card-h">
+          <div><div class="atl-card-title">Material & Kosten</div>${best.length?`<div class="atl-card-sub">${best.length} zum Bestellen</div>`:''}</div>
+          <button class="atl-btn atl-btn-sm" onclick="openM('mat','${a.id}')">+ Material</button>
+        </div>
+        ${M.length?`
+        <div style="overflow-x:auto"><table class="atl-tbl">
+          <thead><tr><th>Material</th><th>Menge</th><th>Status</th><th class="atl-tbl-num">Preis</th><th></th></tr></thead>
+          <tbody>
+            ${M.map(m=>`<tr>
+              <td>${m.name}</td>
+              <td class="atl-tabnum" style="font-size:12px;color:var(--text2)">${m.menge} ${m.einheit}</td>
+              <td>${atlBadge(m.status==='vorhanden'||m.status==='geliefert'?'green':'amber',matStatusLabel[m.status]||m.status)}</td>
+              <td class="atl-tbl-num atl-tabnum" style="font-size:12px">€ ${((m.menge||0)*(m.preis||0)).toFixed(2).replace('.',',')}</td>
+              <td style="width:28px"><button onclick="dDelM('${a.id}','${m.id}')" style="background:none;border:none;color:var(--text3);cursor:pointer;padding:4px">✕</button></td>
+            </tr>`).join('')}
+          </tbody>
+        </table></div>
+        <div style="padding:12px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:24px;font-size:12px;color:var(--text2)">
+          <span>Material: <strong style="font-family:'Instrument Serif',serif;font-size:15px;color:var(--text)">€ ${gM.toFixed(2).replace('.',',')}</strong></span>
+          ${lohn?`<span>Lohn: <strong style="font-family:'Instrument Serif',serif;font-size:15px;color:var(--text)">€ ${lohn.toFixed(2).replace('.',',')}</strong></span><span>Gesamt: <strong style="font-family:'Instrument Serif',serif;font-size:16px;color:var(--accent)">€ ${(gM+lohn).toFixed(2).replace('.',',')}</strong></span>`:''}
+        </div>
+        `:`<div style="padding:20px;color:var(--text3);font-size:13px;text-align:center">Noch kein Material eingetragen.</div>`}
+      </section>
+
+      <!-- Fotos -->
+      ${F.length||isFen?`
+      <section class="atl-card">
+        <div class="atl-card-h"><div class="atl-card-title">Fotos</div><button class="atl-btn atl-btn-sm" onclick="openM('fotoUp','${a.id}')">+ Foto</button></div>
+        <div class="atl-card-body">
+          ${F.length?`<div class="photo-grid">${F.map(f=>`<div class="photo-thumb"><img src="${f.public_url||f.storage_path}" loading="lazy"><div style="position:absolute;bottom:3px;left:3px;background:rgba(0,0,0,.6);color:white;font-size:.55rem;padding:1px 4px;border-radius:3px">${f.kategorie}</div><button class="photo-del" onclick="dDelFoto('${f.id}','${f.storage_path}')">✕</button></div>`).join('')}</div>`:'<div style="color:var(--text3);font-size:13px">Noch keine Fotos.</div>'}
+        </div>
+      </section>`:''}
+
+      <!-- Notizen -->
+      <section class="atl-card">
+        <div class="atl-card-h"><div class="atl-card-title">Notizen</div></div>
+        <div class="atl-card-body">
+          <textarea rows="4" placeholder="Notizen zum Auftrag…" onblur="dSaveNotiz('${a.id}',this.value)" style="width:100%;background:var(--surfaceAlt);border:1px solid var(--border2);border-radius:7px;padding:10px 12px;font-family:inherit;font-size:13px;color:var(--text);resize:vertical;outline:none">${a.notizen||''}</textarea>
+        </div>
+      </section>
+
+      <!-- Kommentare -->
+      <section class="atl-card">
+        <div class="atl-card-h"><div class="atl-card-title">Aktivität</div></div>
+        <div id="komm-liste"></div>
+        <div class="atl-card-body" style="display:flex;gap:8px;padding-top:12px;border-top:1px solid var(--border)">
+          <input id="komm-input" placeholder="Kommentar schreiben…" onkeydown="if(event.key==='Enter')addKomm('${a.id}')" style="flex:1;background:var(--surfaceAlt);border:1px solid var(--border2);border-radius:7px;padding:8px 12px;font-family:inherit;font-size:13px;outline:none">
+          <button class="atl-btn atl-btn-primary" onclick="addKomm('${a.id}')">Senden</button>
+        </div>
+      </section>
+
+      <div style="display:flex;gap:8px;flex-wrap:wrap;padding-bottom:8px">
+        <button class="atl-btn" onclick="dCSV('${a.id}')">CSV Export</button>
+        <button class="atl-btn" style="border-color:var(--redSoft);color:var(--red)" onclick="dDelA('${a.id}')">Auftrag löschen</button>
+      </div>
+    </div>
+
+    ${detailAside()}
   </div>
-</div>
-
-<!-- TIMER -->
-<div class="timer-box">
-  <div>
-    <div style="font-size:.55rem;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:.2rem">Allgemeine Zeit</div>
-    <div class="timer-disp"${gL?' data-live':''}>${gL?fmt(elapsed()):'00:00:00'}</div>
-    <div class="timer-sub">Gesamt: ${fmt(gZ)} · ${(gZ/3600000).toFixed(2)} Std</div>
-  </div>
-  <div style="display:flex;flex-direction:column;gap:.4rem;align-items:flex-end">
-    ${gL?`<button class="btn-stop" onclick="dStop()">Stop</button>`:`<button class="btn" onclick="dStart('global','${a.id}')"${S.timer?' disabled style="opacity:.4"':''}>Start</button>`}
-    <button class="btn-s" onclick="openM('zMan','${a.id}')">Manuell</button>
-  </div>
-</div>
-${Z.filter(e=>e.typ==='global').length?`
-  <div class="sec-label">Zeiteinträge</div>
-  ${Z.filter(e=>e.typ==='global').slice(0,5).map(e=>`
-    <div class="tbl-row">
-      <span style="color:var(--text2)">${fmtDate(e.start_zeit)} · ${e.profile?.name||'—'}</span>
-      <span style="color:var(--gold2);font-weight:600">${fmt(e.dauer_ms)}</span>
-      <button onclick="dDelZ('${e.id}')" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:.7rem">✕</button>
-    </div>`).join('')}`:''}
-
-<hr class="divider">
-
-${isFen?`
-  <div class="sec-head"><div class="sec-h3">Fensterflügel</div><button class="btn-s" onclick="openM('neuTeil','${a.id}|fluegel')">+ Flügel</button></div>
-  ${rTeile(a.id,T.filter(t=>t.typ==='fluegel'),Z)}
-  <hr class="divider">
-  <div class="sec-head"><div class="sec-h3">Fensterstock</div><button class="btn-s" onclick="openM('neuTeil','${a.id}|stock')">+ Stock</button></div>
-  ${rTeile(a.id,T.filter(t=>t.typ==='stock'),Z)}
-  <hr class="divider">`:`
-  <div class="sec-head"><div class="sec-h3">Teile / Schritte</div><button class="btn-s" onclick="openM('neuTeil','${a.id}|sonstiges')">+ Hinzufügen</button></div>
-  ${rTeile(a.id,T,Z)}
-  <hr class="divider">`}
-
-<!-- MATERIAL -->
-<div class="sec-head"><div class="sec-h3">Material & Kosten</div><button class="btn-s" onclick="openM('mat','${a.id}')">+ Material</button></div>
-${M.length?`
-  ${M.map(m=>{const sc={vorhanden:'var(--green2)',bestellen:'var(--amber2)',bestellt:'var(--gold2)',geliefert:'var(--green2)'}[m.status];return`
-    <div class="tbl-row">
-      <span style="flex:1;min-width:0">${m.name}</span>
-      <span style="color:var(--text2);font-size:.7rem;white-space:nowrap">${m.menge}×${m.einheit}</span>
-      <span style="color:${sc};font-size:.63rem;font-weight:600;white-space:nowrap">{{${m.status}}}</span>
-      <span style="color:var(--gold2);font-weight:600;white-space:nowrap">€${((m.menge||0)*(m.preis||0)).toFixed(2)}</span>
-      <button onclick="dDelM('${a.id}','${m.id}')" style="background:none;border:none;color:var(--text3);cursor:pointer">✕</button>
-    </div>`}).join('').replace(/\{\{vorhanden\}\}/g,'Vorhanden').replace(/\{\{bestellen\}\}/g,'Bestellen').replace(/\{\{bestellt\}\}/g,'Bestellt').replace(/\{\{geliefert\}\}/g,'Geliefert')}
-  <div style="text-align:right;margin-top:.4rem;font-size:.8rem;color:var(--text2)">
-    Material: <span style="color:var(--gold2);font-weight:600">€${gM.toFixed(2)}</span>
-    ${lohn?` · Lohn: <span style="color:var(--gold2);font-weight:600">€${lohn.toFixed(2)}</span> · <b style="color:var(--gold3)">Gesamt: €${(gM+lohn).toFixed(2)}</b>`:''}
-  </div>`:'<div class="empty">Noch kein Material</div>'}
-
-${best.length?`
-  <hr class="divider">
-  <div class="sec-h3">📋 Bestellliste</div>
-  ${best.map(m=>`
-    <div style="display:flex;align-items:center;gap:.65rem;padding:.4rem 0;border-bottom:1px solid var(--border)">
-      <div onclick="dTogMat('${a.id}','${m.id}','${m.status}')" style="width:18px;height:18px;border-radius:4px;border:1.5px solid ${m.status==='bestellt'?'var(--green2)':'var(--border2)'};background:${m.status==='bestellt'?'var(--green2)':'transparent'};cursor:pointer;display:flex;align-items:center;justify-content:center;color:white;font-size:.65rem;flex-shrink:0">${m.status==='bestellt'?'✓':''}</div>
-      <span style="flex:1;font-size:.82rem;${m.status==='bestellt'?'text-decoration:line-through;color:var(--text3)':''}">${m.name} — ${m.menge} ${m.einheit}</span>
-    </div>`).join('')}`:''}
-
-<!-- FOTOS -->
-${F.length||isFen?`
-  <hr class="divider">
-  <div class="sec-head"><div class="sec-h3">Fotos</div><button class="btn-s" onclick="openM('fotoUp','${a.id}')">+ Foto</button></div>
-  ${F.length?`
-    <div class="photo-grid">
-      ${F.map(f=>`
-        <div class="photo-thumb">
-          <img src="${f.public_url||f.storage_path}" loading="lazy">
-          <div style="position:absolute;bottom:3px;left:3px;background:rgba(0,0,0,.6);color:white;font-size:.55rem;padding:1px 4px;border-radius:3px">${f.kategorie}</div>
-          <button class="photo-del" onclick="dDelFoto('${f.id}','${f.storage_path}')">✕</button>
-        </div>`).join('')}
-    </div>`:'<div class="empty">Noch keine Fotos</div>'}`:''}
-
-<hr class="divider">
-
-<div class="sec-label">Notizen</div>
-<textarea rows="3" placeholder="Notizen…" onblur="dSaveNotiz('${a.id}',this.value)">${a.notizen||''}</textarea>
-
-<hr class="divider">
-
-<!-- KOMMENTARE -->
-<div class="sec-head"><div class="sec-h3">Kommentare</div></div>
-<div id="komm-liste" style="margin-bottom:.7rem"></div>
-<div style="display:flex;gap:.5rem">
-  <input id="komm-input" placeholder="Kommentar schreiben…" style="flex:1" onkeydown="if(event.key==='Enter')addKomm('${a.id}')">
-  <button class="btn-s" onclick="addKomm('${a.id}')">Senden</button>
-</div>
-
-<hr class="divider">
-<div style="display:flex;gap:.5rem;flex-wrap:wrap">
-  <button class="btn" onclick="dPDF('${a.id}')">PDF</button>
-  <button class="btn-g" onclick="dCSV('${a.id}')">CSV</button>
-  <button class="btn-d" onclick="dDelA('${a.id}')">Löschen</button>
 </div>`;
 }
 
@@ -1006,133 +1709,640 @@ function rTeile(aid,teile,Z){
   }).join('');
 }
 
+// ── WERKSTATTPLAN ─────────────────────────────────────────────────
+window._planWkOff=0;
+window._planNav=function(d){window._planWkOff+=d;document.getElementById('content').innerHTML=vPlan()};
+function vPlan(){
+  const off=window._planWkOff||0;
+  const today=new Date();
+  const dow=(today.getDay()+6)%7;
+  const wStart=new Date(today);
+  wStart.setDate(today.getDate()-dow+off*7);
+  wStart.setHours(0,0,0,0);
+  // KW
+  const kw=(()=>{const d=new Date(Date.UTC(wStart.getFullYear(),wStart.getMonth(),wStart.getDate()));const dn=d.getUTCDay()||7;d.setUTCDate(d.getUTCDate()+4-dn);const ys=new Date(Date.UTC(d.getUTCFullYear(),0,1));return Math.ceil((((d-ys)/86400000)+1)/7)})();
+  // 5 weekdays
+  const days=Array.from({length:5},(_,i)=>{const d=new Date(wStart);d.setDate(wStart.getDate()+i);return d});
+  const wEnd=new Date(days[4]);wEnd.setDate(days[4].getDate()+1);
+  // Employees
+  const emps=(S.nutzer&&S.nutzer.filter(n=>n.freigegeben).length>0)?S.nutzer.filter(n=>n.freigegeben):[S.profil].filter(Boolean);
+  const empColors=['#2D2419','#2563A6','#1F8A5B','#9C7314','#B84A3B'];
+  // Aktive + backlog Auftraege
+  const aktiv=S.auftraege.filter(a=>a.status==='in_arbeit');
+  const backlog=S.auftraege.filter(a=>a.status==='offen');
+  // Auftrag → color by type
+  function aufColor(a){const t=tBy(a.auftragstyp_id);return t?.farbe||empColors[S.auftraege.indexOf(a)%empColors.length]||'#2D2419'}
+  // Build week label
+  const opt={day:'numeric',month:'long'};
+  const wkLbl=`KW ${kw} · ${days[0].toLocaleDateString('de-AT',{day:'numeric',month:'short'})} – ${days[4].toLocaleDateString('de-AT',{day:'numeric',month:'short',year:'numeric'})}`;
+  // Day headers
+  const dNames=['Mo','Di','Mi','Do','Fr'];
+  const dayHeads=days.map((d,i)=>{
+    const isT=d.toDateString()===today.toDateString();
+    return`<div class="plan-day-head${isT?' today':''}">${dNames[i]} ${d.getDate()}</div>`;
+  }).join('');
+  // Employee rows
+  const empRows=emps.map((emp,ei)=>{
+    const ini=(n)=>{if(!n)return'?';const w=n.trim().split(/\s+/);return(w.length>=2?w[0][0]+w[1][0]:n.slice(0,2)).toUpperCase()};
+    const clr=emp.avatar_farbe||empColors[ei%empColors.length];
+    // This employee's jobs: round-robin from aktiv
+    const myJobs=aktiv.filter((_,idx)=>emps.length===1||idx%emps.length===ei);
+    const empCols=days.map((d,di)=>{
+      const isT=d.toDateString()===today.toDateString();
+      const blocks=myJobs.map(a=>{
+        const isAct=S.timer?.auftragId===a.id&&isT;
+        const isUrg=a.prioritaet==='dringend';
+        const c=aufColor(a);
+        return`<div class="plan-job${isAct?' active':''}${isUrg?' urgent':''}" style="background:${c}" title="${a.titel}">${a.titel}</div>`;
+      }).join('');
+      return`<div class="plan-day${isT?' today':''}">${blocks}</div>`;
+    }).join('');
+    return`<div class="plan-emp">
+      <div class="plan-emp-thumb" style="background:${clr}">${ini(emp.name)}</div>
+      <div><div class="plan-emp-name">${emp.name||'Mitarbeiter'}</div>
+        <div class="plan-emp-meta">${emp.rolle||'Mitarbeiter'} · ${myJobs.length} Auftrag${myJobs.length!==1?'e':''}</div></div>
+    </div>${empCols}`;
+  }).join('');
+  // Legend
+  const legendItems=aktiv.map(a=>{
+    const c=aufColor(a);
+    return`<span><span style="display:inline-block;width:10px;height:10px;background:${c};margin-right:5px;vertical-align:middle;border-radius:2px"></span>${a.titel}</span>`;
+  }).join('');
+  // Backlog rows
+  const backlogRows=backlog.map((a,i)=>{
+    const k=kBy(a.kunde_id);
+    const tone=a.prioritaet==='dringend'?'red':a.prioritaet==='hoch'?'amber':'gray';
+    const auNr=`AU-${new Date().getFullYear()}-${String(i+1).padStart(4,'0')}`;
+    return`<div class="atl-row">
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text2)">${auNr}</span>
+          ${atlBadge(tone,'nicht verplant')}
+        </div>
+        <div class="atl-row-title" style="margin-top:2px">${a.titel}</div>
+        <div class="atl-row-sub">${k?.name||'—'}${a.faellig_am?' · Fällig '+fmtDate(a.faellig_am):''}${a.prioritaet==='dringend'?' · Dringend':''}</div>
+      </div>
+      <button class="atl-btn atl-btn-sm" onclick="openA('${a.id}')">Öffnen</button>
+    </div>`;
+  }).join('');
+  return`
+<div class="atl-content" style="max-width:100%">
+  <div class="atl-pageheader">
+    <div><div class="atl-greet">Werkstattplan</div>
+      <div class="atl-greet-sub">${emps.length} Mitarbeiter · ${aktiv.length} aktive Aufträge${backlog.length?' · '+backlog.length+' im Backlog':''}</div></div>
+    <div class="atl-pageheader-actions">
+      <button class="atl-btn atl-btn-primary" onclick="openM('neuA')"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="8" y1="2" x2="8" y2="14"/><line x1="2" y1="8" x2="14" y2="8"/></svg> Neuer Auftrag</button>
+    </div>
+  </div>
+  <section class="atl-card">
+    <div class="plan-toolbar">
+      <div class="plan-wk">
+        <button class="plan-wk-nav" onclick="window._planNav(-1)">‹</button>
+        <div class="plan-wk-lbl">${wkLbl}</div>
+        <button class="plan-wk-nav" onclick="window._planNav(1)">›</button>
+      </div>
+      ${off!==0?`<button class="atl-btn atl-btn-sm" onclick="window._planWkOff=0;document.getElementById('content').innerHTML=vPlan()">Heute</button>`:''}
+      <div style="flex:1"></div>
+      <div class="atl-tabs">
+        <span class="atl-tab on">Woche</span>
+        <span class="atl-tab">Auftrag</span>
+      </div>
+    </div>
+    ${aktiv.length===0&&emps.length>0?`
+    <div style="padding:40px 24px;text-align:center;color:var(--text3);font-size:13px">
+      Keine aktiven Aufträge diese Woche. <button class="atl-btn atl-btn-sm" style="margin-left:8px" onclick="openM('neuA')">Neuer Auftrag</button>
+    </div>`:`
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch">
+    <div class="plan-grid" style="min-width:460px">
+      <div class="plan-corner">Mitarbeiter</div>${dayHeads}
+      ${empRows}
+    </div></div>
+    ${legendItems?`<div style="padding:12px 20px;border-top:1px solid var(--border);display:flex;gap:16px;align-items:center;font-size:11px;color:var(--text2);flex-wrap:wrap">${legendItems}<span style="margin-left:auto;display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;background:var(--red);border-radius:50%;display:inline-block;margin-right:4px"></span>Dringend</span></div>`:''}`}
+  </section>
+  ${backlog.length?`
+  <section class="atl-card" style="margin-top:16px">
+    <div class="atl-card-h">
+      <div><div class="atl-card-title">Nicht verplant · Backlog</div>
+        <div class="atl-card-sub">${backlog.length} Auftrag${backlog.length!==1?'e':''} warten auf Termin</div></div>
+      <button class="atl-btn atl-btn-sm" onclick="S.tab='auftraege';render()">Alle Aufträge</button>
+    </div>
+    <div class="atl-list">${backlogRows}</div>
+  </section>`:''}
+</div>`;
+}
+
 // ── DOKUMENTE (Angebote + Rechnungen) ────────────────────────────
+function angBadge(s){
+  const m={entwurf:['gray','Entwurf'],versendet:['blue','Versendet'],angenommen:['green','Angenommen'],abgelehnt:['red','Abgelehnt'],abgelaufen:['red','Abgelaufen']};
+  const[tone,lbl]=m[s]||['gray',s||'—'];
+  return atlBadge(tone,lbl,s==='versendet'||s==='angenommen');
+}
+function reBadge(s){
+  const m={entwurf:['gray','Entwurf'],gesendet:['blue','Gesendet'],bezahlt:['green','Bezahlt'],ueberfaellig:['red','Überfällig'],storniert:['gray','Storniert']};
+  const[tone,lbl]=m[s]||['gray',s||'—'];
+  const now=new Date();
+  return atlBadge(tone,lbl,s==='gesendet'||s==='bezahlt');
+}
+
 function vDokumente(aktiv){
   const isAng=aktiv==='angebote';
-  const angOffen=S.angebote.filter(a=>a.status==='entwurf'||a.status==='versendet').length;
-  const reOffen=S.rechnungen.filter(r=>r.status==='entwurf'||r.status==='gesendet').reduce((s,r)=>s+(r.brutto||0),0);
-  return`
-    <div class="sec-head"><h2>Dokumente</h2>
-      <button class="btn" onclick="openM(S.tab==='angebote'?'neuAng':'neuRe','')" style="font-size:.75rem">+ Neu</button>
-    </div>
-    <div style="display:flex;gap:0;margin-bottom:.9rem;background:var(--s2);border-radius:var(--radius);padding:3px">
-      <button onclick="S.tab='angebote';render()" style="flex:1;padding:.45rem;border-radius:8px;border:none;font-family:inherit;font-size:.8rem;font-weight:${isAng?'600':'400'};background:${isAng?'var(--s1)':'transparent'};color:${isAng?'var(--text)':'var(--text3)'};cursor:pointer;transition:all .15s">
-        Angebote ${angOffen?`<span style="background:var(--gold2);color:#0d0d0f;border-radius:10px;padding:1px 5px;font-size:.65rem;font-weight:700">${angOffen}</span>`:''}
-      </button>
-      <button onclick="S.tab='rechnungen';render()" style="flex:1;padding:.45rem;border-radius:8px;border:none;font-family:inherit;font-size:.8rem;font-weight:${!isAng?'600':'400'};background:${!isAng?'var(--s1)':'transparent'};color:${!isAng?'var(--text)':'var(--text3)'};cursor:pointer;transition:all .15s">
-        Rechnungen ${reOffen>0?`<span style="background:var(--amber2);color:#0d0d0f;border-radius:10px;padding:1px 5px;font-size:.65rem;font-weight:700">€${reOffen.toFixed(0)}</span>`:''}
-      </button>
-    </div>
-    ${isAng?vAngeboteList():vRechnungenList()}
-  `;
+  if(isAng) return vAngeboteList();
+  return vRechnungenList();
 }
 
 function vAngeboteList(){
-  return S.angebote.map(a=>`
-    <div class="card" onclick="openM('editAng','${a.id}')">
-      <div class="row">
-        <div><div class="card-title">${a.nummer||'Entwurf'} · ${a.titel||kBy(a.kunde_id)?.name||'—'}</div>
-          <div class="card-sub">${kBy(a.kunde_id)?.name||'—'} · ${fmtDate(a.erstellt_am)}</div>
-        </div>
-        <div style="text-align:right;flex-shrink:0">
-          <div style="font-size:1rem;font-weight:700;font-family:'DM Serif Display',serif;color:var(--gold2)">€${(a.brutto||0).toFixed(2)}</div>
-          <div style="margin-top:.25rem">${sbadge(a.status)}</div>
-        </div>
+  const total=S.angebote.length;
+  const offen=S.angebote.filter(a=>a.status==='entwurf'||a.status==='versendet').length;
+  const angenommen=S.angebote.filter(a=>a.status==='angenommen').length;
+  const volumen=S.angebote.reduce((s,a)=>s+(a.brutto||0),0);
+
+  if(total===0) return`
+<div class="atl-content">
+  <div class="atl-pageheader">
+    <div><div class="atl-greet">Angebote</div><div class="atl-greet-sub">Noch keine Angebote erstellt</div></div>
+    <div class="atl-pageheader-actions">
+      <button class="atl-btn atl-btn-primary" onclick="openM('neuAng','')"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="8" y1="2" x2="8" y2="14"/><line x1="2" y1="8" x2="14" y2="8"/></svg> Neues Angebot</button>
+    </div>
+  </div>
+  <section class="atl-card" style="min-height:400px;display:flex;align-items:center;justify-content:center">
+    <div class="empty-stage" style="margin:0">
+      <div class="empty-glyph"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9l-6-6z" opacity=".4"/><path d="M14 3v6h6"/><path d="M9 13h6M9 17h4" opacity=".6"/></svg></div>
+      <div class="empty-h1">Noch kein <em>Angebot</em>.</div>
+      <div class="empty-sub">Erstelle dein erstes Angebot und schick es direkt als PDF an den Kunden.</div>
+      <div class="empty-actions">
+        <button class="atl-btn atl-btn-primary" onclick="openM('neuAng','')">Angebot erstellen</button>
       </div>
-    </div>`).join('')+
-    (S.angebote.length===0?'<div class="empty">Noch keine Angebote</div>':'');
+    </div>
+  </section>
+</div>`;
+
+  const rows=S.angebote.map(a=>{
+    const k=kBy(a.kunde_id);
+    return`<tr onclick="openM('editAng','${a.id}')" style="cursor:pointer">
+      <td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text2)">${a.nummer||'Entwurf'}</td>
+      <td><div class="atl-row-title">${a.titel||k?.name||'—'}</div><div class="atl-row-sub">${k?.name||'—'}</div></td>
+      <td style="font-size:12px;color:var(--text2)">${fmtDate(a.erstellt_am)}</td>
+      <td style="font-size:12px;color:var(--text2)">${a.gueltig_bis?fmtDate(a.gueltig_bis):'—'}</td>
+      <td class="atl-tbl-num"><span style="font-family:'Instrument Serif',serif;font-size:16px;letter-spacing:-0.01em">€ ${(a.brutto||0).toLocaleString('de-AT',{minimumFractionDigits:2,maximumFractionDigits:2})}</span></td>
+      <td>${angBadge(a.status)}</td>
+    </tr>`;
+  }).join('');
+  return`
+<div class="atl-content">
+  <div class="atl-pageheader">
+    <div><div class="atl-greet">Angebote</div>
+      <div class="atl-greet-sub">${total} Angebote · ${offen} offen · ${angenommen} angenommen</div></div>
+    <div class="atl-pageheader-actions">
+      <button class="atl-btn atl-btn-primary" onclick="openM('neuAng','')"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="8" y1="2" x2="8" y2="14"/><line x1="2" y1="8" x2="14" y2="8"/></svg> Neues Angebot</button>
+    </div>
+  </div>
+  <div class="atl-kpi-row">
+    <div class="atl-kpi"><div class="atl-kpi-lbl">Volumen gesamt</div>
+      <div class="atl-kpi-val">€ ${Math.round(volumen).toLocaleString('de-AT')}</div>
+      <div class="atl-kpi-meta">${total} Angebote</div></div>
+    <div class="atl-kpi"><div class="atl-kpi-lbl">Offen</div>
+      <div class="atl-kpi-val">${offen}</div>
+      <div class="atl-kpi-meta">Entwurf oder versendet</div></div>
+    <div class="atl-kpi"><div class="atl-kpi-lbl">Angenommen</div>
+      <div class="atl-kpi-val" style="color:var(--green)">${angenommen}</div>
+      <div class="atl-kpi-meta">${total>0?Math.round((angenommen/total)*100):0} % Erfolgsquote</div></div>
+    <div class="atl-kpi"><div class="atl-kpi-lbl">Ø Angebotswert</div>
+      <div class="atl-kpi-val">€ ${total>0?Math.round(volumen/total).toLocaleString('de-AT'):'0'}</div>
+      <div class="atl-kpi-meta">pro Angebot</div></div>
+  </div>
+  <section class="atl-card">
+    <div class="atl-filters">
+      <span class="atl-chip on">Alle <span class="atl-chip-count">${total}</span></span>
+      ${offen?`<span class="atl-chip">Offen <span class="atl-chip-count">${offen}</span></span>`:''}
+      ${angenommen?`<span class="atl-chip">Angenommen <span class="atl-chip-count">${angenommen}</span></span>`:''}
+    </div>
+    <div style="overflow-x:auto"><table class="atl-tbl"><thead><tr>
+      <th style="width:110px">Nummer</th><th>Titel</th>
+      <th style="width:110px">Erstellt</th><th style="width:110px">Gültig bis</th>
+      <th style="width:120px" class="atl-tbl-num">Betrag</th><th style="width:120px">Status</th>
+    </tr></thead><tbody>${rows}</tbody></table></div>
+  </section>
+</div>`;
 }
 
 function vRechnungenList(){
-  return S.rechnungen.map(r=>`
-    <div class="card" onclick="openM('editRe','${r.id}')">
-      <div class="row">
-        <div><div class="card-title">${r.nummer||'Entwurf'}${r.titel?' · '+r.titel:''}</div>
-          <div class="card-sub">${kBy(r.kunde_id)?.name||'—'} · ${fmtDate(r.erstellt_am)}${r.faellig_am?' · Fällig '+fmtDate(r.faellig_am):''}</div>
-        </div>
-        <div style="text-align:right;flex-shrink:0">
-          <div style="font-size:1rem;font-weight:700;font-family:'DM Serif Display',serif;color:var(--gold2)">€${(r.brutto||0).toFixed(2)}</div>
-          <div style="margin-top:.25rem">${sbadge(r.status)}</div>
-        </div>
-      </div>
-    </div>`).join('')+
-    (S.rechnungen.length===0?'<div class="empty">Noch keine Rechnungen</div>':'');
-}
+  const total=S.rechnungen.length;
+  const now=new Date();
+  const offen=S.rechnungen.filter(r=>r.status==='gesendet'||r.status==='entwurf');
+  const offenSum=offen.reduce((s,r)=>s+(r.brutto||0),0);
+  const bezahlt=S.rechnungen.filter(r=>r.status==='bezahlt');
+  const bezahltSum=bezahlt.reduce((s,r)=>s+(r.brutto||0),0);
+  const ueberfaellig=S.rechnungen.filter(r=>r.status==='gesendet'&&r.faellig_am&&new Date(r.faellig_am)<now);
 
-// ── ANGEBOTE ──────────────────────────────────────────────────────
-function vAngebote(){
-  return`
-<div class="sec-head"><h2>Angebote</h2><button class="btn" onclick="openM('neuAng','')">+ Neu</button></div>
-${S.angebote.map(a=>`
-  <div class="card" onclick="openM('editAng','${a.id}')">
-    <div class="row">
-      <div>
-        <div class="card-title">${a.nummer||'Entwurf'} · ${a.titel||kBy(a.kunde_id)?.name||'—'}</div>
-        <div class="card-sub">${kBy(a.kunde_id)?.name||'—'} · ${fmtDate(a.erstellt_am)}${a.gueltig_bis?` · Gültig bis ${fmtDate(a.gueltig_bis)}`:''}</div>
-      </div>
-      <div style="text-align:right">
-        <div style="color:var(--gold2);font-weight:700;font-size:1rem">€${(a.brutto||0).toFixed(2)}</div>
-        <div style="margin-top:.2rem">${sbadge(a.status)}</div>
+  if(total===0) return`
+<div class="atl-content">
+  <div class="atl-pageheader">
+    <div><div class="atl-greet">Rechnungen</div><div class="atl-greet-sub">Noch keine Rechnungen erstellt</div></div>
+    <div class="atl-pageheader-actions">
+      <button class="atl-btn atl-btn-primary" onclick="openM('neuRe','')"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="8" y1="2" x2="8" y2="14"/><line x1="2" y1="8" x2="14" y2="8"/></svg> Neue Rechnung</button>
+    </div>
+  </div>
+  <section class="atl-card" style="min-height:400px;display:flex;align-items:center;justify-content:center">
+    <div class="empty-stage" style="margin:0">
+      <div class="empty-glyph"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2" opacity=".4"/><path d="M8 10h8M8 14h5" opacity=".6"/></svg></div>
+      <div class="empty-h1">Noch keine <em>Rechnung</em>.</div>
+      <div class="empty-sub">Erstelle deine erste Rechnung — aus einem Angebot oder von Grund auf neu.</div>
+      <div class="empty-actions">
+        <button class="atl-btn" onclick="S.tab='angebote';render()">Aus Angebot übernehmen</button>
+        <button class="atl-btn atl-btn-primary" onclick="openM('neuRe','')">Rechnung erstellen</button>
       </div>
     </div>
-  </div>`).join('')}
-${S.angebote.length===0?'<div class="empty">Noch keine Angebote</div>':''}`;
-}
+  </section>
+</div>`;
 
-// ── RECHNUNGEN ────────────────────────────────────────────────────
-function vRechnungen(){
-  const offen=S.rechnungen.filter(r=>r.status==='entwurf'||r.status==='gesendet').reduce((s,r)=>s+(r.brutto||0),0);
-  return`
-<div class="sec-head"><h2>Rechnungen</h2><button class="btn" onclick="openM('neuRe','')">+ Neu</button></div>
-${offen>0?`<div style="background:var(--s2);border:1px solid var(--border2);border-radius:8px;padding:.7rem 1rem;margin-bottom:.8rem;font-size:.82rem;color:var(--text2)">Offen: <span style="color:var(--amber2);font-weight:700">€${offen.toFixed(2)}</span></div>`:''}
-${S.rechnungen.map(r=>`
-  <div class="card" onclick="openM('editRe','${r.id}')">
-    <div class="row">
-      <div>
-        <div class="card-title">${r.nummer||'Entwurf'}${r.titel?' · '+r.titel:''}</div>
-        <div class="card-sub">${kBy(r.kunde_id)?.name||'—'} · ${fmtDate(r.erstellt_am)}${r.faellig_am?` · Fällig ${fmtDate(r.faellig_am)}`:''}</div>
-      </div>
-      <div style="text-align:right">
-        <div style="color:var(--gold2);font-weight:700;font-size:1rem">€${(r.brutto||0).toFixed(2)}</div>
-        <div style="margin-top:.2rem">${sbadge(r.status)}</div>
+  if(offenSum===0&&total>0) return`
+<div class="atl-content">
+  <div class="atl-pageheader">
+    <div><div class="atl-greet">Rechnungen</div>
+      <div class="atl-greet-sub">${total} Rechnungen · 0 offen · keine Überfälligen</div></div>
+    <div class="atl-pageheader-actions">
+      <button class="atl-btn atl-btn-primary" onclick="openM('neuRe','')"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="8" y1="2" x2="8" y2="14"/><line x1="2" y1="8" x2="14" y2="8"/></svg> Neue Rechnung</button>
+    </div>
+  </div>
+  <div class="atl-kpi-row">
+    <div class="atl-kpi"><div class="atl-kpi-lbl">Bezahlt gesamt</div>
+      <div class="atl-kpi-val" style="color:var(--green)">€ ${Math.round(bezahltSum).toLocaleString('de-AT')}</div>
+      <div class="atl-kpi-meta">${bezahlt.length} Rechnungen</div></div>
+    <div class="atl-kpi"><div class="atl-kpi-lbl">Offen</div>
+      <div class="atl-kpi-val">€ 0</div><div class="atl-kpi-meta">Alles bezahlt</div></div>
+    <div class="atl-kpi"><div class="atl-kpi-lbl">Überfällig</div>
+      <div class="atl-kpi-val">0</div><div class="atl-kpi-meta">Keine offenen Forderungen</div></div>
+    <div class="atl-kpi"><div class="atl-kpi-lbl">Rechnungen</div>
+      <div class="atl-kpi-val">${total}</div><div class="atl-kpi-meta">gesamt</div></div>
+  </div>
+  <section class="atl-card" style="padding:60px 40px">
+    <div class="empty-stage" style="margin:0">
+      <div class="empty-glyph" style="background:var(--greenSoft);color:var(--green)"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg></div>
+      <div class="empty-h1">Alles <em>bezahlt</em>.</div>
+      <div class="empty-sub">Keine offenen Forderungen — alle ${bezahlt.length} Rechnungen wurden beglichen.</div>
+      <div class="empty-actions">
+        <button class="atl-btn atl-btn-primary" onclick="openM('neuRe','')">Neue Rechnung</button>
       </div>
     </div>
-  </div>`).join('')}
-${S.rechnungen.length===0?'<div class="empty">Noch keine Rechnungen</div>':''}`;
+  </section>
+</div>`;
+
+  const rows=S.rechnungen.map(r=>{
+    const k=kBy(r.kunde_id);
+    const isUeber=r.status==='gesendet'&&r.faellig_am&&new Date(r.faellig_am)<now;
+    const effStatus=isUeber?'ueberfaellig':r.status;
+    return`<tr onclick="openM('editRe','${r.id}')" style="cursor:pointer${isUeber?';background:var(--redSoft)':''}">
+      <td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text2)">${r.nummer||'Entwurf'}</td>
+      <td><div class="atl-row-title">${r.titel||k?.name||'—'}</div><div class="atl-row-sub">${k?.name||'—'}</div></td>
+      <td style="font-size:12px;color:var(--text2)">${fmtDate(r.erstellt_am)}</td>
+      <td style="font-size:12px;color:${isUeber?'var(--red)':'var(--text2)'}">${r.faellig_am?fmtDate(r.faellig_am):'—'}</td>
+      <td class="atl-tbl-num"><span style="font-family:'Instrument Serif',serif;font-size:16px;letter-spacing:-0.01em;color:${isUeber?'var(--red)':r.status==='bezahlt'?'var(--green)':'inherit'}">€ ${(r.brutto||0).toLocaleString('de-AT',{minimumFractionDigits:2,maximumFractionDigits:2})}</span></td>
+      <td>${reBadge(effStatus)}</td>
+    </tr>`;
+  }).join('');
+  return`
+<div class="atl-content">
+  <div class="atl-pageheader">
+    <div><div class="atl-greet">Rechnungen</div>
+      <div class="atl-greet-sub">${total} Rechnungen · ${offen.length} offen${ueberfaellig.length?` · ${ueberfaellig.length} überfällig`:''}</div></div>
+    <div class="atl-pageheader-actions">
+      <button class="atl-btn atl-btn-primary" onclick="openM('neuRe','')"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="8" y1="2" x2="8" y2="14"/><line x1="2" y1="8" x2="14" y2="8"/></svg> Neue Rechnung</button>
+    </div>
+  </div>
+  <div class="atl-kpi-row">
+    <div class="atl-kpi"><div class="atl-kpi-lbl">Bezahlt gesamt</div>
+      <div class="atl-kpi-val" style="color:var(--green)">€ ${Math.round(bezahltSum).toLocaleString('de-AT')}</div>
+      <div class="atl-kpi-meta">${bezahlt.length} Rechnungen</div></div>
+    <div class="atl-kpi"><div class="atl-kpi-lbl">Offen</div>
+      <div class="atl-kpi-val" style="color:${offenSum>0?'var(--amber)':'var(--text)'}">€ ${Math.round(offenSum).toLocaleString('de-AT')}</div>
+      <div class="atl-kpi-meta">${offen.length} ausstehend</div></div>
+    <div class="atl-kpi"><div class="atl-kpi-lbl">Überfällig</div>
+      <div class="atl-kpi-val" style="color:${ueberfaellig.length>0?'var(--red)':'var(--text)'}">${ueberfaellig.length}</div>
+      <div class="atl-kpi-meta">${ueberfaellig.length>0?`€ ${Math.round(ueberfaellig.reduce((s,r)=>s+(r.brutto||0),0)).toLocaleString('de-AT')} offen`:'keine überfälligen'}</div></div>
+    <div class="atl-kpi"><div class="atl-kpi-lbl">Rechnungen</div>
+      <div class="atl-kpi-val">${total}</div><div class="atl-kpi-meta">gesamt</div></div>
+  </div>
+  ${ueberfaellig.length?`<div class="atl-alert red"><svg style="width:15px;height:15px;flex-shrink:0;stroke:var(--red);fill:none;stroke-width:1.5;stroke-linecap:round" viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01M10.3 4L3 20h18L13.7 4a2 2 0 00-3.4 0z"/></svg><div><span style="font-weight:600;font-size:12px;color:var(--red)">Überfällig — </span>${ueberfaellig.map(r=>`${r.nummer}: ${kBy(r.kunde_id)?.name||'—'} · Fällig ${fmtDate(r.faellig_am)}`).join(' · ')}</div></div>`:''}
+  <section class="atl-card">
+    <div class="atl-filters">
+      <span class="atl-chip on">Alle <span class="atl-chip-count">${total}</span></span>
+      ${offen.length?`<span class="atl-chip">Offen <span class="atl-chip-count">${offen.length}</span></span>`:''}
+      ${ueberfaellig.length?`<span class="atl-chip">Überfällig <span class="atl-chip-count">${ueberfaellig.length}</span></span>`:''}
+      ${bezahlt.length?`<span class="atl-chip">Bezahlt <span class="atl-chip-count">${bezahlt.length}</span></span>`:''}
+    </div>
+    <div style="overflow-x:auto"><table class="atl-tbl"><thead><tr>
+      <th style="width:110px">Nummer</th><th>Titel</th>
+      <th style="width:110px">Erstellt</th><th style="width:110px">Fällig</th>
+      <th style="width:120px" class="atl-tbl-num">Betrag</th><th style="width:120px">Status</th>
+    </tr></thead><tbody>${rows}</tbody></table></div>
+  </section>
+</div>`;
 }
+
 
 // ── KUNDEN ────────────────────────────────────────────────────────
+window._kSel=null;
+window._kSelect=function(id){window._kSel=id;document.getElementById('content').innerHTML=vKunden()};
 function vKunden(){
+  const selId=window._kSel||S.kunden[0]?.id;
+  const sel=S.kunden.find(k=>k.id===selId);
+  function ini(n){const w=n.trim().split(/\s+/);return(w.length>=2?w[0][0]+w[1][0]:n.slice(0,2)).toUpperCase()}
+  function kAuf(kid){return S.auftraege.filter(a=>a.kunde_id===kid)}
+  function kUm(kid){return(S.rechnungen||[]).filter(r=>r.kunde_id===kid&&r.status==='bezahlt').reduce((s,r)=>s+(r.brutto||0),0)}
+  function kOff(kid){return(S.rechnungen||[]).filter(r=>r.kunde_id===kid&&r.status!=='bezahlt'&&r.status!=='entwurf'&&r.status!=='storniert').reduce((s,r)=>s+(r.brutto||0),0)}
+  function kLast(kid){const a=kAuf(kid).sort((x,y)=>new Date(y.erstellt_am)-new Date(x.erstellt_am))[0];return a?fmtDate(a.erstellt_am):'—'}
+  const offGes=S.kunden.reduce((s,k)=>s+kOff(k.id),0);
+  const mitOff=S.kunden.filter(k=>kOff(k.id)>0).length;
+  const rows=S.kunden.map(k=>{
+    const auf=kAuf(k.id);const um=kUm(k.id);const off=kOff(k.id);const isSel=k.id===selId;
+    return`<tr onclick="window._kSelect('${k.id}')" style="cursor:pointer${isSel?';background:var(--accentSoft)':''}">
+      <td><div style="display:flex;align-items:center;gap:10px">
+        <div class="atl-row-thumb" style="width:30px;height:30px;font-size:11px${isSel?';background:var(--accent);color:#fff':''}">${ini(k.name)}</div>
+        <div><div class="atl-row-title">${k.name}</div><div class="atl-row-sub">${[k.adresse,k.plz_ort].filter(Boolean).join(' · ')||'—'}</div></div>
+      </div></td>
+      <td style="font-size:12px;color:var(--text2)">Privat</td>
+      <td style="font-size:12px;color:var(--text2)">${kLast(k.id)}</td>
+      <td class="atl-tbl-num atl-tabnum">${auf.length}</td>
+      <td class="atl-tbl-num atl-tabnum">€ ${um.toLocaleString('de-AT')}</td>
+      <td class="atl-tbl-num">${off>0?`<span style="color:var(--amber);font-variant-numeric:tabular-nums;font-weight:500">€ ${off.toLocaleString('de-AT')}</span>`:'<span style="color:var(--text3)">—</span>'}</td>
+    </tr>`;
+  }).join('');
+  let rail='';
+  if(sel){
+    const auf=kAuf(sel.id);const um=kUm(sel.id);const off=kOff(sel.id);
+    rail=`<aside style="display:flex;flex-direction:column;gap:14px">
+      <section class="atl-card">
+        <div style="padding:22px 22px 0">
+          <div style="display:flex;align-items:flex-start;gap:14px">
+            <div class="atl-row-thumb" style="width:48px;height:48px;font-size:18px;background:var(--accent);color:#fff;border-radius:50%">${ini(sel.name)}</div>
+            <div style="flex:1"><div style="font-family:'Instrument Serif',serif;font-size:20px;letter-spacing:-0.015em;line-height:1.2">${sel.name}</div>
+              <div style="font-size:12px;color:var(--text2);margin-top:2px">${auf.length} Aufträge</div></div>
+            <button class="atl-iconbtn" style="width:28px;height:28px" onclick="openM('editK','${sel.id}')">⋯</button>
+          </div>
+        </div>
+        <div style="padding:18px 22px;display:grid;grid-template-columns:1fr 1fr;gap:12px;border-bottom:1px solid var(--border);margin-top:18px">
+          <div><div style="font-size:11px;color:var(--text2);font-weight:500;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.05em">Umsatz gesamt</div>
+            <div style="font-family:'Instrument Serif',serif;font-size:22px;letter-spacing:-0.02em">€ ${um.toLocaleString('de-AT')}</div></div>
+          <div><div style="font-size:11px;color:var(--text2);font-weight:500;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.05em">Offene Posten</div>
+            <div style="font-family:'Instrument Serif',serif;font-size:22px;letter-spacing:-0.02em;color:${off>0?'var(--amber)':'var(--text)'}">€ ${off.toLocaleString('de-AT')}</div></div>
+        </div>
+        <div style="padding:18px 22px">
+          <div style="font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px;font-weight:500">Kontakt</div>
+          <dl class="atl-meta-grid">
+            ${sel.telefon?`<dt>Telefon</dt><dd>${sel.telefon}</dd>`:''}
+            ${sel.email?`<dt>E-Mail</dt><dd style="word-break:break-all">${sel.email}</dd>`:''}
+            ${sel.adresse?`<dt>Adresse</dt><dd>${[sel.adresse,sel.plz_ort].filter(Boolean).join(', ')}</dd>`:''}
+          </dl>
+          <div style="display:flex;gap:6px;margin-top:14px">
+            ${sel.telefon?`<a href="tel:${sel.telefon}" class="atl-btn atl-btn-sm" style="flex:1;text-align:center;text-decoration:none">Anrufen</a>`:''}
+            ${sel.email?`<a href="mailto:${sel.email}" class="atl-btn atl-btn-sm" style="flex:1;text-align:center;text-decoration:none">E-Mail</a>`:''}
+            <button class="atl-btn atl-btn-sm" style="flex:1" onclick="openM('editK','${sel.id}')">Bearbeiten</button>
+          </div>
+        </div>
+      </section>
+      <section class="atl-card">
+        <div class="atl-card-h"><div class="atl-card-title">Aufträge (${auf.length})</div>
+          <button class="atl-btn atl-btn-sm" onclick="openM('neuA')">+ Neu</button></div>
+        ${auf.length===0?'<div class="atl-card-body" style="color:var(--text3);font-size:13px">Noch keine Aufträge.</div>':
+        `<div class="atl-list">${auf.slice(0,4).map(a=>{
+          const tone=a.status==='abgeschlossen'?'green':a.status==='in_arbeit'?'amber':'gray';
+          const lbl=a.status==='abgeschlossen'?'Fertig':a.status==='in_arbeit'?'In Arbeit':'Offen';
+          return`<div class="atl-row" style="padding:10px 22px;cursor:pointer" onclick="openA('${a.id}')">
+            <div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:500">${a.titel}</div>
+              <div class="atl-row-sub">${fmtDate(a.erstellt_am)}</div></div>
+            ${atlBadge(tone,lbl,true)}
+          </div>`;}).join('')}</div>`}
+      </section>
+    </aside>`;
+  }
   return`
-<div class="sec-head"><h2>Kunden</h2><button class="btn" onclick="openM('neuK')">+ Neu</button></div>
-${S.kunden.map(k=>`
-  <div class="card" onclick="openM('editK','${k.id}')">
-    <div class="card-title">${k.name}</div>
-    <div class="card-sub">${[k.telefon,k.email].filter(Boolean).join(' · ')||'—'}</div>
-    ${k.adresse?`<div class="card-sub">${k.adresse}${k.plz_ort?' · '+k.plz_ort:''}</div>`:''}
-  </div>`).join('')}
-${S.kunden.length===0?'<div class="empty">Noch keine Kunden</div>':''}`;
+<div class="atl-content">
+  <div class="atl-pageheader">
+    <div><div class="atl-greet">Kunden</div>
+      <div class="atl-greet-sub">${S.kunden.length} Kunden${offGes>0?' · € '+offGes.toLocaleString('de-AT')+' offene Posten':''}</div></div>
+    <div class="atl-pageheader-actions">
+      <button class="atl-btn atl-btn-primary" onclick="openM('neuK')"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="8" y1="2" x2="8" y2="14"/><line x1="2" y1="8" x2="14" y2="8"/></svg> Neuer Kunde</button>
+    </div>
+  </div>
+  <div class="atl-side-rail">
+    <section class="atl-card">
+      <div class="atl-filters">
+        <span class="atl-chip on">Alle <span class="atl-chip-count">${S.kunden.length}</span></span>
+        ${mitOff?`<span class="atl-chip">Offene Posten <span class="atl-chip-count">${mitOff}</span></span>`:''}
+      </div>
+      ${S.kunden.length===0?'<div class="atl-card-body" style="color:var(--text3);font-size:13px">Noch keine Kunden angelegt.</div>':
+      `<div style="overflow-x:auto"><table class="atl-tbl"><thead><tr>
+          <th>Kunde</th><th style="width:100px">Kategorie</th><th style="width:130px">Letzter Auftrag</th>
+          <th style="width:60px" class="atl-tbl-num">Aufträge</th><th style="width:100px" class="atl-tbl-num">Umsatz</th><th style="width:100px" class="atl-tbl-num">Offen</th>
+        </tr></thead><tbody>${rows}</tbody></table></div>`}
+    </section>
+    ${rail}
+  </div>
+</div>`;
 }
 
 // ── INVENTAR ──────────────────────────────────────────────────────
 function vInventar(){
   const low=S.inventar.filter(i=>i.mindestbestand>0&&i.bestand<=i.mindestbestand);
+  const lagerWert=S.inventar.reduce((s,i)=>s+(i.bestand||0)*(i.einkaufspreis||0),0);
+  const kats=[...new Set(S.inventar.map(i=>i.kategorie).filter(Boolean))];
+  const liefs=[...new Set(S.inventar.map(i=>i.lieferant).filter(Boolean))];
+  const rows=S.inventar.map(i=>{
+    const ratio=i.mindestbestand>0?i.bestand/i.mindestbestand:2;
+    const krit=i.mindestbestand>0&&i.bestand<=i.mindestbestand;
+    const niedrig=!krit&&ratio<1.5&&i.mindestbestand>0;
+    const tone=krit?'red':niedrig?'amber':'green';
+    const barW=Math.min(Math.round((ratio/2)*100),100);
+    const barClr=krit?'var(--red)':niedrig?'var(--amber)':'var(--green)';
+    return`<tr onclick="openM('editInv','${i.id}')" style="cursor:pointer">
+      <td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text2)">${i.id||'—'}</td>
+      <td><div class="atl-row-title">${i.name}</div></td>
+      <td style="color:var(--text2);font-size:12px">${i.kategorie||'—'}</td>
+      <td><div style="display:flex;align-items:center;gap:8px">
+        <div style="flex:1;height:4px;background:var(--surfaceAlt);border-radius:2px;overflow:hidden;max-width:70px"><div style="height:100%;width:${barW}%;background:${barClr}"></div></div>
+        <span class="atl-tabnum" style="font-size:12px;min-width:65px;color:${krit?'var(--red)':'var(--text)'}">${i.bestand} / ${i.mindestbestand||0} ${i.einheit}</span>
+      </div></td>
+      <td class="atl-tbl-num atl-tabnum">€ ${((i.bestand||0)*(i.einkaufspreis||0)).toFixed(2).replace('.',',')}</td>
+      <td style="color:var(--text2);font-size:12px">${i.lieferant||'—'}</td>
+      <td>${krit?`<button class="atl-btn atl-btn-sm" style="background:var(--accent);color:#fff;border-color:var(--accent)" onclick="event.stopPropagation();openM('editInv','${i.id}')">Bestellen</button>`:atlBadge(niedrig?'amber':'gray',niedrig?'niedrig':'OK',niedrig)}</td>
+    </tr>`;
+  }).join('');
   return`
-<div class="sec-head"><h2>Inventar</h2><button class="btn" onclick="openM('neuInv')">+ Neu</button></div>
-${low.length?`<div class="alert"><div class="alert-t">Nachbestellen</div>${low.map(i=>`<div style="font-size:.78rem;color:var(--text2);padding:.1rem 0">${i.name} — ${i.bestand} ${i.einheit}</div>`).join('')}</div>`:''}
-${S.inventar.map(i=>{
-  const n=i.mindestbestand>0&&i.bestand<=i.mindestbestand;
-  return`<div class="card" onclick="openM('editInv','${i.id}')">
-    <div class="row">
-      <div style="flex:1">
-        <div class="card-title">${i.name}</div>
-        <div class="card-sub">${i.kategorie?i.kategorie+' · ':''}<span style="color:${n?'var(--amber2)':'var(--text2)'}">${i.bestand} ${i.einheit}</span>${i.einkaufspreis?` · €${i.einkaufspreis}/${i.einheit}`:''}${i.lagerort?` · ${i.lagerort}`:''}</div>
-        ${i.lieferant?`<div class="card-sub">${i.lieferant}</div>`:''}
-      </div>
-      ${n?'<span class="badge b-amb">Niedrig</span>':''}
+<div class="atl-content">
+  <div class="atl-pageheader">
+    <div><div class="atl-greet">Lager</div>
+      <div class="atl-greet-sub">${S.inventar.length} Positionen · ${low.length} kritisch unter Mindestbestand</div></div>
+    <div class="atl-pageheader-actions">
+      <button class="atl-btn atl-btn-primary" onclick="openM('neuInv')"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="8" y1="2" x2="8" y2="14"/><line x1="2" y1="8" x2="14" y2="8"/></svg> Artikel anlegen</button>
     </div>
-  </div>`;}).join('')}
-${S.inventar.length===0?'<div class="empty">Noch kein Inventar</div>':''}`;
+  </div>
+  <div class="atl-kpi-row">
+    <div class="atl-kpi"><div class="atl-kpi-lbl">Lagerwert</div>
+      <div class="atl-kpi-val">€ ${Math.round(lagerWert).toLocaleString('de-AT')}</div>
+      <div class="atl-kpi-meta">${S.inventar.length} Artikel</div></div>
+    <div class="atl-kpi"><div class="atl-kpi-lbl">Positionen</div>
+      <div class="atl-kpi-val">${S.inventar.length}</div>
+      <div class="atl-kpi-meta">${kats.length} Kategorien · ${liefs.length} Lieferanten</div></div>
+    <div class="atl-kpi"><div class="atl-kpi-lbl">Kritisch</div>
+      <div class="atl-kpi-val" style="color:${low.length>0?'var(--red)':'var(--text)'}">${low.length}</div>
+      <div class="atl-kpi-meta">unter Mindestbestand</div></div>
+    <div class="atl-kpi"><div class="atl-kpi-lbl">Lieferanten</div>
+      <div class="atl-kpi-val">${liefs.length}</div>
+      <div class="atl-kpi-meta">aktive Lieferanten</div></div>
+  </div>
+  ${low.length?`<div class="atl-alert red"><svg style="width:15px;height:15px;flex-shrink:0;stroke:var(--red);fill:none;stroke-width:1.5;stroke-linecap:round" viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01M10.3 4L3 20h18L13.7 4a2 2 0 00-3.4 0z"/></svg><div><span style="font-weight:600;font-size:12px;color:var(--red)">Nachbestellen erforderlich — </span>${low.map(i=>`${i.name}: ${i.bestand}/${i.mindestbestand} ${i.einheit}`).join(' · ')}</div></div>`:''}
+  <section class="atl-card">
+    <div class="atl-filters">
+      <span class="atl-chip on">Alle <span class="atl-chip-count">${S.inventar.length}</span></span>
+      ${low.length?`<span class="atl-chip">Kritisch <span class="atl-chip-count">${low.length}</span></span>`:''}
+    </div>
+    ${S.inventar.length===0?'<div class="atl-card-body" style="color:var(--text3);font-size:13px">Noch kein Inventar angelegt.</div>':
+    `<div style="overflow-x:auto"><table class="atl-tbl"><thead><tr>
+        <th style="width:60px">ID</th><th>Artikel</th><th style="width:100px">Kategorie</th>
+        <th style="width:170px">Bestand</th><th style="width:90px" class="atl-tbl-num">Wert</th>
+        <th style="width:110px">Lieferant</th><th style="width:100px"></th>
+      </tr></thead><tbody>${rows}</tbody></table></div>`}
+  </section>
+</div>`;
+}
+
+// ── ZEITERFASSUNG ─────────────────────────────────────────────────
+async function vZeiterfassung(){
+  let zeiten;
+  const since=new Date(Date.now()-30*24*3600000).toISOString();
+  if(isLocalMode){
+    const raw=DB._get('zeiteintraege').filter(e=>e.start_zeit>since);
+    const pData=DB._get('profile');
+    raw.forEach(e=>{e.profile=pData.find(p=>p.id===e.profil_id)||null});
+    zeiten=raw;
+  } else {
+    const{data:_z}=await sbq('zeiteintraege').select('*,profile(name)').gte('start_zeit',since).order('start_zeit',{ascending:false});
+    zeiten=_z;
+  }
+  const Z=zeiten||[];
+  const now=new Date();
+  const dow=(now.getDay()+6)%7;
+  const wStart=new Date(now);wStart.setDate(now.getDate()-dow);wStart.setHours(0,0,0,0);
+  const wEnd=new Date(wStart);wEnd.setDate(wStart.getDate()+7);
+  // KW number
+  const kw=(()=>{const d=new Date(Date.UTC(wStart.getFullYear(),wStart.getMonth(),wStart.getDate()));const dn=d.getUTCDay()||7;d.setUTCDate(d.getUTCDate()+4-dn);const ys=new Date(Date.UTC(d.getUTCFullYear(),0,1));return Math.ceil((((d-ys)/86400000)+1)/7)})();
+  const wZ=Z.filter(e=>new Date(e.start_zeit)>=wStart&&new Date(e.start_zeit)<wEnd);
+  const wMs=wZ.reduce((s,e)=>s+(e.dauer_ms||0),0);
+  const wH=wMs/3600000;
+  const soll=40;
+  const diff=wH-soll;
+  const hz=S.profil?.stundensatz||45;
+  const verrMs=wZ.filter(e=>e.auftrag_id).reduce((s,e)=>s+(e.dauer_ms||0),0);
+  const verrH=verrMs/3600000;
+  const gesH=Z.reduce((s,e)=>s+(e.dauer_ms||0),0)/3600000;
+  // Per-auftrag this week
+  const aufMs={};
+  wZ.forEach(e=>{if(e.auftrag_id)aufMs[e.auftrag_id]=(aufMs[e.auftrag_id]||0)+(e.dauer_ms||0)});
+  const maxMs=Math.max(...Object.values(aufMs),1);
+  // Day bars
+  const dNames=['Mo','Di','Mi','Do','Fr','Sa','So'];
+  const dayBars=dNames.map((d,i)=>{
+    const ds=new Date(wStart);ds.setDate(wStart.getDate()+i);
+    const de=new Date(ds);de.setDate(ds.getDate()+1);
+    const dMs=Z.filter(e=>new Date(e.start_zeit)>=ds&&new Date(e.start_zeit)<de).reduce((s,e)=>s+(e.dauer_ms||0),0);
+    const dH=dMs/3600000;
+    return{d,dt:ds.getDate(),h:dH,pct:Math.min(Math.round((dH/10)*100),100),isToday:ds.toDateString()===now.toDateString()};
+  });
+  document.getElementById('content').innerHTML=`
+<div class="atl-content">
+  <div class="atl-pageheader">
+    <div><div class="atl-greet">Zeiterfassung</div>
+      <div class="atl-greet-sub">KW ${kw} · ${wH.toFixed(1).replace('.',',')} h erfasst von ${soll} h Soll</div></div>
+    <div class="atl-pageheader-actions">
+      <button class="atl-btn atl-btn-primary" onclick="S.tab='auftraege';render()">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"/><polyline points="8 5 8 8 10 10"/></svg>
+        Timer starten
+      </button>
+    </div>
+  </div>
+  <div class="atl-kpi-row">
+    ${S.timer?`<div class="atl-kpi" style="background:var(--accent);color:#fff">
+      <div style="font-size:11px;color:rgba(255,255,255,.65);text-transform:uppercase;letter-spacing:.05em;font-weight:500;margin-bottom:4px">Timer läuft</div>
+      <div style="font-family:'Instrument Serif',serif;font-size:32px;letter-spacing:-.025em;line-height:1" id="zeit-live">${fmt(elapsed())}</div>
+      <div style="margin-top:6px;font-size:12px;opacity:.9">${aBy(S.timer.auftragId)?.titel||'—'}</div>
+    </div>`:
+    `<div class="atl-kpi"><div class="atl-kpi-lbl">KW ${kw} erfasst</div>
+      <div class="atl-kpi-val">${wH.toFixed(1).replace('.',',')} <span style="font-size:18px;color:var(--text2)">h</span></div>
+      <div class="atl-kpi-meta">Soll ${soll} h · ${diff>=0?'↑ +':'↓ '}${Math.abs(diff).toFixed(1).replace('.',',')} h</div></div>`}
+    <div class="atl-kpi"><div class="atl-kpi-lbl">Verrechenbar</div>
+      <div class="atl-kpi-val">${verrH.toFixed(1).replace('.',',')} <span style="font-size:18px;color:var(--text2)">h</span></div>
+      <div class="atl-kpi-meta">${wH>0?Math.round((verrH/wH)*100):0} % · € ${Math.round(verrH*hz).toLocaleString('de-AT')}</div></div>
+    <div class="atl-kpi"><div class="atl-kpi-lbl">30 Tage gesamt</div>
+      <div class="atl-kpi-val">${gesH.toFixed(1).replace('.',',')} <span style="font-size:18px;color:var(--text2)">h</span></div>
+      <div class="atl-kpi-meta">€ ${Math.round(gesH*hz).toLocaleString('de-AT')} Verrechnungswert</div></div>
+    <div class="atl-kpi"><div class="atl-kpi-lbl">Aufträge aktiv</div>
+      <div class="atl-kpi-val">${S.auftraege.filter(a=>a.status==='in_arbeit').length}</div>
+      <div class="atl-kpi-meta">in Bearbeitung</div></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:16px">
+    <section class="atl-card">
+      <div class="atl-card-h">
+        <div><div class="atl-card-title">Wochenansicht</div><div class="atl-card-sub">KW ${kw}</div></div>
+      </div>
+      <div style="padding:20px 24px 16px">
+        <div style="display:flex;gap:8px;align-items:flex-end;height:120px;margin-bottom:12px">
+          ${dayBars.map(day=>`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:0">
+            <div style="flex:1;width:100%;display:flex;align-items:flex-end">
+              <div style="width:100%;background:${day.isToday?'var(--accent)':day.h>0?'var(--border2)':'transparent'};border-radius:3px 3px 0 0;height:${day.pct||0}%;min-height:${day.h>0?'3px':'0'};transition:height .2s"></div>
+            </div>
+          </div>`).join('')}
+        </div>
+        <div style="display:flex;gap:8px">
+          ${dayBars.map(day=>`<div style="flex:1;text-align:center">
+            <div style="font-size:10px;color:var(--text3);font-weight:500;text-transform:uppercase;letter-spacing:.04em">${day.d}</div>
+            <div style="font-family:'Instrument Serif',serif;font-size:15px;letter-spacing:-.01em;color:${day.isToday?'var(--accent)':'var(--text)'}">${day.dt}</div>
+            <div class="atl-tabnum" style="font-size:10px;color:${day.h===0?'var(--text3)':'var(--text)'};font-weight:500">${day.h>0?day.h.toFixed(1).replace('.',','):'—'}</div>
+          </div>`).join('')}
+        </div>
+      </div>
+    </section>
+    <section class="atl-card">
+      <div class="atl-card-h">
+        <div><div class="atl-card-title">Pro Auftrag · KW ${kw}</div><div class="atl-card-sub">Verteilung der Stunden</div></div>
+      </div>
+      <div class="atl-card-body">
+        ${Object.keys(aufMs).length===0?'<div style="color:var(--text3);font-size:13px">Keine Zeiten diese Woche erfasst.</div>':
+        Object.entries(aufMs).sort((a,b)=>b[1]-a[1]).map(([aid,ms])=>{
+          const a=aBy(aid);const h=ms/3600000;const pct=Math.round((ms/maxMs)*100);
+          return`<div style="margin-bottom:14px">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px">
+              <span style="font-size:12px;font-weight:500">${a?.titel||aid}</span>
+              <span class="atl-tabnum" style="font-size:13px;font-family:'Instrument Serif',serif;letter-spacing:-.01em">${h.toFixed(1).replace('.',',')} h</span>
+            </div>
+            <div style="height:5px;background:var(--surfaceAlt);border-radius:2.5px;overflow:hidden">
+              <div style="height:100%;width:${pct}%;background:var(--accent)"></div>
+            </div>
+          </div>`;}).join('')}
+        ${Object.keys(aufMs).length>0?`<div style="padding-top:14px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:baseline">
+          <span style="font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;font-weight:500">Verrechnungswert</span>
+          <span style="font-family:'Instrument Serif',serif;font-size:20px;letter-spacing:-.02em">€ ${(verrH*hz).toLocaleString('de-AT',{minimumFractionDigits:2,maximumFractionDigits:2})}</span>
+        </div>`:''}
+      </div>
+    </section>
+  </div>
+  ${Z.length?`<section class="atl-card" style="margin-top:16px">
+    <div class="atl-card-h">
+      <div><div class="atl-card-title">Letzte Einträge</div><div class="atl-card-sub">30 Tage</div></div>
+    </div>
+    <div style="overflow-x:auto"><table class="atl-tbl"><thead><tr>
+      <th style="width:110px">Datum</th><th>Auftrag</th>
+      <th style="width:80px" class="atl-tbl-num">Dauer</th><th style="width:90px" class="atl-tbl-num">Wert</th>
+    </tr></thead><tbody>
+      ${Z.slice(0,8).map(e=>{const a=aBy(e.auftrag_id);const w=e.dauer_ms?(e.dauer_ms/3600000)*hz:0;
+        return`<tr>
+          <td style="font-size:12px;color:var(--text2)">${fmtDate(e.start_zeit)}</td>
+          <td><div class="atl-row-title">${a?.titel||'Sonstiges'}</div><div class="atl-row-sub">${e.profile?.name||e.typ||''}</div></td>
+          <td class="atl-tbl-num" style="font-family:'Instrument Serif',serif;font-size:15px">${fmtShort(e.dauer_ms)}</td>
+          <td class="atl-tbl-num atl-tabnum">€ ${w.toFixed(2).replace('.',',')}</td>
+        </tr>`;}).join('')}
+    </tbody></table></div>
+  </section>`:''}
+</div>`;
 }
 
 // ── STATISTIK ─────────────────────────────────────────────────────
@@ -1224,7 +2434,7 @@ async function vNutzer(){
             </div>
           </div>`).join('')}
       </div>`:``}
-    <div style="font-family:'DM Serif Display',serif;font-size:1rem;font-weight:600;margin-bottom:.7rem">Alle Nutzer (${nutzer.filter(n=>n.freigegeben).length})</div>
+    <div style="font-family:'Instrument Serif',serif;font-size:1rem;font-weight:600;margin-bottom:.7rem">Alle Nutzer (${nutzer.filter(n=>n.freigegeben).length})</div>
     ${nutzer.filter(n=>n.freigegeben).map(n=>{
       const rolleCol={admin:'var(--gold2)',mitarbeiter:'var(--green2)',readonly:'var(--blue2)'}[n.rolle]||'var(--text3)';
       const auftraegeN=S.auftraege.filter(a=>a.zugewiesen_an===n.id).length;
@@ -1268,7 +2478,7 @@ function vSettings(){
   return`
 <div class="sec-head"><h2>Einstellungen</h2></div>
 
-<div style="font-family:'DM Serif Display',serif;font-size:1rem;font-weight:600;margin-bottom:.7rem">Firma & Vorlagen</div>
+<div style="font-family:'Instrument Serif',serif;font-size:1rem;font-weight:600;margin-bottom:.7rem">Firma & Vorlagen</div>
 <div class="card" onclick="openM('editFirma')" style="margin-bottom:.8rem">
   <div class="card-title">${f.firmenname||'Firmendaten eingeben'}</div>
   <div class="card-sub">${[f.adresse,f.plz_ort].filter(Boolean).join(', ')||'Noch keine Adresse'}</div>
@@ -1277,7 +2487,7 @@ function vSettings(){
   <div style="margin-top:.4rem"><span class="badge ${f.kleinunternehmer?'b-grn':'b-amb'}">${f.kleinunternehmer?'§6 Kleinunternehmer':'Regelbesteuerung'}</span></div>
 </div>
 
-<div style="font-family:'DM Serif Display',serif;font-size:1rem;font-weight:600;margin-bottom:.7rem">Auftragstypen</div>
+<div style="font-family:'Instrument Serif',serif;font-size:1rem;font-weight:600;margin-bottom:.7rem">Auftragstypen</div>
 ${S.typen.map(t=>`
   <div class="card" onclick="openM('editTyp','${t.id}')">
     <div class="row">
@@ -1289,7 +2499,7 @@ ${S.typen.map(t=>`
 
 <hr class="divider">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.7rem">
-  <div style="font-family:'DM Serif Display',serif;font-size:1rem;font-weight:600">Flügel-Vorlagen</div>
+  <div style="font-family:'Instrument Serif',serif;font-size:1rem;font-weight:600">Flügel-Vorlagen</div>
 </div>
 ${(()=>{
   const vl=JSON.parse(localStorage.getItem('fluegelVorlagen')||'[]');
@@ -1299,13 +2509,13 @@ ${(()=>{
 
 <hr class="divider">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.7rem">
-  <div style="font-family:'DM Serif Display',serif;font-size:1rem;font-weight:600">Produkt-Kategorien</div>
+  <div style="font-family:'Instrument Serif',serif;font-size:1rem;font-weight:600">Produkt-Kategorien</div>
   <button class="btn-s" onclick="addEigeneKat()">+ Kategorie</button>
 </div>
 ${getAllKats().map(k=>{const n=S.inventar.filter(i=>i.kategorie===k).length;const isC=!PROD_KATS_DEFAULT.includes(k);return`<div class="tbl-row"><span style="font-size:.82rem">${k}</span><span style="font-size:.7rem;color:var(--text3)">${n} Produkt${n!==1?'e':''}</span>${isC?`<button onclick="delEigeneKat('${k}')" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:.7rem">✕</button>`:'<span style="font-size:.6rem;color:var(--text3)">Standard</span>'}</div>`}).join('')}
 
 <hr class="divider">
-<div style="font-family:'DM Serif Display',serif;font-size:1rem;font-weight:600;margin-bottom:.7rem">Profil</div>
+<div style="font-family:'Instrument Serif',serif;font-size:1rem;font-weight:600;margin-bottom:.7rem">Profil</div>
 <div class="card">
   <div class="card-title">${S.profil?.name||'—'}</div>
   <div class="card-sub">${S.user?.email||''}${S.profil?.stundensatz?` · €${S.profil.stundensatz}/Std`:''}</div>
@@ -1487,7 +2697,7 @@ function getAllKatOpts(selected){
   return `<option value="">— wählen —</option>${opts}<option value="__neu__" style="color:var(--gold2)">+ Neue Kategorie…</option>`;
 }
 
-const PROD_KATS = ['Grundierung','Lack / Lasur','Farbe / RAL','Kitt','Leim','Öl','Holzschutz','Beschlag','Sonstiges'];'Grundierung','Lack / Lasur','Farbe / RAL','Kitt','Leim','Öl','Holzschutz','Beschlag','Sonstiges'];
+const PROD_KATS = ['Grundierung','Lack / Lasur','Farbe / RAL','Kitt','Leim','Öl','Holzschutz','Beschlag','Sonstiges'];
 
 function prodByKat(kat){
   return S.inventar.filter(i=>i.kategorie===kat);
@@ -1520,7 +2730,7 @@ window.pickProd=(targetId,kat)=>{
   picker.style.cssText='position:fixed;inset:0;z-index:500;display:flex;align-items:flex-end;justify-content:center';
   picker.innerHTML=`<div style="background:rgba(0,0,0,.6);position:absolute;inset:0" onclick="document.getElementById('prod-picker').remove()"></div>
     <div style="background:var(--s1);border:1px solid var(--border2);border-radius:16px 16px 0 0;width:100%;max-width:480px;z-index:1;padding-bottom:calc(var(--safe-b)+1rem)">
-      <div style="padding:.8rem 1.1rem;border-bottom:1px solid var(--border);font-family:'DM Serif Display',serif;font-size:1rem;font-weight:600">${kat}</div>
+      <div style="padding:.8rem 1.1rem;border-bottom:1px solid var(--border);font-family:'Instrument Serif',serif;font-size:1rem;font-weight:600">${kat}</div>
       ${prods.map(p=>`
         <div onclick="document.getElementById('${targetId}').value='${esc(p.name)}';document.getElementById('prod-picker').remove()"
           style="padding:.75rem 1.1rem;border-bottom:1px solid var(--border);cursor:pointer;display:flex;justify-content:space-between;align-items:center">
@@ -1546,7 +2756,7 @@ Speichere zuerst einen Flügel als Vorlage.');return}
   picker.innerHTML=`<div style="background:rgba(0,0,0,.6);position:absolute;inset:0" onclick="document.getElementById('vorl-picker').remove()"></div>
     <div style="background:var(--s1);border:1px solid var(--border2);border-radius:16px 16px 0 0;width:100%;max-width:480px;z-index:1;padding-bottom:calc(var(--safe-b)+1rem)">
       <div style="padding:.8rem 1.1rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
-        <span style="font-family:'DM Serif Display',serif;font-size:1rem;font-weight:600">Vorlage laden</span>
+        <span style="font-family:'Instrument Serif',serif;font-size:1rem;font-weight:600">Vorlage laden</span>
         <button onclick="document.getElementById('vorl-picker').remove()" style="background:none;border:none;color:var(--text3);cursor:pointer">✕</button>
       </div>
       ${vorlagen.map((v,i)=>`
@@ -1747,7 +2957,7 @@ function mHTML_zeitVorschlag(d){
   return mWrap(typ==='angebot'?'Neues Angebot':'Neue Rechnung',`
     <div style="background:var(--s2);border:1px solid var(--border2);border-radius:8px;padding:.85rem 1rem;margin-bottom:1rem">
       <div style="font-size:.6rem;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:.5rem">Getimte Zeit aus Auftrag</div>
-      <div style="font-family:'DM Serif Display',serif;font-size:1.6rem;font-weight:600;color:var(--gold2)">${gesamtStd} Std</div>
+      <div style="font-family:'Instrument Serif',serif;font-size:1.6rem;font-weight:600;color:var(--gold2)">${gesamtStd} Std</div>
       <div style="font-size:.72rem;color:var(--text2);margin-top:.2rem">bei €${satz}/Std = €${gesamt}</div>
     </div>
     <div style="display:flex;align-items:center;gap:.75rem;padding:.7rem;background:var(--s3);border:1px solid var(--border2);border-radius:8px;margin-bottom:1rem;cursor:pointer" onclick="document.getElementById('zeit-cb').click()">
@@ -2204,6 +3414,24 @@ window.sFirma=async()=>{
 
 // ── PDF Generierung ───────────────────────────────────────────────
 // ── PDF Hilfsfunktionen ──────────────────────────────────────────
+function pdfFirmaKopf(doc,W,ML){
+  const f=S.firma;
+  doc.setFillColor(245,245,245);
+  doc.rect(0,0,W,42,'F');
+  doc.setDrawColor(220,220,220);
+  doc.line(0,42,W,42);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(16);
+  doc.setTextColor(20,20,20);
+  doc.text(f.firmenname||'Mein Betrieb',ML,16);
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(7.5);
+  doc.setTextColor(100,100,100);
+  const kontakt=[f.inhaber,f.adresse,f.plz_ort,[f.telefon,f.email].filter(Boolean).join('  |  ')].filter(Boolean);
+  kontakt.forEach((l,i)=>doc.text(l,ML,23+i*4));
+  return 52;
+}
+
 function pdfSetup(){
   const{jsPDF}=window.jspdf;
   const doc=new jsPDF({unit:'mm',format:'a4'});
