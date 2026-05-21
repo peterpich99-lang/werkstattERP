@@ -833,10 +833,57 @@ async function detectMode(){
     console.log('Offline/Vorschau-Modus aktiv — nutze lokalen Speicher');
   }
 }
+// ── Auth-Funktionen früh definieren (vor await, damit Form sofort reagiert) ──
+let localAuth; // wird nach detectMode zugewiesen
+let S={tab:'dash',user:null,profil:null,firma:{},typen:[],kunden:[],auftraege:[],inventar:[],angebote:[],rechnungen:[],aktId:null,timer:null,tick:null,modal:null,pSchritte:[],pFotos:[],filter:'alle'};
+
+window.authTab=t=>{
+  document.querySelectorAll('.auth-tab').forEach((b,i)=>b.classList.toggle('on',i===(t==='login'?0:1)));
+  const loginDiv=document.getElementById('auth-login');
+  const regDiv=document.getElementById('auth-reg');
+  if(loginDiv)loginDiv.style.display=t==='login'?'block':'none';
+  if(regDiv)regDiv.style.display=t==='reg'?'block':'none';
+  ['a-err','r-err','r-msg'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=''});
+};
+window.doLogin=async()=>{
+  const btn=document.querySelector('#auth-login .btn');
+  const errEl=document.getElementById('a-err');
+  const email=document.getElementById('a-mail')?.value?.trim();
+  const pw=document.getElementById('a-pw')?.value;
+  if(!email||!pw){if(errEl)errEl.textContent='Bitte E-Mail und Passwort eingeben.';return}
+  if(btn){btn.textContent='Anmelden…';btn.disabled=true}
+  if(errEl)errEl.textContent='';
+  try{
+    const auth=isLocalMode?localAuth:SB.auth;
+    const{data,error}=await auth.signInWithPassword({email,password:pw});
+    if(error){
+      const msg=error.message==='Invalid login credentials'||error.message.includes('invalid')||error.message.includes('Invalid')?'Falsche E-Mail oder falsches Passwort.':error.message;
+      if(errEl){errEl.textContent=msg}else{alert(msg)}
+      if(btn){btn.textContent='Anmelden';btn.disabled=false}
+    } else if(data?.user){await boot(data.user)}
+  }catch(e){
+    if(errEl)errEl.textContent='Verbindungsfehler. Bitte nochmal versuchen.';
+  }finally{
+    if(btn){btn.textContent='Anmelden';btn.disabled=false}
+  }
+};
+window.doReg=async()=>{
+  const auth=isLocalMode?localAuth:SB.auth;
+  const{error}=await auth.signUp({email:document.getElementById('r-mail').value,password:document.getElementById('r-pw').value,options:{data:{name:document.getElementById('r-name').value}}});
+  if(!error&&isLocalMode){const s=JSON.parse(localStorage.getItem('wp_auth_session'));if(s?.user)boot(s.user);return;}
+  if(error)document.getElementById('r-err').textContent=error.message;
+  else document.getElementById('r-msg').textContent='Bestätigungsmail gesendet!';
+};
+window.doLogout=async()=>{
+  if(isDemoMode){isDemoMode=false;S.user=null;S.profil=null;showAuth();return}
+  if(isLocalMode){await localAuth.signOut();return}
+  await SB.auth.signOut();
+};
+
 await detectMode();
 
 // Auth wrapper for local mode
-const localAuth = {
+localAuth = {
   _users(){try{return JSON.parse(localStorage.getItem('wp_auth_users')||'[]')}catch(e){return[]}},
   _setUsers(u){localStorage.setItem('wp_auth_users',JSON.stringify(u))},
   _session(){try{return JSON.parse(localStorage.getItem('wp_auth_session')||'null')}catch(e){return null}},
@@ -872,14 +919,6 @@ const localAuth = {
     S.user=null;S.profil=null;showAuth();
   },
   onAuthStateChange(){return{data:{subscription:{unsubscribe:()=>{}}}};}
-};
-
-// ── State ────────────────────────────────────────────────────────
-let S={
-  tab:'dash', user:null, profil:null, firma:{},
-  typen:[], kunden:[], auftraege:[], inventar:[], angebote:[], rechnungen:[],
-  aktId:null, timer:null, tick:null, modal:null,
-  pSchritte:[], pFotos:[], filter:'alle'
 };
 
 // ── Boot ─────────────────────────────────────────────────────────
@@ -969,52 +1008,6 @@ function showAuth(){
   document.getElementById('app').style.display='none';
 }
 function hideAuth(){document.getElementById('auth').style.display='none';document.getElementById('app').style.display='flex'}
-
-// ── Auth ─────────────────────────────────────────────────────────
-window.authTab=t=>{
-  document.querySelectorAll('.auth-tab').forEach((b,i)=>b.classList.toggle('on',i===(t==='login'?0:1)));
-  const loginDiv=document.getElementById('auth-login');
-  const regDiv=document.getElementById('auth-reg');
-  if(loginDiv)loginDiv.style.display=t==='login'?'block':'none';
-  if(regDiv)regDiv.style.display=t==='reg'?'block':'none';
-  // Clear errors when switching
-  ['a-err','r-err','r-msg'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=''});
-};
-window.doLogin=async()=>{
-  const btn=document.querySelector('#auth-login .btn');
-  const errEl=document.getElementById('a-err');
-  const email=document.getElementById('a-mail')?.value?.trim();
-  const pw=document.getElementById('a-pw')?.value;
-  if(!email||!pw){errEl.textContent='Bitte E-Mail und Passwort eingeben.';return}
-  if(btn){btn.textContent='Anmelden…';btn.disabled=true}
-  errEl.textContent='';
-  try{
-    const{data,error}=await (isLocalMode?localAuth:SB.auth).signInWithPassword({email,password:pw});
-    if(error){
-      const msg=error.message==='Invalid login credentials'||error.message.includes('invalid')||error.message.includes('Invalid')?'Falsche E-Mail oder falsches Passwort.':error.message;
-      if(errEl){errEl.textContent=msg}else{alert(msg)}
-      if(btn){btn.textContent='Anmelden';btn.disabled=false}
-    } else if(data?.user){
-      await boot(data.user);
-    }
-  }catch(e){
-    errEl.textContent='Verbindungsfehler. Bitte nochmal versuchen.';
-  }finally{
-    if(btn){btn.textContent='Anmelden';btn.disabled=false}
-  }
-};
-window.doReg=async()=>{
-  const auth=isLocalMode?localAuth:SB.auth;
-  const{error}=await auth.signUp({email:document.getElementById('r-mail').value,password:document.getElementById('r-pw').value,options:{data:{name:document.getElementById('r-name').value}}});
-  if(!error&&isLocalMode){const s=JSON.parse(localStorage.getItem('wp_auth_session'));if(s?.user)boot(s.user);return;}
-  if(error)document.getElementById('r-err').textContent=error.message;
-  else document.getElementById('r-msg').textContent='Bestätigungsmail gesendet!';
-};
-window.doLogout=async()=>{
-  if(isDemoMode){isDemoMode=false;S.user=null;S.profil=null;showAuth();return}
-  if(isLocalMode){await localAuth.signOut();return}
-  await SB.auth.signOut();
-};
 
 // ── Timer ─────────────────────────────────────────────────────────
 function elapsed(){return S.timer?Date.now()-S.timer.startEpoch:0}
@@ -2747,8 +2740,7 @@ window.pickProd=(targetId,kat)=>{
 // Vorlage laden für Flügel/Stock
 window.ladeVorlage=(typ)=>{
   const vorlagen=JSON.parse(localStorage.getItem('fluegelVorlagen')||'[]').filter(v=>v.typ===typ||v.typ==='beide');
-  if(!vorlagen.length){alert('Noch keine Vorlagen gespeichert.
-Speichere zuerst einen Flügel als Vorlage.');return}
+  if(!vorlagen.length){alert('Noch keine Vorlagen gespeichert.\nSpeichere zuerst einen Flügel als Vorlage.');return}
   const mr=document.getElementById('modal-root');
   const picker=document.createElement('div');
   picker.id='vorl-picker';
@@ -2804,8 +2796,7 @@ window.delVorlage=(idx)=>{
 };
 
 window.speichereVorlage=(typ)=>{
-  const name=prompt('Name für diese Vorlage:
-(z.B. "Kastenfenster Standard")');
+  const name=prompt('Name für diese Vorlage:\n(z.B. "Kastenfenster Standard")');
   if(!name)return;
   const v=JSON.parse(localStorage.getItem('fluegelVorlagen')||'[]');
   v.push({
