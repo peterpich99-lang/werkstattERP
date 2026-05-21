@@ -1,6 +1,14 @@
 import { S } from '../auth.js';
 import { fmtDate, tbadge, sbadge, prioBadge, kBy } from '../helpers.js';
 
+function assigneeBadge(profileId) {
+  if (!profileId) return '';
+  const n = S.nutzer.find(x => x.id === profileId);
+  if (!n) return '';
+  const initials = (n.name || n.email || '?').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+  return `<span class="badge b-gray" style="font-size:.6rem">${initials}</span>`;
+}
+
 export default function vAuftraege() {
   const srch = (document.getElementById('auftrag-search')?.value || '').toLowerCase();
   const list = S.auftraege.filter(a =>
@@ -44,6 +52,7 @@ ${list.map(a => `
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:.25rem;flex-shrink:0">
         ${tbadge(a.auftragstyp_id)}${sbadge(a.status)}${prioBadge(a.prioritaet)}
+        ${assigneeBadge(a.zugewiesen_an)}
         ${S.timer?.auftragId === a.id ? '<span class="badge b-red">● Läuft</span>' : ''}
       </div>
     </div>

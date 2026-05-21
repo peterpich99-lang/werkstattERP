@@ -6,7 +6,8 @@ export default async function vDetail() {
   const a = S.auftraege.find(x => x.id === S.aktId);
   if (!a) return '<div class="empty" style="padding:2rem;text-align:center">Auftrag nicht gefunden</div>';
 
-  const kunde = kBy(a.kunde_id);
+  const kunde    = kBy(a.kunde_id);
+  const assignee = S.nutzer.find(n => n.id === a.zugewiesen_an);
   const isActive = S.timer?.auftragId === a.id;
 
   // Load Zeiteinträge
@@ -50,6 +51,7 @@ export default async function vDetail() {
       <div style="font-size:.72rem;color:var(--text2);margin-top:.25rem">
         ${kunde?.name || '—'} · ${fmtDate(a.erstellt_am)}
         ${a.faellig_am ? ` · <span style="color:var(--red2)">Fällig ${fmtDate(a.faellig_am)}</span>` : ''}
+        ${assignee ? ` · <span style="color:var(--text3)">Zugewiesen: ${assignee.name || assignee.email}</span>` : ''}
       </div>
     </div>
     <button class="btn-sm" onclick="openM('editAuftrag','${a.id}')">Bearbeiten</button>
