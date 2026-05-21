@@ -25,16 +25,30 @@ export const SB = createClient(SUPABASE_URL, SUPABASE_KEY, {
 export let isLocalMode = false;
 
 export async function detectMode() {
-  try {
-    await Promise.race([
-      fetch(`${SUPABASE_URL}/rest/v1/`, { signal: AbortSignal.timeout(2500) }),
-      new Promise((_, r) => setTimeout(() => r(new Error('timeout')), 2500)),
-    ]);
-    isLocalMode = false;
-  } catch {
+  // navigator.onLine is instant and reliable in PWA standalone mode
+  if (!navigator.onLine) {
     isLocalMode = true;
     console.log('[WP] Offline – lokaler Speicher aktiv');
+    return;
   }
+  // Double-check Supabase reachability (no-cors avoids CORS preflight issues)
+  try {
+    await fetch(`${SUPABASE_URL}/rest/v1/`, {
+      mode: 'no-cors',
+      signal: AbortSignal.timeout(5000),
+    });
+    isLocalMode = false;
+  } catch {
+    // Only go offline if navigator also agrees we're offline
+    isLocalMode = !navigator.onLine;
+    if (isLocalMode) console.log('[WP] Offline – lokaler Speicher aktiv');
+  }
+}
+
+// Keep isLocalMode in sync if connection drops/returns
+if (typeof window !== 'undefined') {
+  window.addEventListener('online',  () => { isLocalMode = false; });
+  window.addEventListener('offline', () => { isLocalMode = true;  });
 }
 
 // ── Local DB (localStorage) ───────────────────────────────────────────
