@@ -126,24 +126,29 @@ function openM(type, id) {
   if (!ov || !box) return;
 
   let html = '';
-  switch (type) {
-    case 'neuAuftrag':  html = mNeuAuftrag();     break;
-    case 'editAuftrag': html = mNeuAuftrag(id);   break;
-    case 'neuKunde':    html = mNeuKunde();        break;
-    case 'editKunde':   html = mNeuKunde(id);      break;
-    case 'neuAng':      html = mNeuAng(id);        break;
-    case 'viewAng':     html = mViewAng(id);       break;
-    case 'neuRe':       html = mNeuRe(id);         break;
-    case 'viewRe':      html = mViewRe(id);        break;
-    case 'neuInventar': html = mNeuInventar();     break;
-    case 'editInventar':html = mNeuInventar(id);   break;
-    case 'neuTyp':      html = mNeuTyp();          break;
-    case 'editTyp':     html = mNeuTyp(id);        break;
-    case 'einladen':    html = mEinladen();        break;
-    case 'editNutzer':  html = mEditNutzer(id);    break;
-    case 'neuZeit':     html = mNeuZeit(id);       break;
-    case 'neuMaterial': html = mNeuMaterial(id);   break;
-    default: return;
+  try {
+    switch (type) {
+      case 'neuAuftrag':  html = mNeuAuftrag();     break;
+      case 'editAuftrag': html = mNeuAuftrag(id);   break;
+      case 'neuKunde':    html = mNeuKunde();        break;
+      case 'editKunde':   html = mNeuKunde(id);      break;
+      case 'neuAng':      html = mNeuAng(id);        break;
+      case 'viewAng':     html = mViewAng(id);       break;
+      case 'neuRe':       html = mNeuRe(id);         break;
+      case 'viewRe':      html = mViewRe(id);        break;
+      case 'neuInventar': html = mNeuInventar();     break;
+      case 'editInventar':html = mNeuInventar(id);   break;
+      case 'neuTyp':      html = mNeuTyp();          break;
+      case 'editTyp':     html = mNeuTyp(id);        break;
+      case 'einladen':    html = mEinladen();        break;
+      case 'editNutzer':  html = mEditNutzer(id);    break;
+      case 'neuZeit':     html = mNeuZeit(id);       break;
+      case 'neuMaterial': html = mNeuMaterial(id);   break;
+      default: return;
+    }
+  } catch(e) {
+    alert('Fehler: ' + e.message);
+    return;
   }
 
   box.innerHTML = html;
