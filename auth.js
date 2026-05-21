@@ -241,29 +241,24 @@ window.doLogin = async () => {
   btn.disabled    = true;
   errEl.textContent = '';
 
+  const dbg = `[${isLocalMode ? 'OFFLINE' : 'online'} · net:${navigator.onLine} · sb:${!!SB?.auth}] `;
   try {
     if (isLocalMode) {
-      errEl.textContent = '⚠ Offline-Modus – kein Supabase-Login möglich. Bitte Internetverbindung prüfen.';
-      btn.textContent = 'Anmelden';
-      btn.disabled = false;
-      return;
+      errEl.textContent = dbg + 'Offline-Modus aktiv – Supabase nicht erreichbar.';
+      btn.textContent = 'Anmelden'; btn.disabled = false; return;
     }
     if (!SB?.auth) {
-      errEl.textContent = 'Fehler: Supabase nicht geladen. Bitte Seite neu laden.';
-      btn.textContent = 'Anmelden';
-      btn.disabled = false;
-      return;
+      errEl.textContent = dbg + 'Supabase nicht geladen. Bitte Seite neu laden.';
+      btn.textContent = 'Anmelden'; btn.disabled = false; return;
     }
     const { data, error } = await SB.auth.signInWithPassword({ email, password: pw });
     if (error) {
-      errEl.textContent = error.message.toLowerCase().includes('invalid')
-        ? 'Falsche E-Mail oder falsches Passwort.'
-        : error.message;
+      errEl.textContent = dbg + error.message;
     } else if (data?.user) {
       await boot(data.user);
     }
   } catch (e) {
-    errEl.textContent = 'Verbindungsfehler: ' + (e?.message || 'Bitte nochmal versuchen.');
+    errEl.textContent = dbg + 'Exception: ' + (e?.message || String(e));
   } finally {
     btn.textContent = 'Anmelden';
     btn.disabled    = false;
