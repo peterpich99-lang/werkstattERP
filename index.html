@@ -115,6 +115,18 @@
 </div>
 
 <script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').then(reg => {
+    reg.addEventListener('updatefound', () => {
+      const w = reg.installing;
+      w && w.addEventListener('statechange', () => {
+        if (w.state === 'activated') location.reload();
+      });
+    });
+  });
+}
+</script>
+<script>
 // Generate apple-touch-icon PNG via canvas for iOS home screen
 (function(){
   try {
@@ -133,27 +145,27 @@
 <script type="importmap">
 {
   "imports": {
-    "./auth.js":              "./auth.js?v=13",
-    "./db.js":                "./db.js?v=13",
-    "./helpers.js":           "./helpers.js?v=13",
-    "./pdf.js":               "./pdf.js?v=13",
-    "./views/dashboard.js":   "./views/dashboard.js?v=13",
-    "./views/auftraege.js":   "./views/auftraege.js?v=13",
-    "./views/detail.js":      "./views/detail.js?v=13",
-    "./views/dokumente.js":   "./views/dokumente.js?v=13",
-    "./views/kunden.js":      "./views/kunden.js?v=13",
-    "./views/inventar.js":    "./views/inventar.js?v=13",
-    "./views/stats.js":       "./views/stats.js?v=13",
-    "./views/nutzer.js":      "./views/nutzer.js?v=13",
-    "./views/settings.js":    "./views/settings.js?v=13",
-    "./views/modals.js":      "./views/modals.js?v=13",
-    "../auth.js":             "./auth.js?v=13",
-    "../db.js":               "./db.js?v=13",
-    "../helpers.js":          "./helpers.js?v=13",
-    "../pdf.js":              "./pdf.js?v=13"
+    "./auth.js":              "./auth.js?v=14",
+    "./db.js":                "./db.js?v=14",
+    "./helpers.js":           "./helpers.js?v=14",
+    "./pdf.js":               "./pdf.js?v=14",
+    "./views/dashboard.js":   "./views/dashboard.js?v=14",
+    "./views/auftraege.js":   "./views/auftraege.js?v=14",
+    "./views/detail.js":      "./views/detail.js?v=14",
+    "./views/dokumente.js":   "./views/dokumente.js?v=14",
+    "./views/kunden.js":      "./views/kunden.js?v=14",
+    "./views/inventar.js":    "./views/inventar.js?v=14",
+    "./views/stats.js":       "./views/stats.js?v=14",
+    "./views/nutzer.js":      "./views/nutzer.js?v=14",
+    "./views/settings.js":    "./views/settings.js?v=14",
+    "./views/modals.js":      "./views/modals.js?v=14",
+    "../auth.js":             "./auth.js?v=14",
+    "../db.js":               "./db.js?v=14",
+    "../helpers.js":          "./helpers.js?v=14",
+    "../pdf.js":              "./pdf.js?v=14"
   }
 }
 </script>
-<script type="module" src="app.js?v=13"></script>
+<script type="module" src="app.js?v=14"></script>
 </body>
 </html>
