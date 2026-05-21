@@ -242,8 +242,19 @@ window.doLogin = async () => {
   errEl.textContent = '';
 
   try {
-    const auth = isLocalMode ? localAuth : SB.auth;
-    const { data, error } = await auth.signInWithPassword({ email, password: pw });
+    if (isLocalMode) {
+      errEl.textContent = '⚠ Offline-Modus – kein Supabase-Login möglich. Bitte Internetverbindung prüfen.';
+      btn.textContent = 'Anmelden';
+      btn.disabled = false;
+      return;
+    }
+    if (!SB?.auth) {
+      errEl.textContent = 'Fehler: Supabase nicht geladen. Bitte Seite neu laden.';
+      btn.textContent = 'Anmelden';
+      btn.disabled = false;
+      return;
+    }
+    const { data, error } = await SB.auth.signInWithPassword({ email, password: pw });
     if (error) {
       errEl.textContent = error.message.toLowerCase().includes('invalid')
         ? 'Falsche E-Mail oder falsches Passwort.'
@@ -251,8 +262,8 @@ window.doLogin = async () => {
     } else if (data?.user) {
       await boot(data.user);
     }
-  } catch {
-    errEl.textContent = 'Verbindungsfehler. Bitte nochmal versuchen.';
+  } catch (e) {
+    errEl.textContent = 'Verbindungsfehler: ' + (e?.message || 'Bitte nochmal versuchen.');
   } finally {
     btn.textContent = 'Anmelden';
     btn.disabled    = false;
