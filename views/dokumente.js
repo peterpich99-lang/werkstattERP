@@ -12,8 +12,8 @@ export default function vDokumente() {
 </div>
 
 <div style="display:flex;border-bottom:1px solid var(--border);margin-bottom:.85rem">
-  <button class="auth-tab${isAng ? ' on' : ''}" onclick="setDoktab('angebote')">Angebote</button>
-  <button class="auth-tab${!isAng ? ' on' : ''}" onclick="setDoktab('rechnungen')">Rechnungen</button>
+  <button class="auth-tab${isAng ? ' on' : ''}" data-action="doktab" data-val="angebote">Angebote</button>
+  <button class="auth-tab${!isAng ? ' on' : ''}" data-action="doktab" data-val="rechnungen">Rechnungen</button>
 </div>
 
 ${list.map(d => {

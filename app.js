@@ -673,6 +673,17 @@ window.einladen = async () => {
 };
 
 // ── Init ──────────────────────────────────────────────────────────────────────
+// Event delegation — handles all data-action clicks (avoids iOS onclick issues)
+document.addEventListener('click', (e) => {
+  const el = e.target.closest('[data-action]');
+  if (!el) return;
+  const a = el.dataset.action;
+  const v = el.dataset.val;
+  if (a === 'doktab')    { S.doktab   = v; render(); }
+  if (a === 'filter')    { S.filter   = v; render(); }
+  if (a === 'invfilter') { S.invFilter = v; render(); }
+});
+
 // Modal overlay click-outside to close
 document.getElementById('modal-overlay')?.addEventListener('click', (e) => {
   if (e.target.id === 'modal-overlay') oClose();
