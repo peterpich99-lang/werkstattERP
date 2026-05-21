@@ -1,22 +1,23 @@
-import { S, isDemoMode, load } from './auth.js?v=16';
-import { sbq, DB, isLocalMode } from './db.js?v=16';
-import { calcPos, nextNummer } from './helpers.js?v=16';
+import { S, isDemoMode, load } from './auth.js?v=17';
+import { SB, sbq, DB, isLocalMode } from './db.js?v=17';
+import { calcPos, nextNummer } from './helpers.js?v=17';
 
-import vDash      from './views/dashboard.js?v=16';
-import vAuftraege from './views/auftraege.js?v=16';
-import vDetail    from './views/detail.js?v=16';
-import vDokumente from './views/dokumente.js?v=16';
-import vKunden    from './views/kunden.js?v=16';
-import vInventar  from './views/inventar.js?v=16';
-import vStats     from './views/stats.js?v=16';
-import vNutzer    from './views/nutzer.js?v=16';
-import vSettings  from './views/settings.js?v=16';
+import vDash       from './views/dashboard.js?v=17';
+import vAuftraege  from './views/auftraege.js?v=17';
+import vDetail     from './views/detail.js?v=17';
+import vDokumente  from './views/dokumente.js?v=17';
+import vKunden     from './views/kunden.js?v=17';
+import vInventar   from './views/inventar.js?v=17';
+import vStats      from './views/stats.js?v=17';
+import vNutzer     from './views/nutzer.js?v=17';
+import vSettings   from './views/settings.js?v=17';
+import vOnboarding from './views/onboarding.js?v=17';
 import {
   mNeuAuftrag, mNeuKunde, mNeuAng, mViewAng,
   mNeuRe, mViewRe, mNeuInventar, mNeuTyp, mEinladen,
-  mNeuZeit, mNeuMaterial
-} from './views/modals.js?v=16';
-import { openPDF } from './pdf.js?v=16';
+  mNeuZeit, mNeuMaterial, mEditNutzer
+} from './views/modals.js?v=17';
+import { openPDF } from './pdf.js?v=17';
 
 // ── Nav ──────────────────────────────────────────────────────────────────────
 const TABS = [
@@ -31,6 +32,7 @@ const MORE_TABS = ['inventar','stats','nutzer','settings'];
 function renderNav() {
   const nav = document.getElementById('app-nav');
   if (!nav) return;
+  if (S.onboarding || S.waitingApproval) { nav.innerHTML = ''; return; }
   nav.innerHTML = TABS.map(t => `
     <button class="nav-btn${S.tab === t.id || (t.id==='mehr' && MORE_TABS.includes(S.tab)) ? ' on' : ''}"
             onclick="navTap('${t.id}')">
@@ -92,7 +94,9 @@ async function render() {
 
   let html = '';
   try {
-    if (S.aktId && S.tab === 'auftraege') {
+    if (S.onboarding || S.waitingApproval) {
+      html = vOnboarding();
+    } else if (S.aktId && S.tab === 'auftraege') {
       html = await vDetail();
     } else {
       switch (S.tab) {
@@ -136,6 +140,7 @@ function openM(type, id) {
     case 'neuTyp':      html = mNeuTyp();          break;
     case 'editTyp':     html = mNeuTyp(id);        break;
     case 'einladen':    html = mEinladen();        break;
+    case 'editNutzer':  html = mEditNutzer(id);    break;
     case 'neuZeit':     html = mNeuZeit(id);       break;
     case 'neuMaterial': html = mNeuMaterial(id);   break;
     default: return;
@@ -261,6 +266,7 @@ window.saveAuftrag = async () => {
     faellig_am:    document.getElementById('m-faellig')?.value || null,
     stundensatz:   parseFloat(document.getElementById('m-stunde')?.value) || null,
     notizen:       document.getElementById('m-notizen')?.value || null,
+    zugewiesen_an: document.getElementById('m-zugewiesen')?.value || null,
     status: id ? undefined : 'offen',
     erstellt_am: id ? undefined : new Date().toISOString(),
   };
@@ -746,10 +752,112 @@ window.einladen = async () => {
     alert('Einladungen nur im Online-Modus verfügbar');
     return;
   }
-  try {
-    alert(`Einladung an ${email} gesendet (Funktion in Kürze verfügbar)`);
-  } catch(e) { console.warn(e); }
+  // Share invite code instead of sending email directly
+  const code = S.firma?.invite_code;
+  if (code) {
+    const msg = `Einladungscode für ${S.firma?.name || 'Werkstatt Pro'}:\n\n${code}\n\nApp: https://peterpich99-lang.github.io/werkstattERP/`;
+    if (navigator.share) {
+      navigator.share({ title: 'Werkstatt Pro Einladung', text: msg }).catch(() => {});
+    } else {
+      navigator.clipboard?.writeText(msg).then(() => alert('Einladungstext kopiert! Sende ihn an ' + email));
+    }
+  }
   oClose();
+};
+
+window.saveNutzer = async () => {
+  const id   = document.getElementById('en-id')?.value;
+  const data = {
+    rolle:       document.getElementById('en-rolle')?.value || 'mitarbeiter',
+    freigegeben: document.getElementById('en-frei')?.checked !== false,
+  };
+  try {
+    if (!isDemoMode && !isLocalMode) await sbq('profile').update(data).eq('id', id);
+    const n = S.nutzer.find(x => x.id === id);
+    if (n) Object.assign(n, data);
+  } catch(e) { console.warn(e); }
+  oClose(); render();
+};
+
+window.setupFirma = async () => {
+  const name = document.getElementById('ob-firma')?.value?.trim();
+  const err  = document.getElementById('ob-err');
+  if (!name) { if (err) err.textContent = 'Bitte Firmennamen eingeben'; return; }
+  const data = {
+    name,
+    adresse:         document.getElementById('ob-adresse')?.value?.trim() || null,
+    telefon:         document.getElementById('ob-tel')?.value?.trim() || null,
+    email:           document.getElementById('ob-email')?.value?.trim() || null,
+    iban:            document.getElementById('ob-iban')?.value?.trim() || null,
+    kleinunternehmer:document.getElementById('ob-ku')?.checked !== false,
+  };
+  try {
+    if (!isLocalMode) await sbq('firmen').update(data).eq('id', S.firma?.id);
+    Object.assign(S.firma, data);
+    S.onboarding = false;
+    S.onboardingStep = null;
+    document.getElementById('hdr-sub').textContent = data.name;
+    render();
+  } catch(e) {
+    if (err) err.textContent = 'Fehler: ' + (e?.message || String(e));
+  }
+};
+
+window.joinFirma = async () => {
+  const code = document.getElementById('ob-code')?.value?.trim();
+  const err  = document.getElementById('ob-err');
+  if (!code) { if (err) err.textContent = 'Bitte Code eingeben'; return; }
+  if (isLocalMode) { if (err) err.textContent = 'Nur im Online-Modus verfügbar'; return; }
+  try {
+    const { data, error } = await SB.rpc('join_firma', { code });
+    if (error || data?.error) {
+      if (err) err.textContent = data?.error || error?.message || 'Fehler';
+      return;
+    }
+    S.onboarding = false;
+    S.onboardingStep = null;
+    S.waitingApproval = true;
+    document.getElementById('hdr-sub').textContent = 'Warte auf Freigabe';
+    render();
+  } catch(e) {
+    if (err) err.textContent = 'Fehler: ' + (e?.message || String(e));
+  }
+};
+
+window.checkApproval = async () => {
+  const err = document.getElementById('ob-err');
+  try {
+    const { data: profil } = await SB.from('profile').select('*').eq('id', S.user?.id).single();
+    if (profil?.freigegeben !== false) {
+      S.waitingApproval = false;
+      S.profil = profil;
+      if (profil?.firma_id) {
+        const { data: firma } = await SB.from('firmen').select('*').eq('id', profil.firma_id).single();
+        S.firma = firma || {};
+      }
+      document.getElementById('hdr-sub').textContent = S.firma.name || 'Werkstatt Pro';
+      await load();
+      render();
+    } else {
+      if (err) err.textContent = 'Noch nicht freigegeben — bitte Admin kontaktieren.';
+    }
+  } catch(e) { if (err) err.textContent = 'Fehler: ' + (e?.message || String(e)); }
+};
+
+window.copyInviteCode = () => {
+  const code = S.firma?.invite_code;
+  if (!code) return;
+  navigator.clipboard?.writeText(code)
+    .then(() => alert('Code kopiert!'))
+    .catch(() => alert(code));
+};
+
+window.regenerateInviteCode = async () => {
+  if (!confirm('Neuen Code generieren? Der alte Code wird ungültig.')) return;
+  try {
+    const { data, error } = await SB.rpc('regenerate_invite_code');
+    if (!error && data) { S.firma.invite_code = data; render(); }
+  } catch(e) { console.warn(e); }
 };
 
 // ── Init ──────────────────────────────────────────────────────────────────────

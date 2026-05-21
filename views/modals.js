@@ -51,6 +51,11 @@ export function mNeuAuftrag(auftragId) {
     <select id="m-kunde"><option value="">— Kein Kunde —</option>${kOpts(a?.kunde_id)}</select></div>
   <div><label class="form-label">Auftragstyp</label>
     <select id="m-typ"><option value="">— Kein Typ —</option>${typOpts(a?.auftragstyp_id)}</select></div>
+  <div><label class="form-label">Zugewiesen an</label>
+    <select id="m-zugewiesen">
+      <option value="">— Niemand —</option>
+      ${S.nutzer.map(n => `<option value="${n.id}" ${(a?.zugewiesen_an||'')===(n.id)?'selected':''}>${n.name||n.email||'—'}</option>`).join('')}
+    </select></div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:.4rem">
     <div><label class="form-label">Priorität</label>
       <select id="m-prio">
@@ -330,6 +335,34 @@ export function mEinladen() {
     </select></div>
   <button class="btn" style="margin-top:.3rem" onclick="einladen()">Einladen</button>
   <div style="font-size:.7rem;color:var(--text3)">Der Nutzer erhält eine E-Mail mit einem Einladungslink.</div>
+</div>`;
+}
+
+export function mEditNutzer(nutzerId) {
+  const n = S.nutzer.find(x => x.id === nutzerId);
+  if (!n) return '<div class="empty">Nicht gefunden</div>';
+  return `
+<div class="modal-header"><span class="modal-title">Nutzer bearbeiten</span><button class="modal-close" onclick="oClose()">✕</button></div>
+<div style="display:grid;gap:.55rem;padding:.1rem 0">
+  <div style="padding:.6rem .7rem;background:var(--s1);border:1px solid var(--border2);border-radius:8px">
+    <div style="font-size:.88rem;font-weight:600">${n.name || '—'}</div>
+    <div style="font-size:.72rem;color:var(--text2);margin-top:.1rem">${n.email || '—'}</div>
+  </div>
+  <div><label class="form-label">Rolle</label>
+    <select id="en-rolle">
+      <option value="admin" ${n.rolle==='admin'?'selected':''}>Admin</option>
+      <option value="mitarbeiter" ${n.rolle==='mitarbeiter'?'selected':''}>Mitarbeiter</option>
+      <option value="leserecht" ${n.rolle==='leserecht'?'selected':''}>Leserecht (nur lesen)</option>
+    </select></div>
+  <div style="display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-top:1px solid var(--border)">
+    <div>
+      <div style="font-size:.82rem;font-weight:600">Freigegeben</div>
+      <div style="font-size:.65rem;color:var(--text3)">Gesperrte Nutzer können sich nicht einloggen</div>
+    </div>
+    <input type="checkbox" id="en-frei" ${n.freigegeben!==false?'checked':''} style="width:1.1rem;height:1.1rem;accent-color:var(--gold)">
+  </div>
+  <input type="hidden" id="en-id" value="${n.id}">
+  <button class="btn" style="margin-top:.3rem" onclick="saveNutzer()">Speichern</button>
 </div>`;
 }
 

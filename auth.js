@@ -65,6 +65,7 @@ export const S = {
   user: null, profil: null, firma: {},
   typen: [], kunden: [], auftraege: [], inventar: [], angebote: [], rechnungen: [], nutzer: [],
   aktId: null, timer: null, tick: null, modal: null, filter: 'alle', doktab: 'angebote',
+  onboarding: false, onboardingStep: null, waitingApproval: false,
 };
 
 // ── UI ────────────────────────────────────────────────────────────────
@@ -148,10 +149,19 @@ export async function boot(user) {
     S.profil = profil || {};
 
     if (profil && profil.freigegeben === false) {
-      showAuth();
-      document.getElementById('a-err').textContent = 'Dein Account wartet auf Freigabe durch den Admin.';
-      if (!isLocalMode) await SB.auth.signOut();
+      S.waitingApproval = true;
+      S.profil = profil;
+      S.firma  = {};
+      document.getElementById('hdr-user').textContent = (profil?.name || user.email).split(' ')[0];
+      document.getElementById('hdr-sub').textContent  = 'Warte auf Freigabe';
+      hideAuth();
+      render();
       return;
+    }
+
+    // last_seen aktualisieren (fire-and-forget)
+    if (!isLocalMode && profil) {
+      SB.from('profile').update({ last_seen: new Date().toISOString() }).eq('id', user.id).catch(() => {});
     }
 
     // Firma holen (via firma_id aus Profil)
@@ -166,8 +176,16 @@ export async function boot(user) {
     }
     S.firma = firma;
 
+    // Onboarding nötig wenn Firmenname noch auf Default
+    if (!isDemoMode && (firma.name === 'Meine Werkstatt' || !firma.name)) {
+      S.onboarding = true;
+      S.onboardingStep = S.onboardingStep || 'choose';
+    } else {
+      S.onboarding = false;
+    }
+
     document.getElementById('hdr-user').textContent = (profil?.name || user.email).split(' ')[0];
-    document.getElementById('hdr-sub').textContent  = S.firma.name || 'Werkstatt Pro';
+    document.getElementById('hdr-sub').textContent  = S.onboarding ? 'Einrichtung' : (S.firma.name || 'Werkstatt Pro');
   } catch (err) {
     S.profil = {};
     S.firma  = {};
@@ -333,6 +351,7 @@ window.doReg = async () => {
 };
 
 window.doLogout = async () => {
+  S.onboarding = false; S.onboardingStep = null; S.waitingApproval = false;
   if (isDemoMode) {
     isDemoMode = false;
     Object.assign(S, { user: null, profil: null, firma: {}, typen: [], kunden: [], auftraege: [], inventar: [], angebote: [], rechnungen: [], nutzer: [] });

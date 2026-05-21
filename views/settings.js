@@ -77,6 +77,21 @@ export default function vSettings() {
   </div>
 </div>
 
+${S.profil?.rolle === 'admin' ? `
+<div class="sec-label" style="margin-top:.85rem">Team-Einladung</div>
+<div class="card" style="padding:.85rem">
+  <div style="font-size:.75rem;color:var(--text2);margin-bottom:.6rem;line-height:1.5">
+    Teile diesen Code mit Mitarbeitern, damit sie der Firma beitreten können.
+  </div>
+  <div style="background:var(--s1);border:1px solid var(--border2);border-radius:8px;padding:.55rem .7rem;font-family:monospace;font-size:.75rem;word-break:break-all;color:var(--gold3);margin-bottom:.5rem">
+    ${f.invite_code || '—'}
+  </div>
+  <div style="display:flex;gap:.4rem">
+    <button class="btn-ghost" style="flex:1;font-size:.75rem" onclick="copyInviteCode()">Kopieren</button>
+    <button class="btn-ghost" style="flex:1;font-size:.75rem" onclick="regenerateInviteCode()">Neu generieren</button>
+  </div>
+</div>` : ''}
+
 <div class="sec-label" style="margin-top:.85rem">Auftragstypen</div>
 <div class="card" style="padding:.85rem">
   ${S.typen.map(t => `
