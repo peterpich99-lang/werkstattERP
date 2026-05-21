@@ -126,15 +126,15 @@ export async function load() {
     sbq('inventar').select('*').order('name'),
     sbq('angebote').select('*').order('erstellt_am', { ascending: false }),
     sbq('rechnungen').select('*').order('erstellt_am', { ascending: false }),
-    sbq('profile').select('*').order('erstellt_am', { ascending: false }),
+    sbq('profile').select('*'),
   ]);
-  S.typen     = a.data || [];
-  S.kunden    = b.data || [];
-  S.auftraege = c.data || [];
-  S.inventar  = d.data || [];
-  S.angebote  = e.data || [];
+  S.typen      = a.data || [];
+  S.kunden     = b.data || [];
+  S.auftraege  = c.data || [];
+  S.inventar   = d.data || [];
+  S.angebote   = e.data || [];
   S.rechnungen = f.data || [];
-  S.nutzer    = g.data || [];
+  S.nutzer     = g.data || [];
 }
 
 // ── Boot (after successful login) ─────────────────────────────────────
@@ -143,17 +143,9 @@ export async function boot(user) {
   S.user = user;
 
   try {
-    const firmaQuery = isLocalMode
-      ? Promise.resolve({ data: DB._get('firma')[0] || {} })
-      : SB.from('firma').select('*').eq('id', 1).single();
-
-    const [{ data: profil }, { data: firma }] = await Promise.all([
-      sbq('profile').select('*').eq('id', user.id).single(),
-      firmaQuery,
-    ]);
-
+    // Profil holen
+    const { data: profil } = await sbq('profile').select('*').eq('id', user.id).single();
     S.profil = profil || {};
-    S.firma  = firma  || {};
 
     if (profil && profil.freigegeben === false) {
       showAuth();
@@ -161,6 +153,18 @@ export async function boot(user) {
       if (!isLocalMode) await SB.auth.signOut();
       return;
     }
+
+    // Firma holen (via firma_id aus Profil)
+    let firma = {};
+    if (profil?.firma_id) {
+      if (isLocalMode) {
+        firma = DB._get('firmen').find(f => f.id === profil.firma_id) || {};
+      } else {
+        const { data } = await SB.from('firmen').select('*').eq('id', profil.firma_id).single();
+        firma = data || {};
+      }
+    }
+    S.firma = firma;
 
     document.getElementById('hdr-user').textContent = (profil?.name || user.email).split(' ')[0];
     document.getElementById('hdr-sub').textContent  = S.firma.name || 'Werkstatt Pro';
