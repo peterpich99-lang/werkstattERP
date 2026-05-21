@@ -880,9 +880,10 @@ document.getElementById('modal-overlay')?.addEventListener('click', (e) => {
 // More panel click-outside
 document.addEventListener('click', (e) => {
   const panel = document.getElementById('more-panel');
-  if (panel?.classList.contains('open') && !panel.contains(e.target)) {
-    panel.classList.remove('open');
-  }
+  if (!panel?.classList.contains('open')) return;
+  if (panel.contains(e.target)) return;
+  if (e.target.closest('#app-nav')) return;
+  panel.classList.remove('open');
 });
 
 // If user is already logged in (auth.js ran before app.js loaded)
