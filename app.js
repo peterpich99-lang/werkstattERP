@@ -154,7 +154,9 @@ window.openM     = openM;
 window.oClose    = oClose;
 window.openPDF   = openPDF;
 window.S         = S;
-window.setDoktab = (t) => { S.doktab = t; render(); };
+window.setDoktab  = (t) => { S.doktab  = t; render(); };
+window.setFilter  = (f) => { S.filter  = f; render(); };
+window.setInvFilter = (f) => { S.invFilter = f; render(); };
 
 window.setTab = (tab) => {
   S.tab = tab;
