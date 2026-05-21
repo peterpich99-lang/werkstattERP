@@ -40,6 +40,10 @@ export default async function vDetail() {
 
   return `
 <div style="margin-bottom:.85rem">
+  <button class="btn-sm" onclick="S.aktId=null;appRender()"
+          style="margin-bottom:.65rem;font-size:.75rem;color:var(--text2);border-color:var(--border)">
+    ← Aufträge
+  </button>
   <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:.5rem;margin-bottom:.5rem">
     <div style="flex:1;min-width:0">
       <div style="font-family:'DM Serif Display',serif;font-size:1.15rem;line-height:1.3">${a.titel}</div>
@@ -81,31 +85,43 @@ export default async function vDetail() {
   </div>
 </div>
 
+<div style="display:flex;justify-content:space-between;align-items:center">
+  <div class="sec-label" style="margin-bottom:0">Zeiteinträge</div>
+  <button class="btn-sm" onclick="openM('neuZeit','${a.id}')" style="font-size:.7rem">+ Eintragen</button>
+</div>
 ${zeiten.length > 0 ? `
-<div class="sec-label">Zeiteinträge</div>
-${zeiten.slice(0, 5).map(z => `
+<div style="margin-top:.4rem">
+${zeiten.slice(0, 8).map(z => `
   <div class="tbl-row">
-    <span style="font-size:.72rem;color:var(--text2)">${fmtDate(z.start_zeit)}</span>
+    <span style="font-size:.72rem;color:var(--text2);min-width:60px">${fmtDate(z.start_zeit)}</span>
     <span style="font-family:'DM Serif Display',serif;font-size:.9rem;color:var(--gold2)">${fmt(z.dauer_ms)}</span>
     <span style="font-size:.72rem;color:var(--text3)">${fmtH(z.dauer_ms)}</span>
     <span style="font-size:.72rem;color:var(--text2)">${fmtEuro((z.dauer_ms/3600000)*(a.stundensatz||0))}</span>
+    ${z.typ==='manuell' ? `<button onclick="delZeit('${z.id}','${a.id}')" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:.75rem;padding:0 .2rem">✕</button>` : ''}
   </div>`).join('')}
-` : ''}
+</div>
+` : '<div style="font-size:.72rem;color:var(--text3);padding:.4rem 0">Noch keine Zeiteinträge</div>'}
 
+<div style="display:flex;justify-content:space-between;align-items:center;margin-top:.85rem">
+  <div class="sec-label" style="margin:0">Material</div>
+  <button class="btn-sm" onclick="openM('neuMaterial','${a.id}')" style="font-size:.7rem">+ Hinzufügen</button>
+</div>
 ${material.length > 0 ? `
-<div class="sec-label">Material</div>
+<div style="margin-top:.4rem">
 ${material.map(m => `
   <div class="tbl-row">
-    <span style="flex:1">${m.name}</span>
-    <span style="color:var(--text2);font-size:.72rem">${m.menge}×${m.einheit}</span>
+    <span style="flex:1;font-size:.82rem">${m.name}</span>
+    <span style="color:var(--text2);font-size:.72rem">${m.menge} ${m.einheit}</span>
     <span style="font-size:.65rem;font-weight:600;${m.status==='bestellen'?'color:var(--amber2)':'color:var(--green2)'}">${m.status==='bestellen'?'Bestellen':'OK'}</span>
     <span style="color:var(--gold2);font-weight:600">${fmtEuro((m.menge||0)*(m.preis||0))}</span>
+    <button onclick="delMaterial('${m.id}')" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:.75rem;padding:0 .2rem">✕</button>
   </div>`).join('')}
-<div style="text-align:right;margin-top:.4rem;font-size:.8rem;color:var(--text2)">
+<div style="text-align:right;margin-top:.5rem;padding-top:.4rem;border-top:1px solid var(--border);font-size:.78rem;color:var(--text2)">
   Material: ${fmtEuro(gesamtMat)} · Lohn: ${fmtEuro(lohn)} ·
   <strong style="color:var(--gold3)">Gesamt: ${fmtEuro(gesamtMat + lohn)}</strong>
 </div>
-` : ''}
+</div>
+` : '<div style="font-size:.72rem;color:var(--text3);padding:.4rem 0">Noch kein Material</div>'}
 
 ${a.notizen ? `
 <div class="sec-label">Notizen</div>
@@ -116,7 +132,7 @@ ${a.notizen ? `
 <div style="display:flex;gap:.4rem;flex-wrap:wrap">
   <button class="btn-ghost" onclick="openM('neuAng','${a.id}')" style="font-size:.78rem">+ Angebot</button>
   <button class="btn-ghost" onclick="openM('neuRe','${a.id}')" style="font-size:.78rem">+ Rechnung</button>
-  <button class="btn-danger" onclick="delAuftrag('${a.id}')" style="font-size:.75rem;margin-left:auto">Löschen</button>
+  <button class="btn-danger" onclick="delAuftrag('${a.id}')" style="font-size:.75rem;margin-left:auto">Auftrag löschen</button>
 </div>
 `;
 }

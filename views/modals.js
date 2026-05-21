@@ -171,13 +171,25 @@ export function mViewAng(angId) {
 }
 
 export function mNeuRe(auftragId) {
-  const a = auftragId ? aBy(auftragId) : null;
-  const nr = nextNummer('rechnung');
-  const pos = a?.id ? [{ bezeichnung: a.titel || '', menge: 1, einzelpreis: 0 }] : [{ bezeichnung: '', menge: 1, einzelpreis: 0 }];
+  // Consume Angebot template if coming from angToRe()
+  const tpl = window._angTemplate || null;
+  window._angTemplate = null;
+
+  const a      = !tpl && auftragId ? aBy(auftragId) : null;
+  const titel  = tpl?.titel  || a?.titel  || '';
+  const kundeId= tpl?.kunde_id || a?.kunde_id || '';
+  const aufId  = tpl?.auftrag_id || auftragId || '';
+  const nr     = nextNummer('rechnung');
+  const pos    = tpl?.positionen?.length
+    ? JSON.parse(JSON.stringify(tpl.positionen))
+    : a?.id
+      ? [{ bezeichnung: a.titel || '', menge: 1, einzelpreis: 0 }]
+      : [{ bezeichnung: '', menge: 1, einzelpreis: 0 }];
   window._mPos = pos;
   const faellig = new Date(Date.now() + 14 * 86400000).toISOString().slice(0, 10);
+  const subTitle = tpl ? ` <span style="font-size:.68rem;color:var(--text3);font-weight:400">aus ${tpl.nummer}</span>` : '';
   return `
-<div class="modal-header"><span class="modal-title">Neue Rechnung</span><button class="modal-close" onclick="oClose()">✕</button></div>
+<div class="modal-header"><span class="modal-title">Neue Rechnung${subTitle}</span><button class="modal-close" onclick="oClose()">✕</button></div>
 <div style="display:grid;gap:.55rem;padding:.1rem 0">
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:.4rem">
     <div><label class="form-label">Nummer</label>
@@ -186,9 +198,9 @@ export function mNeuRe(auftragId) {
       <input type="date" id="mr-datum" value="${new Date().toISOString().slice(0,10)}"></div>
   </div>
   <div><label class="form-label">Titel *</label>
-    <input id="mr-titel" value="${a?.titel||''}" placeholder="Rechnungsbeschreibung"></div>
+    <input id="mr-titel" value="${titel}" placeholder="Rechnungsbeschreibung"></div>
   <div><label class="form-label">Kunde</label>
-    <select id="mr-kunde"><option value="">— Kein Kunde —</option>${kOpts(a?.kunde_id)}</select></div>
+    <select id="mr-kunde"><option value="">— Kein Kunde —</option>${kOpts(kundeId)}</select></div>
   <div><label class="form-label">Fällig am</label>
     <input type="date" id="mr-faellig" value="${faellig}"></div>
   <div class="sec-label" style="margin:0">Positionen</div>
@@ -197,7 +209,7 @@ export function mNeuRe(auftragId) {
   <div id="mr-footer">${dokFooter(pos)}</div>
   <div><label class="form-label">Notiz</label>
     <textarea id="mr-notiz" rows="2">${S.firma?.rechnung_notiz||''}</textarea></div>
-  <input type="hidden" id="mr-aufid" value="${auftragId||''}">
+  <input type="hidden" id="mr-aufid" value="${aufId}">
   <button class="btn" style="margin-top:.3rem" onclick="saveRechnung()">Speichern</button>
 </div>`;
 }
@@ -318,5 +330,61 @@ export function mEinladen() {
     </select></div>
   <button class="btn" style="margin-top:.3rem" onclick="einladen()">Einladen</button>
   <div style="font-size:.7rem;color:var(--text3)">Der Nutzer erhält eine E-Mail mit einem Einladungslink.</div>
+</div>`;
+}
+
+export function mNeuZeit(auftragId) {
+  return `
+<div class="modal-header"><span class="modal-title">Zeit eintragen</span><button class="modal-close" onclick="oClose()">✕</button></div>
+<div style="display:grid;gap:.55rem;padding:.1rem 0">
+  <div><label class="form-label">Datum</label>
+    <input type="date" id="mz-datum" value="${new Date().toISOString().slice(0,10)}"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:.4rem">
+    <div><label class="form-label">Stunden</label>
+      <input type="number" id="mz-std" placeholder="0" min="0" step="1" style="font-size:1.1rem;text-align:center"></div>
+    <div><label class="form-label">Minuten</label>
+      <input type="number" id="mz-min" placeholder="0" min="0" max="59" step="5" style="font-size:1.1rem;text-align:center"></div>
+  </div>
+  <div style="display:flex;gap:.3rem;flex-wrap:wrap">
+    ${[15,30,45,60,90,120].map(m => `
+    <button class="btn-sm" onclick="
+      document.getElementById('mz-std').value=${Math.floor(m/60)};
+      document.getElementById('mz-min').value=${m%60}"
+      style="font-size:.7rem">${m<60?m+'min':(m/60)+'h'}</button>`).join('')}
+  </div>
+  <input type="hidden" id="mz-aufid" value="${auftragId||''}">
+  <button class="btn" style="margin-top:.3rem" onclick="saveZeit()">Speichern</button>
+</div>`;
+}
+
+export function mNeuMaterial(auftragId) {
+  const invOpts = S.inventar.map(i =>
+    `<option value="${i.id}" data-preis="${i.einkaufspreis||0}" data-einheit="${i.einheit||'Stk'}">${i.name}</option>`
+  ).join('');
+  return `
+<div class="modal-header"><span class="modal-title">Material hinzufügen</span><button class="modal-close" onclick="oClose()">✕</button></div>
+<div style="display:grid;gap:.55rem;padding:.1rem 0">
+  ${invOpts ? `
+  <div><label class="form-label">Aus Lager wählen</label>
+    <select id="mm-inv" onchange="matInvChange()">
+      <option value="">— Manuell eingeben —</option>${invOpts}
+    </select></div>` : ''}
+  <div><label class="form-label">Bezeichnung *</label>
+    <input id="mm-name" placeholder="z.B. PU-Leim Würth"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:.4rem">
+    <div><label class="form-label">Menge</label>
+      <input type="number" id="mm-menge" value="1" min="0.01" step="0.1"></div>
+    <div><label class="form-label">Einheit</label>
+      <input id="mm-einheit" value="Stk" placeholder="Stk"></div>
+  </div>
+  <div><label class="form-label">Preis (€)</label>
+    <input type="number" id="mm-preis" placeholder="0.00" step="0.01"></div>
+  <div><label class="form-label">Status</label>
+    <select id="mm-status">
+      <option value="vorhanden">Vorhanden ✓</option>
+      <option value="bestellen">Muss bestellt werden</option>
+    </select></div>
+  <input type="hidden" id="mm-aufid" value="${auftragId||''}">
+  <button class="btn" style="margin-top:.3rem" onclick="saveMaterial()">Speichern</button>
 </div>`;
 }
