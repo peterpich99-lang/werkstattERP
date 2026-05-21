@@ -1,5 +1,4 @@
-// Use the UMD bundle loaded via <script> tag in index.html (avoids ESM CDN issues in iOS PWA)
-const { createClient } = window.supabase || {};
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const SUPABASE_URL = 'https://itstjivahmmiuwxqabnq.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_kNLXqjqguJhAq4Q4IL8ogQ_3jyiN54F';

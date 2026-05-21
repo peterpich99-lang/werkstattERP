@@ -1,22 +1,22 @@
-import { S, isDemoMode, load } from './auth.js?v=11';
-import { sbq, DB, isLocalMode } from './db.js?v=11';
-import { calcPos, nextNummer } from './helpers.js?v=11';
+import { S, isDemoMode, load } from './auth.js?v=12';
+import { sbq, DB, isLocalMode } from './db.js?v=12';
+import { calcPos, nextNummer } from './helpers.js?v=12';
 
-import vDash      from './views/dashboard.js?v=11';
-import vAuftraege from './views/auftraege.js?v=11';
-import vDetail    from './views/detail.js?v=11';
-import vDokumente from './views/dokumente.js?v=11';
-import vKunden    from './views/kunden.js?v=11';
-import vInventar  from './views/inventar.js?v=11';
-import vStats     from './views/stats.js?v=11';
-import vNutzer    from './views/nutzer.js?v=11';
-import vSettings  from './views/settings.js?v=11';
+import vDash      from './views/dashboard.js?v=12';
+import vAuftraege from './views/auftraege.js?v=12';
+import vDetail    from './views/detail.js?v=12';
+import vDokumente from './views/dokumente.js?v=12';
+import vKunden    from './views/kunden.js?v=12';
+import vInventar  from './views/inventar.js?v=12';
+import vStats     from './views/stats.js?v=12';
+import vNutzer    from './views/nutzer.js?v=12';
+import vSettings  from './views/settings.js?v=12';
 import {
   mNeuAuftrag, mNeuKunde, mNeuAng, mViewAng,
   mNeuRe, mViewRe, mNeuInventar, mNeuTyp, mEinladen,
   mNeuZeit, mNeuMaterial
-} from './views/modals.js?v=11';
-import { openPDF } from './pdf.js?v=11';
+} from './views/modals.js?v=12';
+import { openPDF } from './pdf.js?v=12';
 
 // ── Nav ──────────────────────────────────────────────────────────────────────
 const TABS = [
