@@ -81,28 +81,39 @@
       </div>
     </div>
     <div class="hdr-r">
+      <div id="t-pill" class="timer-pill" style="display:none" onclick="goTimer()">
+        ▶ <span id="t-val">0:00</span>
+      </div>
       <span id="hdr-user"></span>
-      <button class="btn-sm" onclick="doLogout()">Abmelden</button>
+      <button class="btn-sm" onclick="doLogout()">↩</button>
     </div>
   </header>
 
   <main class="content" id="content-wrap">
-    <div class="inner" id="content">
+    <div class="inner" id="app-content">
       <div class="loading">Laden…</div>
     </div>
   </main>
 
-  <nav class="nav" id="nav"></nav>
-  <div class="nav-more-panel" id="more-panel">
-    <div class="nav-more-bg" onclick="closeMore()"></div>
-    <div class="nav-more-sheet" id="more-sheet"></div>
+  <nav class="nav" id="app-nav"></nav>
+
+  <div id="more-panel" class="more-panel">
+    <div class="more-overlay" onclick="closeMore()"></div>
+    <div class="more-sheet">
+      <button class="more-item" onclick="setTab('inventar')">📦 Inventar</button>
+      <button class="more-item" onclick="setTab('stats')">📊 Statistik</button>
+      <button class="more-item" onclick="setTab('nutzer')">👥 Nutzer</button>
+      <button class="more-item" onclick="setTab('settings')">⚙ Einstellungen</button>
+    </div>
   </div>
 </div>
 
-<div id="modal-root"></div>
+<!-- MODAL -->
+<div id="modal-overlay" class="modal-overlay" onclick="if(event.target===this)oClose()">
+  <div id="modal-box" class="modal-box"></div>
+</div>
 
-<!-- Supabase UMD (kein esm.sh, kein Import-Problem) -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script type="module" src="auth.js"></script>
+<script type="module" src="app.js"></script>
 </body>
 </html>
