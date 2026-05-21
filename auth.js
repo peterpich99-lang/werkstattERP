@@ -257,25 +257,36 @@ window.doLogin = async () => {
     let data, error;
     try {
       ({ data, error } = await SB.auth.signInWithPassword({ email, password: pw }));
-    } catch (fetchErr) {
-      // Fallback: direct fetch bypasses supabase-js wrapper
-      const r = await fetch('https://itstjivahmmiuwxqabnq.supabase.co/auth/v1/token?grant_type=password', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': 'sb_publishable_kNLXqjqguJhAq4Q4IL8ogQ_3jyiN54F',
-          'Authorization': 'Bearer sb_publishable_kNLXqjqguJhAq4Q4IL8ogQ_3jyiN54F',
-        },
-        body: JSON.stringify({ email, password: pw }),
-      });
-      const json = await r.json();
-      if (!r.ok) {
-        error = { message: json.error_description || json.msg || 'Login fehlgeschlagen' };
-      } else {
-        // Inject session into SB client so everything works normally
-        await SB.auth.setSession({ access_token: json.access_token, refresh_token: json.refresh_token });
-        data = { user: json.user };
-        error = null;
+    } catch (e) {
+      error = { message: e?.message || String(e) };
+    }
+
+    // supabase-js returns network errors as error.message, not as thrown exceptions.
+    // "Load failed" = WebKit fetch failure → try a direct fetch as fallback.
+    if (error && /load failed|failed to fetch|networkerror|fetch/i.test(error.message)) {
+      try {
+        const r = await fetch(
+          'https://itstjivahmmiuwxqabnq.supabase.co/auth/v1/token?grant_type=password',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'apikey': 'sb_publishable_kNLXqjqguJhAq4Q4IL8ogQ_3jyiN54F',
+              'Authorization': 'Bearer sb_publishable_kNLXqjqguJhAq4Q4IL8ogQ_3jyiN54F',
+            },
+            body: JSON.stringify({ email, password: pw }),
+          }
+        );
+        const json = await r.json().catch(() => ({}));
+        if (r.ok) {
+          await SB.auth.setSession({ access_token: json.access_token, refresh_token: json.refresh_token });
+          data = { user: json.user };
+          error = null;
+        } else {
+          error = { message: json.error_description || json.msg || `Server Fehler ${r.status}` };
+        }
+      } catch (e2) {
+        error = { message: 'Supabase nicht erreichbar. Bitte Supabase Dashboard prüfen – Projekt möglicherweise pausiert.' };
       }
     }
 
