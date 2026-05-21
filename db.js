@@ -1,4 +1,5 @@
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+// Use the UMD bundle loaded via <script> tag in index.html (avoids ESM CDN issues in iOS PWA)
+const { createClient } = window.supabase || {};
 
 const SUPABASE_URL = 'https://itstjivahmmiuwxqabnq.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_kNLXqjqguJhAq4Q4IL8ogQ_3jyiN54F';
@@ -25,31 +26,15 @@ export const SB = createClient(SUPABASE_URL, SUPABASE_KEY, {
 export let isLocalMode = false;
 
 export async function detectMode() {
-  // navigator.onLine is instant and reliable in PWA standalone mode
-  if (!navigator.onLine) {
-    isLocalMode = true;
-    console.log('[WP] Offline – lokaler Speicher aktiv');
-    return;
-  }
-  // Double-check Supabase reachability (no-cors avoids CORS preflight issues)
-  try {
-    await fetch(`${SUPABASE_URL}/rest/v1/`, {
-      mode: 'no-cors',
-      signal: AbortSignal.timeout(5000),
-    });
-    isLocalMode = false;
-  } catch {
-    // Only go offline if navigator also agrees we're offline
-    isLocalMode = !navigator.onLine;
-    if (isLocalMode) console.log('[WP] Offline – lokaler Speicher aktiv');
-  }
+  // Use navigator.onLine — instant and reliable in PWA standalone mode.
+  // Never set isLocalMode=true if the device is online, even if Supabase is slow.
+  isLocalMode = !navigator.onLine;
+  if (isLocalMode) console.log('[WP] Offline – lokaler Speicher aktiv');
 }
 
-// Keep isLocalMode in sync if connection drops/returns
-if (typeof window !== 'undefined') {
-  window.addEventListener('online',  () => { isLocalMode = false; });
-  window.addEventListener('offline', () => { isLocalMode = true;  });
-}
+// Keep isLocalMode in sync if connection drops/returns mid-session
+window.addEventListener('online',  () => { isLocalMode = false; });
+window.addEventListener('offline', () => { isLocalMode = true;  });
 
 // ── Local DB (localStorage) ───────────────────────────────────────────
 export const DB = {
