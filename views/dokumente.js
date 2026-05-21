@@ -2,7 +2,7 @@ import { S } from '../auth.js';
 import { fmtDate, fmtEuro, sbadge, kBy } from '../helpers.js';
 
 export default function vDokumente() {
-  const isAng = S.tab === 'angebote';
+  const isAng = (S.doktab || 'angebote') === 'angebote';
   const list  = isAng ? S.angebote : S.rechnungen;
 
   return `
@@ -12,8 +12,8 @@ export default function vDokumente() {
 </div>
 
 <div style="display:flex;border-bottom:1px solid var(--border);margin-bottom:.85rem">
-  <button class="auth-tab${isAng ? ' on' : ''}" onclick="S.tab='angebote';appRender()">Angebote</button>
-  <button class="auth-tab${!isAng ? ' on' : ''}" onclick="S.tab='rechnungen';appRender()">Rechnungen</button>
+  <button class="auth-tab${isAng ? ' on' : ''}" onclick="S.doktab='angebote';appRender()">Angebote</button>
+  <button class="auth-tab${!isAng ? ' on' : ''}" onclick="S.doktab='rechnungen';appRender()">Rechnungen</button>
 </div>
 
 ${list.map(d => {
