@@ -1,4 +1,4 @@
-const CACHE = 'werkstatt-v13';
+const CACHE = 'werkstatt-v15';
 
 self.addEventListener('install', () => self.skipWaiting());
 
@@ -12,6 +12,9 @@ self.addEventListener('activate', e => {
 
 self.addEventListener('fetch', e => {
   const url = e.request.url;
+
+  // Only handle same-origin requests — never intercept Supabase, fonts, CDNs
+  if (!url.startsWith(self.location.origin)) return;
 
   // Navigation (HTML): always network first so updates load immediately
   if (e.request.mode === 'navigate') {
