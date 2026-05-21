@@ -1,5 +1,6 @@
 import { S } from '../auth.js';
 import { fmtEuro, calcPos, nextNummer, kBy, aBy, fmtDate } from '../helpers.js';
+import { openPDF } from '../pdf.js';
 
 function kOpts(sel) {
   return S.kunden.map(k =>
@@ -161,7 +162,8 @@ export function mViewAng(angId) {
       ${{entwurf:'Entwurf',versendet:'Versendet',angenommen:'Angenommen',abgelehnt:'Abgelehnt'}[s]}
     </button>`).join('')}
   </div>
-  <div style="display:flex;gap:.4rem;margin-top:.6rem">
+  <div style="display:flex;gap:.4rem;margin-top:.6rem;flex-wrap:wrap">
+    <button class="btn" style="font-size:.78rem" onclick="openPDF('ang','${d.id}')">PDF</button>
     <button class="btn-ghost" style="flex:1;font-size:.78rem" onclick="angToRe('${d.id}')">→ Rechnung</button>
     <button class="btn-danger" style="font-size:.75rem" onclick="delAngebot('${d.id}')">Löschen</button>
   </div>
@@ -240,7 +242,10 @@ export function mViewRe(reId) {
       ${{entwurf:'Entwurf',gesendet:'Gesendet',bezahlt:'Bezahlt',storniert:'Storniert'}[s]}
     </button>`).join('')}
   </div>
-  <button class="btn-danger" style="margin-top:.6rem;font-size:.75rem" onclick="delRechnung('${d.id}')">Löschen</button>
+  <div style="display:flex;gap:.4rem;margin-top:.6rem">
+    <button class="btn" style="font-size:.78rem" onclick="openPDF('re','${d.id}')">PDF</button>
+    <button class="btn-danger" style="font-size:.75rem" onclick="delRechnung('${d.id}')">Löschen</button>
+  </div>
 </div>`;
 }
 

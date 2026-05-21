@@ -15,6 +15,7 @@ import {
   mNeuAuftrag, mNeuKunde, mNeuAng, mViewAng,
   mNeuRe, mViewRe, mNeuInventar, mNeuTyp, mEinladen
 } from './views/modals.js';
+import { openPDF } from './pdf.js';
 
 // ── Nav ──────────────────────────────────────────────────────────────────────
 const TABS = [
@@ -151,6 +152,7 @@ function oClose() {
 window.appRender = render;
 window.openM     = openM;
 window.oClose    = oClose;
+window.openPDF   = openPDF;
 
 window.setTab = (tab) => {
   S.tab = tab;
