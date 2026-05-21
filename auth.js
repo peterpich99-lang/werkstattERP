@@ -266,13 +266,13 @@ window.doLogin = async () => {
     if (error && /load failed|failed to fetch|networkerror|fetch/i.test(error.message)) {
       try {
         const r = await fetch(
-          'https://itstjivahmmiuwxqabnq.supabase.co/auth/v1/token?grant_type=password',
+          'https://mjiqfpdthrqznrdxcwzt.supabase.co/auth/v1/token?grant_type=password',
           {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'apikey': 'sb_publishable_kNLXqjqguJhAq4Q4IL8ogQ_3jyiN54F',
-              'Authorization': 'Bearer sb_publishable_kNLXqjqguJhAq4Q4IL8ogQ_3jyiN54F',
+              'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1qaXFmcGR0aHJxem5yZHhjd3p0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzNTkwNDEsImV4cCI6MjA5NDkzNTA0MX0.9zg22fKAEvBovrouLKrXgvg6Hku71UNuPV7hhzfPDOo',
+              'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1qaXFmcGR0aHJxem5yZHhjd3p0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzNTkwNDEsImV4cCI6MjA5NDkzNTA0MX0.9zg22fKAEvBovrouLKrXgvg6Hku71UNuPV7hhzfPDOo',
             },
             body: JSON.stringify({ email, password: pw }),
           }
