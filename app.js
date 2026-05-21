@@ -154,6 +154,7 @@ window.openM     = openM;
 window.oClose    = oClose;
 window.openPDF   = openPDF;
 window.S         = S;
+window.setDoktab = (t) => { S.doktab = t; render(); };
 
 window.setTab = (tab) => {
   S.tab = tab;
