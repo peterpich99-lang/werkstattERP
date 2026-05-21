@@ -100,5 +100,23 @@ ${topKunden.map((k, i) => `
     <span style="flex:1;font-size:.82rem">${k.name}</span>
     <span style="font-family:'DM Serif Display',serif;color:var(--gold2)">${fmtEuro(k.umsatz)}</span>
   </div>`).join('')}` : ''}
+
+${reOffen.length > 0 ? `
+<div class="sec-label" style="margin-top:.85rem">Offene Rechnungen</div>
+${reOffen.map(r => {
+  const overdue = r.faellig_am && new Date(r.faellig_am) < new Date();
+  return `
+  <div class="tbl-row" onclick="S.doktab='rechnungen';setTab('dokumente')" style="cursor:pointer">
+    <div style="flex:1;min-width:0">
+      <div style="font-size:.82rem">${r.titel||r.nummer||'—'}</div>
+      <div style="font-size:.65rem;color:var(--text3)">${r.nummer||''}</div>
+    </div>
+    ${overdue ? `<span style="font-size:.65rem;font-weight:600;color:var(--red2)">Überfällig</span>` : ''}
+    <span style="font-family:'DM Serif Display',serif;color:var(--amber2)">${fmtEuro(r.brutto)}</span>
+  </div>`;
+}).join('')}
+<div style="text-align:right;margin-top:.4rem;font-size:.78rem;font-weight:600;color:var(--amber2)">
+  Gesamt ausstehend: ${fmtEuro(ausstehend)}
+</div>` : ''}
 `;
 }

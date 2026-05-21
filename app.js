@@ -1,21 +1,22 @@
-import { S, isDemoMode, load } from './auth.js?v=8';
-import { sbq, DB, isLocalMode } from './db.js?v=8';
-import { calcPos, nextNummer } from './helpers.js?v=8';
+import { S, isDemoMode, load } from './auth.js?v=9';
+import { sbq, DB, isLocalMode } from './db.js?v=9';
+import { calcPos, nextNummer } from './helpers.js?v=9';
 
-import vDash      from './views/dashboard.js?v=8';
-import vAuftraege from './views/auftraege.js?v=8';
-import vDetail    from './views/detail.js?v=8';
-import vDokumente from './views/dokumente.js?v=8';
-import vKunden    from './views/kunden.js?v=8';
-import vInventar  from './views/inventar.js?v=8';
-import vStats     from './views/stats.js?v=8';
-import vNutzer    from './views/nutzer.js?v=8';
-import vSettings  from './views/settings.js?v=8';
+import vDash      from './views/dashboard.js?v=9';
+import vAuftraege from './views/auftraege.js?v=9';
+import vDetail    from './views/detail.js?v=9';
+import vDokumente from './views/dokumente.js?v=9';
+import vKunden    from './views/kunden.js?v=9';
+import vInventar  from './views/inventar.js?v=9';
+import vStats     from './views/stats.js?v=9';
+import vNutzer    from './views/nutzer.js?v=9';
+import vSettings  from './views/settings.js?v=9';
 import {
   mNeuAuftrag, mNeuKunde, mNeuAng, mViewAng,
-  mNeuRe, mViewRe, mNeuInventar, mNeuTyp, mEinladen
-} from './views/modals.js?v=8';
-import { openPDF } from './pdf.js?v=8';
+  mNeuRe, mViewRe, mNeuInventar, mNeuTyp, mEinladen,
+  mNeuZeit, mNeuMaterial
+} from './views/modals.js?v=9';
+import { openPDF } from './pdf.js?v=9';
 
 // ── Nav ──────────────────────────────────────────────────────────────────────
 const TABS = [
@@ -135,6 +136,8 @@ function openM(type, id) {
     case 'neuTyp':      html = mNeuTyp();          break;
     case 'editTyp':     html = mNeuTyp(id);        break;
     case 'einladen':    html = mEinladen();        break;
+    case 'neuZeit':     html = mNeuZeit(id);       break;
+    case 'neuMaterial': html = mNeuMaterial(id);   break;
     default: return;
   }
 
@@ -644,6 +647,83 @@ window.saveFirma = async () => {
     else S.firma = data;
   } catch(e) { console.warn(e); }
   alert('Firma gespeichert');
+  render();
+};
+
+// ── Zeiteinträge CRUD ─────────────────────────────────────────────────────────
+window.saveZeit = async () => {
+  const std      = parseFloat(document.getElementById('mz-std')?.value) || 0;
+  const min      = parseFloat(document.getElementById('mz-min')?.value) || 0;
+  const auftragId= document.getElementById('mz-aufid')?.value;
+  const datum    = document.getElementById('mz-datum')?.value;
+  const dauer_ms = Math.round((std * 60 + min) * 60000);
+  if (dauer_ms <= 0) return alert('Bitte Zeit eingeben');
+  const entry = {
+    auftrag_id: auftragId,
+    dauer_ms,
+    start_zeit: datum ? new Date(datum + 'T08:00:00').toISOString() : new Date().toISOString(),
+    typ: 'manuell',
+  };
+  try {
+    if (!isDemoMode) {
+      if (isLocalMode) DB.insert('zeiteintraege', { id: 'z'+Date.now(), ...entry });
+      else await sbq('zeiteintraege').insert(entry);
+    }
+  } catch(e) { console.warn('saveZeit error', e); }
+  oClose(); render();
+};
+
+// ── Auftrag-Material CRUD ─────────────────────────────────────────────────────
+window.saveMaterial = async () => {
+  const name = document.getElementById('mm-name')?.value?.trim();
+  if (!name) return alert('Bitte Bezeichnung eingeben');
+  const auftragId = document.getElementById('mm-aufid')?.value;
+  const data = {
+    auftrag_id:   auftragId,
+    name,
+    menge:        parseFloat(document.getElementById('mm-menge')?.value) || 1,
+    einheit:      document.getElementById('mm-einheit')?.value?.trim() || 'Stk',
+    preis:        parseFloat(document.getElementById('mm-preis')?.value) || 0,
+    status:       document.getElementById('mm-status')?.value || 'vorhanden',
+    inventar_id:  document.getElementById('mm-inv')?.value || null,
+  };
+  try {
+    if (!isDemoMode) {
+      if (isLocalMode) DB.insert('auftrag_material', { id: 'm'+Date.now(), ...data });
+      else await sbq('auftrag_material').insert(data);
+    }
+  } catch(e) { console.warn('saveMaterial error', e); }
+  oClose(); render();
+};
+
+window.matInvChange = () => {
+  const sel = document.getElementById('mm-inv');
+  const opt = sel?.selectedOptions[0];
+  if (!opt?.value) return;
+  document.getElementById('mm-name').value    = opt.text;
+  document.getElementById('mm-preis').value   = opt.dataset.preis || '';
+  document.getElementById('mm-einheit').value = opt.dataset.einheit || 'Stk';
+};
+
+window.delZeit = async (id, auftragId) => {
+  if (!confirm('Zeiteintrag löschen?')) return;
+  try {
+    if (!isDemoMode) {
+      if (isLocalMode) DB.delete('zeiteintraege', id);
+      else await sbq('zeiteintraege').delete().eq('id', id);
+    }
+  } catch(e) { console.warn('delZeit error', e); }
+  render();
+};
+
+window.delMaterial = async (id) => {
+  if (!confirm('Material löschen?')) return;
+  try {
+    if (!isDemoMode) {
+      if (isLocalMode) DB.delete('auftrag_material', id);
+      else await sbq('auftrag_material').delete().eq('id', id);
+    }
+  } catch(e) { console.warn('delMaterial error', e); }
   render();
 };
 
