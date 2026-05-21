@@ -21,9 +21,9 @@ export default function vInventar() {
        style="margin-bottom:.7rem" value="${srch}">
 
 <div style="display:flex;gap:.35rem;flex-wrap:wrap;margin-bottom:.85rem">
-  <button class="btn-sm" onclick="S.invFilter='alle';appRender()"
+  <button class="btn-sm" onclick="setInvFilter('alle')"
           style="${filter==='alle'?'background:var(--gold);color:#0a0a0c;border-color:var(--gold);font-weight:600':''}">Alle</button>
-  <button class="btn-sm" onclick="S.invFilter='low';appRender()"
+  <button class="btn-sm" onclick="setInvFilter('low')"
           style="${filter==='low'?'background:var(--gold);color:#0a0a0c;border-color:var(--gold);font-weight:600':''}">
     Nachbestellen${lowCount > 0 ? ` (${lowCount})` : ''}
   </button>

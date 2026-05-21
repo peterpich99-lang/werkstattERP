@@ -26,7 +26,7 @@ export default function vAuftraege() {
 
 <div style="display:flex;gap:.35rem;flex-wrap:wrap;margin-bottom:.85rem">
   ${filters.map(f => `
-    <button class="btn-sm" onclick="S.filter='${f.id}';appRender()"
+    <button class="btn-sm" onclick="setFilter('${f.id}')"
             style="${S.filter === f.id ? 'background:var(--gold);color:#0a0a0c;border-color:var(--gold);font-weight:600' : ''}">
       ${f.l}
     </button>`).join('')}
