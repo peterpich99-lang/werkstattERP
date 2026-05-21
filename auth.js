@@ -343,7 +343,7 @@ window.doReg = async () => {
     errEl.textContent = error.message === 'User already registered'
       ? 'Diese E-Mail ist bereits registriert.'
       : error.message;
-  } else if (isLocalMode && data?.user) {
+  } else if (data?.user && (isLocalMode || data?.session)) {
     await boot(data.user);
   } else {
     okEl.textContent = 'Bestätigungsmail gesendet! Bitte E-Mail prüfen.';

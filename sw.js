@@ -1,4 +1,4 @@
-const CACHE = 'werkstatt-v16';
+const CACHE = 'werkstatt-v17';
 
 self.addEventListener('install', () => self.skipWaiting());
 
