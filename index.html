@@ -932,18 +932,22 @@ async function boot(u){
       isLocalMode?Promise.resolve({data:DB._get('firma')[0]||{}}):sbq('firma').select('*').eq('id',1).single()
     ]);
     S.profil=p||{};S.firma=f||{};
-    // Freigabe-Check
-    if(p&&p.freigegeben===false){
-      // Kein Admin vorhanden? Ersten User automatisch als Admin freigeben
-      const{data:admins}=await sbq('profile').select('id').eq('rolle','admin').eq('freigegeben',true);
-      if(!admins||admins.length===0){
-        await sbq('profile').update({freigegeben:true,rolle:'admin'}).eq('id',u.id);
-        p.freigegeben=true;p.rolle='admin';
-      } else {
-        showAuth();
-        document.getElementById('a-err').textContent='Dein Account wartet auf Freigabe durch den Admin.';
-        if(!isLocalMode)await SB.auth.signOut();
-        return;
+    // Freigabe-Check + kein Admin vorhanden → ersten User auto-promoten
+    {
+      const needsApproval=p&&p.freigegeben===false;
+      const notAdmin=p&&p.rolle!=='admin';
+      if(needsApproval||notAdmin){
+        const{data:admins}=await sbq('profile').select('id').eq('rolle','admin').eq('freigegeben',true);
+        if(!admins||admins.length===0){
+          await sbq('profile').update({freigegeben:true,rolle:'admin'}).eq('id',u.id);
+          if(p){p.freigegeben=true;p.rolle='admin';}
+          S.profil=p;
+        } else if(needsApproval){
+          showAuth();
+          document.getElementById('a-err').textContent='Dein Account wartet auf Freigabe durch den Admin.';
+          if(!isLocalMode)await SB.auth.signOut();
+          return;
+        }
       }
     }
     document.getElementById('hdr-user').textContent=(p?.name||u.email).split(' ')[0];
@@ -1846,8 +1850,12 @@ function reBadge(s){
 
 function vDokumente(aktiv){
   const isAng=aktiv==='angebote';
-  if(isAng) return vAngeboteList();
-  return vRechnungenList();
+  const subtabs=`<div style="display:flex;gap:8px;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--border)">
+    <button class="atl-chip${isAng?' on':''}" onclick="S.tab='angebote';render()">Angebote</button>
+    <button class="atl-chip${!isAng?' on':''}" onclick="S.tab='rechnungen';render()">Rechnungen</button>
+  </div>`;
+  const html=isAng?vAngeboteList():vRechnungenList();
+  return html.replace('<div class="atl-content">','<div class="atl-content">'+subtabs);
 }
 
 function vAngeboteList(){
