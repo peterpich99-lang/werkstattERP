@@ -983,7 +983,7 @@ localAuth = {
     const{name,firmaName,joinCode,rolle:optRolle,firma_id:optFirmaId}=options?.data||{};
     let firmaId=optFirmaId;
     if(!firmaId){
-      const newFirma={id:Date.now(),firmenname:firmaName||'Mein Betrieb',join_code:joinCode||genJoinCode(),kleinunternehmer:true,ust_satz:20,zahlungsziel_tage:14,angebot_gueltig_tage:30};
+      const newFirma={id:crypto.randomUUID(),firmenname:firmaName||'Mein Betrieb',join_code:joinCode||genJoinCode(),kleinunternehmer:true,ust_satz:20,zahlungsziel_tage:14,angebot_gueltig_tage:30};
       const firms=DB._get('firma');firms.push(newFirma);DB._set('firma',firms);
       firmaId=newFirma.id;
     }
@@ -1018,7 +1018,7 @@ async function boot(u){
     } else {
       const{data:f}=firmaId
         ?await sbq('firma').select('*').eq('id',firmaId).single()
-        :await sbq('firma').select('*').eq('id',1).single();
+        :await SB.from('firma').select('*').limit(1).single().catch(()=>({data:{}}));
       fData=f||{};
     }
     S.firma=fData;
@@ -3527,8 +3527,8 @@ window.dDelTyp=async id=>{if(!confirm('Löschen?'))return;await sbq('auftragstyp
 window.sProfil=async()=>{const d={name:g('p-n'),stundensatz:pf('p-s')||0};await sbq('profile').update(d).eq('id',S.user.id);S.profil={...S.profil,...d};document.getElementById('hdr-user').textContent=d.name.split(' ')[0];closeM();render()};
 window.sFirma=async()=>{
   const d={firmenname:g('fi-fn'),inhaber:g('fi-ih'),adresse:g('fi-adr'),plz_ort:g('fi-plz'),telefon:g('fi-tel'),email:g('fi-em'),website:g('fi-web'),uid_steuer:g('fi-uid'),iban:g('fi-iban'),bic:g('fi-bic'),bank:g('fi-bank'),kleinunternehmer:document.getElementById('fi-ku')?.value==='true',ust_satz:pf('fi-ust')||20,zahlungsziel_tage:parseInt(g('fi-zz'))||14,angebot_gueltig_tage:parseInt(g('fi-ag'))||30,angebot_einleitung:g('fi-ae'),angebot_schluss:g('fi-as'),rechnung_einleitung:g('fi-re'),rechnung_schluss:g('fi-rs')};
-  if(isLocalMode){const f=DB._get('firma');if(f.length)DB._set('firma',[{...f[0],...d,id:1}]);else DB._set('firma',[{...d,id:1}]);}
-  else await sbq('firma').update(d).eq('id',1);
+  if(isLocalMode){const f=DB._get('firma');if(f.length)DB._set('firma',[{...f[0],...d}]);else DB._set('firma',[{...d,id:crypto.randomUUID()}]);}
+  else if(S.firma?.id)await sbq('firma').update(d).eq('id',S.firma.id);
   S.firma={...S.firma,...d};document.getElementById('hdr-sub').textContent=d.firmenname||'Werkstatt Pro';closeM();render();
 };
 
