@@ -1092,11 +1092,11 @@ const TABS=[
 const BOTTOM_TABS = [
   {id:'dash',l:'Start',icon:'○'},
   {id:'auftraege',l:'Aufträge',icon:'≡'},
+  {id:'kunden',l:'Kunden',icon:'users'},
   {id:'dokumente',l:'Dokumente',icon:'□'},
   {id:'mehr',l:'Mehr',icon:'···'},
 ];
 const MORE_TABS = [
-  {id:'kunden',l:'Kunden'},
   {id:'inventar',l:'Inventar'},
   {id:'nutzer',l:'Nutzer'},
   {id:'stats',l:'Statistik'},
@@ -1127,8 +1127,9 @@ function renderNav(){
     let active=t.id==='mehr'?moreActive:t.id==='dokumente'?dokActive:(S.tab===t.id||S.tab==='detail'&&t.id==='auftraege');
     if(t.id==='dokumente')active=S.tab==='angebote'||S.tab==='rechnungen';
     if(t.id==='auftraege')active=S.tab==='auftraege'||S.tab==='detail';
+    const ico=NAV_ICONS[t.icon]?`<svg class="atl-nav-ico" viewBox="0 0 24 24"><path d="${NAV_ICONS[t.icon]}"/></svg>`:`<span style="font-size:.95rem;font-weight:300;letter-spacing:.5px">${t.icon}</span>`;
     return`<button class="nav-btn${active?' on':''}" onclick="navTap('${t.id}')">
-      <span class="nav-icon" style="font-size:.95rem;font-weight:300;letter-spacing:.5px">${t.icon}</span>
+      <span class="nav-icon">${ico}</span>
       <span>${t.l}</span>
     </button>`;
   }).join('');
