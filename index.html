@@ -934,10 +934,17 @@ async function boot(u){
     S.profil=p||{};S.firma=f||{};
     // Freigabe-Check
     if(p&&p.freigegeben===false){
-      showAuth();
-      document.getElementById('a-err').textContent='Dein Account wartet auf Freigabe durch den Admin.';
-      await SB.auth.signOut();
-      return;
+      // Kein Admin vorhanden? Ersten User automatisch als Admin freigeben
+      const{data:admins}=await sbq('profile').select('id').eq('rolle','admin').eq('freigegeben',true);
+      if(!admins||admins.length===0){
+        await sbq('profile').update({freigegeben:true,rolle:'admin'}).eq('id',u.id);
+        p.freigegeben=true;p.rolle='admin';
+      } else {
+        showAuth();
+        document.getElementById('a-err').textContent='Dein Account wartet auf Freigabe durch den Admin.';
+        if(!isLocalMode)await SB.auth.signOut();
+        return;
+      }
     }
     document.getElementById('hdr-user').textContent=(p?.name||u.email).split(' ')[0];
     document.getElementById('hdr-sub').textContent=S.firma.firmenname||'Werkstatt Pro';
