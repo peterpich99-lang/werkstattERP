@@ -1104,6 +1104,8 @@ async function load(){
 }
 
 function showAuth(){
+  // Boot-Guard zurücksetzen damit der nächste Login-Versuch boot() neu ausführt
+  S.user=null;S.profil=null;
   // Init local DB defaults if needed
   if(isLocalMode){
     if(!DB._get('auftragstypen').length){
