@@ -918,36 +918,29 @@ async function _doRegNeu(name,email,pw,firmaName,errEl,msgEl){
     if(error){if(errEl)errEl.textContent=error.message;return}
     const s=JSON.parse(localStorage.getItem('wp_auth_session'));if(s?.user)boot(s.user);return;
   }
+  // Speichere Wahl für boot() — klappt auch nach E-Mail-Bestätigung
+  localStorage.setItem('wp_pending_reg',JSON.stringify({typ:'neu',name,firmaName,joinCode}));
   const{data,error}=await SB.auth.signUp({email,password:pw,options:{data:{name}}});
-  if(error){if(errEl)errEl.textContent=error.message;return}
-  if(!data?.user){if(msgEl)msgEl.textContent='Bestätigungsmail gesendet!';return}
-  try{
-    const{data:firma}=await SB.from('firma').insert({firmenname:firmaName||'Mein Betrieb',join_code:joinCode,kleinunternehmer:true,ust_satz:20,zahlungsziel_tage:14,angebot_gueltig_tage:30}).select().single();
-    await SB.from('profile').upsert({id:data.user.id,name,rolle:'admin',freigegeben:true,firma_id:firma?.id,stundensatz:0});
-  }catch(e){
-    await SB.from('profile').upsert({id:data.user.id,name,rolle:'admin',freigegeben:true,stundensatz:0}).catch(()=>{});
-  }
-  boot(data.user);
+  if(error){localStorage.removeItem('wp_pending_reg');if(errEl)errEl.textContent=error.message;return}
+  if(data?.session){boot(data.user);return}
+  if(msgEl)msgEl.textContent='Bestätigungsmail gesendet! Bitte E-Mail bestätigen, dann kannst du dich anmelden.';
 }
 async function _doRegJoin(name,email,pw,code,errEl,msgEl){
-  let firma;
   if(isLocalMode){
-    firma=DB._get('firma').find(f=>f.join_code===code);
-  } else {
-    const{data}=await SB.from('firma').select('*').eq('join_code',code).single().catch(()=>({data:null}));
-    firma=data;
-  }
-  if(!firma){if(errEl)errEl.textContent='Einladungscode nicht gefunden.';return}
-  if(isLocalMode){
+    const firma=DB._get('firma').find(f=>f.join_code===code);
+    if(!firma){if(errEl)errEl.textContent='Einladungscode nicht gefunden.';return}
     const{error}=await localAuth.signUp({email,password:pw,options:{data:{name,firma_id:firma.id,rolle:'readonly'}}});
     if(error){if(errEl)errEl.textContent=error.message;return}
     const s=JSON.parse(localStorage.getItem('wp_auth_session'));if(s?.user)boot(s.user);return;
   }
+  // Prüfe Code BEVOR wir registrieren
+  const{data:firma}=await SB.from('firma').select('id').eq('join_code',code).single().catch(()=>({data:null}));
+  if(!firma){if(errEl)errEl.textContent='Einladungscode nicht gefunden.';return}
+  localStorage.setItem('wp_pending_reg',JSON.stringify({typ:'join',name,firmaId:firma.id}));
   const{data,error}=await SB.auth.signUp({email,password:pw,options:{data:{name}}});
-  if(error){if(errEl)errEl.textContent=error.message;return}
-  if(!data?.user){if(msgEl)msgEl.textContent='Bestätigungsmail gesendet!';return}
-  await SB.from('profile').upsert({id:data.user.id,name,rolle:'readonly',freigegeben:true,firma_id:firma.id,stundensatz:0}).catch(()=>{});
-  boot(data.user);
+  if(error){localStorage.removeItem('wp_pending_reg');if(errEl)errEl.textContent=error.message;return}
+  if(data?.session){boot(data.user);return}
+  if(msgEl)msgEl.textContent='Bestätigungsmail gesendet! Bitte E-Mail bestätigen, dann kannst du dich anmelden.';
 }
 window.doLogout=async()=>{
   if(isDemoMode){isDemoMode=false;S.user=null;S.profil=null;showAuth();return}
@@ -1007,9 +1000,26 @@ async function boot(u){
   if(S.user?.id===u?.id&&S.profil?.id)return;
   S.user=u;
   try{
-    const{data:p}=await sbq('profile').select('*').eq('id',u.id).single();
+    let{data:p}=await sbq('profile').select('*').eq('id',u.id).single();
+    // Kein Profil? Firma + Profil anlegen (z.B. nach E-Mail-Bestätigung)
+    if(!p&&!isLocalMode){
+      const pending=JSON.parse(localStorage.getItem('wp_pending_reg')||'null');
+      let firmaId=pending?.firmaId||null;
+      if(!firmaId){
+        const joinCode=pending?.joinCode||genJoinCode();
+        const firmaName=pending?.firmaName||'';
+        const{data:nf}=await SB.from('firma').insert({firmenname:firmaName||'Mein Betrieb',join_code:joinCode,kleinunternehmer:true,ust_satz:20,zahlungsziel_tage:14,angebot_gueltig_tage:30}).select('id').single().catch(()=>({data:null}));
+        firmaId=nf?.id||null;
+      }
+      const rolle=pending?.typ==='join'?'readonly':'admin';
+      const name=pending?.name||u.email;
+      await SB.from('profile').upsert({id:u.id,name,rolle,freigegeben:true,firma_id:firmaId,stundensatz:0}).catch(()=>{});
+      localStorage.removeItem('wp_pending_reg');
+      const{data:p2}=await SB.from('profile').select('*').eq('id',u.id).single().catch(()=>({data:null}));
+      p=p2;
+    }
     S.profil=p||{};
-    // Firma laden: bevorzuge firma_id aus Profil, fallback auf erste Firma
+    // Firma laden
     const firmaId=p?.firma_id;
     let fData;
     if(isLocalMode){
@@ -1021,8 +1031,7 @@ async function boot(u){
         :await SB.from('firma').select('*').limit(1).single().catch(()=>({data:{}}));
       fData=f||{};
     }
-    S.firma=fData;
-    // Freigabe-Check: nur blockieren wenn explizit freigegeben===false
+    S.firma=fData||{};
     if(p&&p.freigegeben===false){
       showAuth();
       document.getElementById('a-err').textContent='Dein Account wartet auf Freigabe durch den Admin.';
