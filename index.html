@@ -617,7 +617,24 @@ textarea{height:auto;min-height:80px;padding:10px 12px;resize:vertical;line-heig
       <div class="field"><label>Name</label><input id="r-name" placeholder="Dein Name"></div>
       <div class="field"><label>E-Mail</label><input id="r-mail" type="email" placeholder="name@beispiel.at"></div>
       <div class="field"><label>Passwort</label><input id="r-pw" type="password" placeholder="Min. 6 Zeichen"></div>
-      <button class="btn" style="width:100%;margin-top:.2rem" onclick="doReg()">Registrieren</button>
+      <div style="margin:12px 0 8px;border-top:1px solid var(--border);padding-top:12px">
+        <div style="font-size:11px;color:var(--text2);margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:.05em">Unternehmen</div>
+        <label style="display:flex;align-items:center;gap:9px;cursor:pointer;padding:7px 0;font-size:13px">
+          <input type="radio" name="reg-typ" value="neu" checked onchange="regTyp('neu')">
+          <span>Neues Unternehmen erstellen</span>
+        </label>
+        <label style="display:flex;align-items:center;gap:9px;cursor:pointer;padding:7px 0;font-size:13px">
+          <input type="radio" name="reg-typ" value="join" onchange="regTyp('join')">
+          <span>Bestehendem Unternehmen beitreten</span>
+        </label>
+      </div>
+      <div id="reg-neu">
+        <div class="field"><label>Unternehmensname <span style="font-weight:400;color:var(--text2)">(optional)</span></label><input id="r-firma" placeholder="Meine Tischlerei"></div>
+      </div>
+      <div id="reg-join" style="display:none">
+        <div class="field"><label>Einladungscode</label><input id="r-code" placeholder="XXXXXX" oninput="this.value=this.value.toUpperCase()" style="font-family:'JetBrains Mono',monospace;letter-spacing:3px;font-size:1.1rem"></div>
+      </div>
+      <button class="btn" style="width:100%;margin-top:.5rem" onclick="doReg()">Registrieren</button>
       <div id="r-msg" class="auth-ok"></div>
       <div id="r-err" class="auth-err"></div>
     </div>
@@ -867,13 +884,71 @@ window.doLogin=async()=>{
     if(btn){btn.textContent='Anmelden';btn.disabled=false}
   }
 };
-window.doReg=async()=>{
-  const auth=isLocalMode?localAuth:SB.auth;
-  const{error}=await auth.signUp({email:document.getElementById('r-mail').value,password:document.getElementById('r-pw').value,options:{data:{name:document.getElementById('r-name').value}}});
-  if(!error&&isLocalMode){const s=JSON.parse(localStorage.getItem('wp_auth_session'));if(s?.user)boot(s.user);return;}
-  if(error)document.getElementById('r-err').textContent=error.message;
-  else document.getElementById('r-msg').textContent='Bestätigungsmail gesendet!';
+function genJoinCode(){
+  const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  return Array.from({length:6},()=>c[Math.floor(Math.random()*c.length)]).join('');
+}
+window.regTyp=(t)=>{
+  document.getElementById('reg-neu').style.display=t==='neu'?'block':'none';
+  document.getElementById('reg-join').style.display=t==='join'?'block':'none';
 };
+window.doReg=async()=>{
+  const name=document.getElementById('r-name').value.trim();
+  const email=document.getElementById('r-mail').value.trim();
+  const pw=document.getElementById('r-pw').value;
+  const typ=document.querySelector('input[name="reg-typ"]:checked')?.value||'neu';
+  const errEl=document.getElementById('r-err');
+  const msgEl=document.getElementById('r-msg');
+  if(errEl)errEl.textContent='';if(msgEl)msgEl.textContent='';
+  if(!name||!email||!pw){if(errEl)errEl.textContent='Bitte alle Felder ausfüllen.';return}
+  if(pw.length<6){if(errEl)errEl.textContent='Passwort mind. 6 Zeichen.';return}
+  if(typ==='join'){
+    const code=(document.getElementById('r-code')?.value||'').trim().toUpperCase();
+    if(!code){if(errEl)errEl.textContent='Bitte Einladungscode eingeben.';return}
+    await _doRegJoin(name,email,pw,code,errEl,msgEl);
+  } else {
+    const firmaName=document.getElementById('r-firma')?.value.trim()||'';
+    await _doRegNeu(name,email,pw,firmaName,errEl,msgEl);
+  }
+};
+async function _doRegNeu(name,email,pw,firmaName,errEl,msgEl){
+  const joinCode=genJoinCode();
+  if(isLocalMode){
+    const{error}=await localAuth.signUp({email,password:pw,options:{data:{name,firmaName,joinCode,rolle:'admin'}}});
+    if(error){if(errEl)errEl.textContent=error.message;return}
+    const s=JSON.parse(localStorage.getItem('wp_auth_session'));if(s?.user)boot(s.user);return;
+  }
+  const{data,error}=await SB.auth.signUp({email,password:pw,options:{data:{name}}});
+  if(error){if(errEl)errEl.textContent=error.message;return}
+  if(!data?.user){if(msgEl)msgEl.textContent='Bestätigungsmail gesendet!';return}
+  try{
+    const{data:firma}=await SB.from('firma').insert({firmenname:firmaName||'Mein Betrieb',join_code:joinCode,kleinunternehmer:true,ust_satz:20,zahlungsziel_tage:14,angebot_gueltig_tage:30}).select().single();
+    await SB.from('profile').upsert({id:data.user.id,name,rolle:'admin',freigegeben:true,firma_id:firma?.id,stundensatz:0});
+  }catch(e){
+    await SB.from('profile').upsert({id:data.user.id,name,rolle:'admin',freigegeben:true,stundensatz:0}).catch(()=>{});
+  }
+  boot(data.user);
+}
+async function _doRegJoin(name,email,pw,code,errEl,msgEl){
+  let firma;
+  if(isLocalMode){
+    firma=DB._get('firma').find(f=>f.join_code===code);
+  } else {
+    const{data}=await SB.from('firma').select('*').eq('join_code',code).single().catch(()=>({data:null}));
+    firma=data;
+  }
+  if(!firma){if(errEl)errEl.textContent='Einladungscode nicht gefunden.';return}
+  if(isLocalMode){
+    const{error}=await localAuth.signUp({email,password:pw,options:{data:{name,firma_id:firma.id,rolle:'readonly'}}});
+    if(error){if(errEl)errEl.textContent=error.message;return}
+    const s=JSON.parse(localStorage.getItem('wp_auth_session'));if(s?.user)boot(s.user);return;
+  }
+  const{data,error}=await SB.auth.signUp({email,password:pw,options:{data:{name}}});
+  if(error){if(errEl)errEl.textContent=error.message;return}
+  if(!data?.user){if(msgEl)msgEl.textContent='Bestätigungsmail gesendet!';return}
+  await SB.from('profile').upsert({id:data.user.id,name,rolle:'readonly',freigegeben:true,firma_id:firma.id,stundensatz:0}).catch(()=>{});
+  boot(data.user);
+}
 window.doLogout=async()=>{
   if(isDemoMode){isDemoMode=false;S.user=null;S.profil=null;showAuth();return}
   if(isLocalMode){await localAuth.signOut();return}
@@ -905,10 +980,15 @@ localAuth = {
     const id=crypto.randomUUID();
     users.push({id,email,password,name:options?.data?.name||email});
     this._setUsers(users);
-    // Auto-create profile
+    const{name,firmaName,joinCode,rolle:optRolle,firma_id:optFirmaId}=options?.data||{};
+    let firmaId=optFirmaId;
+    if(!firmaId){
+      const newFirma={id:Date.now(),firmenname:firmaName||'Mein Betrieb',join_code:joinCode||genJoinCode(),kleinunternehmer:true,ust_satz:20,zahlungsziel_tage:14,angebot_gueltig_tage:30};
+      const firms=DB._get('firma');firms.push(newFirma);DB._set('firma',firms);
+      firmaId=newFirma.id;
+    }
     const profiles=DB._get('profile');
-    const isFirst=profiles.length===0;
-    profiles.push({id,name:options?.data?.name||email,rolle:isFirst?'admin':'mitarbeiter',freigegeben:isFirst,stundensatz:0,erstellt_am:new Date().toISOString()});
+    profiles.push({id,name:name||email,rolle:optRolle||'admin',freigegeben:true,firma_id:firmaId,stundensatz:0,erstellt_am:new Date().toISOString()});
     DB._set('profile',profiles);
     const session={user:{id,email}};
     localStorage.setItem('wp_auth_session',JSON.stringify(session));
@@ -927,28 +1007,27 @@ async function boot(u){
   if(S.user?.id===u?.id&&S.profil?.id)return;
   S.user=u;
   try{
-    const[{data:p},{data:f}]=await Promise.all([
-      sbq('profile').select('*').eq('id',u.id).single(),
-      isLocalMode?Promise.resolve({data:DB._get('firma')[0]||{}}):sbq('firma').select('*').eq('id',1).single()
-    ]);
-    S.profil=p||{};S.firma=f||{};
-    // Freigabe-Check + kein Admin vorhanden → ersten User auto-promoten
-    {
-      const needsApproval=p&&p.freigegeben===false;
-      const notAdmin=p&&p.rolle!=='admin';
-      if(needsApproval||notAdmin){
-        const{data:admins}=await sbq('profile').select('id').eq('rolle','admin').eq('freigegeben',true);
-        if(!admins||admins.length===0){
-          await sbq('profile').update({freigegeben:true,rolle:'admin'}).eq('id',u.id);
-          if(p){p.freigegeben=true;p.rolle='admin';}
-          S.profil=p;
-        } else if(needsApproval){
-          showAuth();
-          document.getElementById('a-err').textContent='Dein Account wartet auf Freigabe durch den Admin.';
-          if(!isLocalMode)await SB.auth.signOut();
-          return;
-        }
-      }
+    const{data:p}=await sbq('profile').select('*').eq('id',u.id).single();
+    S.profil=p||{};
+    // Firma laden: bevorzuge firma_id aus Profil, fallback auf erste Firma
+    const firmaId=p?.firma_id;
+    let fData;
+    if(isLocalMode){
+      const firms=DB._get('firma');
+      fData=firmaId?firms.find(x=>x.id===firmaId)||firms[0]||{}:firms[0]||{};
+    } else {
+      const{data:f}=firmaId
+        ?await sbq('firma').select('*').eq('id',firmaId).single()
+        :await sbq('firma').select('*').eq('id',1).single();
+      fData=f||{};
+    }
+    S.firma=fData;
+    // Freigabe-Check: nur blockieren wenn explizit freigegeben===false
+    if(p&&p.freigegeben===false){
+      showAuth();
+      document.getElementById('a-err').textContent='Dein Account wartet auf Freigabe durch den Admin.';
+      if(!isLocalMode)await SB.auth.signOut();
+      return;
     }
     document.getElementById('hdr-user').textContent=(p?.name||u.email).split(' ')[0];
     document.getElementById('hdr-sub').textContent=S.firma.firmenname||'Werkstatt Pro';
@@ -1008,9 +1087,8 @@ function showAuth(){
         {id:'t-son',name:'Sonstiges',farbe:'#666666',vordefiniert:true},
       ]);
     }
-    if(!DB._get('firma').length){
-      DB._set('firma',[{id:1,firmenname:'',kleinunternehmer:true,ust_satz:20,zahlungsziel_tage:14,angebot_gueltig_tage:30}]);
-    }
+    // Firma nur anlegen wenn noch keine existiert (neue Registrierung erstellt eigene)
+    // Kein Default-Eintrag mehr — wird bei Registrierung erstellt
     if(!DB._get('nummernkreis').length){
       DB._set('nummernkreis',[{typ:'rechnung',jahr:new Date().getFullYear(),zaehler:0},{typ:'angebot',jahr:new Date().getFullYear(),zaehler:0}]);
     }
@@ -2423,50 +2501,85 @@ ${Object.keys(typStd).length?`
 // ── NUTZERVERWALTUNG ──────────────────────────────────────────────
 async function vNutzer(){
   const isAdmin=S.profil?.rolle==='admin';
-  if(!isAdmin){document.getElementById('content').innerHTML='<div class="empty" style="padding:2rem">Nur für Admins.</div>';return}
   const nutzer=S.nutzer||[];
-  const wartend=nutzer.filter(n=>!n.freigegeben);
-  document.getElementById('content').innerHTML=`
-    <div class="sec-head"><h2>Nutzerverwaltung</h2></div>
-    ${wartend.length?`
-      <div class="alert" style="border-color:var(--red2)">
-        <div class="alert-t" style="color:var(--red2)">Warten auf Freigabe (${wartend.length})</div>
-        ${wartend.map(n=>`
-          <div style="display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-bottom:1px solid var(--border)">
-            <div>
-              <div style="font-size:.85rem;font-weight:600">${n.name}</div>
-              <div style="font-size:.7rem;color:var(--text2)">${n.erstellt_am?new Date(n.erstellt_am).toLocaleString('de-AT'):''}</div>
-            </div>
-            <div style="display:flex;gap:.4rem">
-              <button class="btn-grn" onclick="freigebenNutzer('${n.id}')">Freigeben</button>
-              <button class="btn-d" onclick="ablehnNutzer('${n.id}')">✕</button>
-            </div>
-          </div>`).join('')}
-      </div>`:``}
-    <div style="font-family:'Instrument Serif',serif;font-size:1rem;font-weight:600;margin-bottom:.7rem">Alle Nutzer (${nutzer.filter(n=>n.freigegeben).length})</div>
-    ${nutzer.filter(n=>n.freigegeben).map(n=>{
-      const rolleCol={admin:'var(--gold2)',mitarbeiter:'var(--green2)',readonly:'var(--blue2)'}[n.rolle]||'var(--text3)';
-      const auftraegeN=S.auftraege.filter(a=>a.zugewiesen_an===n.id).length;
-      const initials=(n.name||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
-      return`<div class="card">
-        <div class="row">
-          <div style="display:flex;align-items:center;gap:.75rem">
-            <div style="width:38px;height:38px;border-radius:50%;background:${n.avatar_farbe||'var(--gold)'};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;color:#0a0a0c;flex-shrink:0">${initials}</div>
-            <div>
-              <div class="card-title">${n.name}${n.id===S.user?.id?' (Du)':''}</div>
-              <div class="card-sub">${n.letzter_login?'Zuletzt: '+new Date(n.letzter_login).toLocaleString('de-AT'):'Noch nicht eingeloggt'}</div>
-              <div class="card-sub">${auftraegeN} Aufträge zugewiesen</div>
-            </div>
-          </div>
-          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:.3rem">
-            <span class="badge" style="color:${rolleCol};background:${rolleCol}22;border:1px solid ${rolleCol}44">${{admin:'Admin',mitarbeiter:'Mitarbeiter',readonly:'Nur-Lesen'}[n.rolle]||n.rolle}</span>
-            ${n.id!==S.user?.id?`<button class="btn-s" onclick="openM('editNutzer','${n.id}')"></button>`:''}
-          </div>
+  const joinCode=S.firma?.join_code||'—';
+  const rolleCol={admin:'var(--gold2)',mitarbeiter:'var(--green2)',readonly:'var(--blue2)'};
+  const rolleLbl={admin:'Admin',mitarbeiter:'Mitarbeiter',readonly:'Nur-Lesen'};
+
+  const myProfil=S.profil||{};
+  const myInitials=(myProfil.name||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+  const myRolleCol=rolleCol[myProfil.rolle]||'var(--text3)';
+
+  const meineProfil=`
+    <div class="atl-card" style="margin-bottom:1rem">
+      <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text2);margin-bottom:12px">Mein Profil</div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:42px;height:42px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;color:#0a0a0c;flex-shrink:0">${myInitials}</div>
+        <div style="flex:1">
+          <div style="font-weight:600">${myProfil.name||'—'}</div>
+          <div style="font-size:12px;color:var(--text2)">${S.user?.email||''}</div>
+        </div>
+        <span class="badge" style="color:${myRolleCol};background:${myRolleCol}22;border:1px solid ${myRolleCol}44">${rolleLbl[myProfil.rolle]||myProfil.rolle||'—'}</span>
+      </div>
+    </div>`;
+
+  if(!isAdmin){
+    document.getElementById('content').innerHTML=`
+      <div class="atl-content">
+        <div class="atl-pageheader"><div><div class="atl-greet">Nutzer</div><div class="atl-greet-sub">Dein Konto</div></div></div>
+        ${meineProfil}
+        <div class="atl-card" style="color:var(--text2);font-size:13px;padding:1rem 1.2rem">
+          Du hast die Rolle <strong>${rolleLbl[myProfil.rolle]||myProfil.rolle}</strong>. Der Admin kann deine Rechte anpassen.
         </div>
       </div>`;
-    }).join('')}
-    ${nutzer.filter(n=>n.freigegeben).length===0?'<div class="empty">Keine freigegebenen Nutzer</div>':''}
-  `;
+    return;
+  }
+
+  const wartend=nutzer.filter(n=>!n.freigegeben);
+  document.getElementById('content').innerHTML=`
+    <div class="atl-content">
+      <div class="atl-pageheader">
+        <div><div class="atl-greet">Nutzer</div><div class="atl-greet-sub">${nutzer.filter(n=>n.freigegeben).length} aktive Mitglieder</div></div>
+      </div>
+      <div class="atl-card" style="margin-bottom:1rem">
+        <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text2);margin-bottom:10px">Einladungscode</div>
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:1.6rem;letter-spacing:4px;font-weight:700;color:var(--accent)">${joinCode}</span>
+          <button class="atl-btn" onclick="navigator.clipboard?.writeText('${joinCode}').then(()=>alert('Code kopiert!'))">Kopieren</button>
+        </div>
+        <div style="font-size:12px;color:var(--text2);margin-top:8px">Gib diesen Code neuen Mitarbeitern bei der Registrierung.</div>
+      </div>
+      ${wartend.length?`
+      <div class="atl-card" style="margin-bottom:1rem;border-color:var(--red2)">
+        <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--red2);margin-bottom:10px">Warten auf Freigabe (${wartend.length})</div>
+        ${wartend.map(n=>`
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-bottom:1px solid var(--border)">
+            <div style="font-size:.85rem;font-weight:600">${n.name}</div>
+            <div style="display:flex;gap:.4rem">
+              <button class="atl-btn atl-btn-primary" onclick="freigebenNutzer('${n.id}')">Freigeben</button>
+              <button class="atl-btn" style="color:var(--red2)" onclick="ablehnNutzer('${n.id}')">Ablehnen</button>
+            </div>
+          </div>`).join('')}
+      </div>`:''}
+      ${meineProfil}
+      <div class="atl-card">
+        <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text2);margin-bottom:12px">Alle Nutzer</div>
+        ${nutzer.filter(n=>n.freigegeben&&n.id!==S.user?.id).map(n=>{
+          const rc=rolleCol[n.rolle]||'var(--text3)';
+          const initials=(n.name||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+          const auftraegeN=S.auftraege.filter(a=>a.zugewiesen_an===n.id).length;
+          return`<div style="display:flex;align-items:center;gap:12px;padding:.6rem 0;border-bottom:1px solid var(--border)">
+            <div style="width:36px;height:36px;border-radius:50%;background:${n.avatar_farbe||'var(--surfaceAlt)'};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem;flex-shrink:0">${initials}</div>
+            <div style="flex:1">
+              <div style="font-weight:600;font-size:14px">${n.name}</div>
+              <div style="font-size:12px;color:var(--text2)">${auftraegeN} Aufträge</div>
+            </div>
+            <span class="badge" style="color:${rc};background:${rc}22;border:1px solid ${rc}44">${rolleLbl[n.rolle]||n.rolle}</span>
+            <button class="atl-btn" onclick="openM('editNutzer','${n.id}')">Rechte</button>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
 }
 
 window.freigebenNutzer=async(id)=>{
