@@ -739,6 +739,7 @@ function startDemo(){
   hideAuth();
   render();
 }
+window.startDemo = startDemo;
 // iOS Safari localStorage wrapper
 const safeStorage = {
   getItem(key){try{return localStorage.getItem(key)}catch(e){return sessionStorage.getItem(key)}},
@@ -1039,12 +1040,21 @@ async function boot(u){
       fData=f||{};
     }
     S.firma=fData||{};
-    // Nur blockieren wenn freigegeben===false UND firma_id schon gesetzt (echter Admin-Approval-Flow)
+    // Nur blockieren wenn Admin den User explizit auf freigegeben=false gesetzt hat
+    // (d.h. firma_id vorhanden = echter Betrieb, freigegeben=false = Admin hat abgelehnt/gesperrt)
+    // Trigger-erstellte Profile ohne firma_id werden NICHT blockiert (oben bereits behandelt)
     if(p&&p.freigegeben===false&&p.firma_id){
-      showAuth();
-      document.getElementById('a-err').textContent='Dein Account wartet auf Freigabe durch den Admin.';
-      if(!isLocalMode)await SB.auth.signOut();
-      return;
+      // Gibt es keinen anderen Admin? Dann den ersten User auto-promoten
+      const{data:admins}=await SB.from('profile').select('id').eq('firma_id',p.firma_id).eq('rolle','admin').eq('freigegeben',true).neq('id',u.id).catch(()=>({data:[]}));
+      if(!admins||admins.length===0){
+        await SB.from('profile').update({freigegeben:true,rolle:'admin'}).eq('id',u.id).catch(()=>{});
+        p={...p,freigegeben:true,rolle:'admin'};
+      } else {
+        showAuth();
+        document.getElementById('a-err').textContent='Dein Account wartet auf Freigabe durch den Admin.';
+        if(!isLocalMode)await SB.auth.signOut();
+        return;
+      }
     }
     document.getElementById('hdr-user').textContent=(p?.name||u.email).split(' ')[0];
     document.getElementById('hdr-sub').textContent=S.firma.firmenname||'Werkstatt Pro';
