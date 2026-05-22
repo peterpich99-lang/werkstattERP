@@ -1001,22 +1001,29 @@ async function boot(u){
   S.user=u;
   try{
     let{data:p}=await sbq('profile').select('*').eq('id',u.id).single();
-    // Kein Profil? Firma + Profil anlegen (z.B. nach E-Mail-Bestätigung)
-    if(!p&&!isLocalMode){
+    if(!isLocalMode){
       const pending=JSON.parse(localStorage.getItem('wp_pending_reg')||'null');
-      let firmaId=pending?.firmaId||null;
-      if(!firmaId){
-        const joinCode=pending?.joinCode||genJoinCode();
-        const firmaName=pending?.firmaName||'';
-        const{data:nf}=await SB.from('firma').insert({firmenname:firmaName||'Mein Betrieb',join_code:joinCode,kleinunternehmer:true,ust_satz:20,zahlungsziel_tage:14,angebot_gueltig_tage:30}).select('id').single().catch(()=>({data:null}));
-        firmaId=nf?.id||null;
+      // Kein Profil ODER Profil ohne firma_id (von Supabase-Trigger angelegt) → Firma + Profil anlegen
+      const needsSetup=!p||(p.freigegeben===false&&!p.firma_id)||(p.freigegeben===true&&!p.firma_id);
+      if(needsSetup){
+        let firmaId=pending?.firmaId||null;
+        if(!firmaId){
+          const joinCode=pending?.joinCode||genJoinCode();
+          const firmaName=pending?.firmaName||'';
+          const{data:nf}=await SB.from('firma').insert({firmenname:firmaName||'Mein Betrieb',join_code:joinCode,kleinunternehmer:true,ust_satz:20,zahlungsziel_tage:14,angebot_gueltig_tage:30}).select('id').single().catch(()=>({data:null}));
+          firmaId=nf?.id||null;
+        }
+        const rolle=pending?.typ==='join'?'readonly':'admin';
+        const name=pending?.name||p?.name||u.email;
+        if(p){
+          await SB.from('profile').update({freigegeben:true,rolle,firma_id:firmaId,name}).eq('id',u.id).catch(()=>{});
+        } else {
+          await SB.from('profile').upsert({id:u.id,name,rolle,freigegeben:true,firma_id:firmaId,stundensatz:0}).catch(()=>{});
+        }
+        localStorage.removeItem('wp_pending_reg');
+        const{data:p2}=await SB.from('profile').select('*').eq('id',u.id).single().catch(()=>({data:null}));
+        p=p2;
       }
-      const rolle=pending?.typ==='join'?'readonly':'admin';
-      const name=pending?.name||u.email;
-      await SB.from('profile').upsert({id:u.id,name,rolle,freigegeben:true,firma_id:firmaId,stundensatz:0}).catch(()=>{});
-      localStorage.removeItem('wp_pending_reg');
-      const{data:p2}=await SB.from('profile').select('*').eq('id',u.id).single().catch(()=>({data:null}));
-      p=p2;
     }
     S.profil=p||{};
     // Firma laden
@@ -1032,7 +1039,8 @@ async function boot(u){
       fData=f||{};
     }
     S.firma=fData||{};
-    if(p&&p.freigegeben===false){
+    // Nur blockieren wenn freigegeben===false UND firma_id schon gesetzt (echter Admin-Approval-Flow)
+    if(p&&p.freigegeben===false&&p.firma_id){
       showAuth();
       document.getElementById('a-err').textContent='Dein Account wartet auf Freigabe durch den Admin.';
       if(!isLocalMode)await SB.auth.signOut();
