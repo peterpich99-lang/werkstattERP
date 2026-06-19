@@ -1,0 +1,18 @@
+{
+  "name": "Werkstatt Pro",
+  "short_name": "Werkstatt",
+  "description": "Werkstatt ERP – Aufträge, Rechnungen, Inventar",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#0a0a0c",
+  "theme_color": "#0a0a0c",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
